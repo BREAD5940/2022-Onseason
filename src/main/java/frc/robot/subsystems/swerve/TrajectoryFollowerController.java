@@ -25,9 +25,9 @@ public class TrajectoryFollowerController extends CommandBase {
     public final HolonomicDriveController autonomusController = new HolonomicDriveController(
         new PIDController(8, 0, 0), 
         new PIDController(8, 0, 0), 
-        new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(360.0),
-            Units.degreesToRadians(180.0)
+        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(
+            Units.degreesToRadians(180.0),
+            Units.degreesToRadians(90.0)
         ))
     );
 
@@ -65,6 +65,8 @@ public class TrajectoryFollowerController extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) { }
+    public void end(boolean interrupted) { 
+        swerve.setSpeeds(new ChassisSpeeds(0, 0, 0));
+    }
 
 }

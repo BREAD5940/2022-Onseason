@@ -1,0 +1,16 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DualIntake": "Subsystem",
+      "/LiveWindow/Flywheel": "Subsystem",
+      "/LiveWindow/Gut": "Subsystem",
+      "/LiveWindow/Neck": "Subsystem",
+      "/LiveWindow/Superstructure": "Subsystem",
+      "/LiveWindow/Swerve": "Subsystem",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Field": "Field2d"
+    }
+  }
+}

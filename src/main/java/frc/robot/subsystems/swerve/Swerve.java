@@ -96,20 +96,19 @@ public class Swerve extends SubsystemBase {
         br.drive.setNeutralMode(mode);
     }
 
-    public double getVelocityX() {
-        return gyro.getVelocityX();
-    }
-
-    public double getVelocityY() {
-        return gyro.getVelocityY();
-    }
-
     public double getVelocity() {
-        return Math.sqrt(Math.pow(getVelocityX(), 2) + Math.pow(getVelocityY(), 2));
+        ChassisSpeeds speeds = kinematics.toChassisSpeeds(
+            fl.getState(),
+            fr.getState(),
+            bl.getState(),
+            br.getState()
+        );
+        return Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2));
     }
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
         updateOdometry();
     }
     
