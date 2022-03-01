@@ -8,39 +8,25 @@ import static frc.robot.Constants.DualIntake.*;
 
 public class IntakePneumatics extends SubsystemBase {
 
-    private final DoubleSolenoid leftSolenoids = new DoubleSolenoid(PneumaticsModuleType.REVPH, LEFT_INTAKE_PISTON_CHANNELS[0], LEFT_INTAKE_PISTON_CHANNELS[1]);
-    private final DoubleSolenoid rightSolenoids = new DoubleSolenoid(PneumaticsModuleType.REVPH, RIGHT_INTAKE_PISTON_CHANNELS[0], RIGHT_INTAKE_PISTON_CHANNELS[1]);
-    public boolean leftRetracted = true;
-    public boolean rightRetracted = true;
+    private final DoubleSolenoid leftSolenoids = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, LEFT_INTAKE_PISTON_CHANNELS[0], LEFT_INTAKE_PISTON_CHANNELS[1]);
+    private final DoubleSolenoid rightSolenoids = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RIGHT_INTAKE_PISTON_CHANNELS[0], RIGHT_INTAKE_PISTON_CHANNELS[1]);
 
     public void extendLeft() {
-        leftRetracted = false;
+        leftSolenoids.set(Value.kForward);
     }
 
     public void extendRight() {
-        rightRetracted = false;
+        System.out.println("Extend right requested");
+        rightSolenoids.set(Value.kForward);
     }
 
     public void retractLeft() {
-        leftRetracted = true;
+        leftSolenoids.set(Value.kReverse);
     }
 
     public void retractRight() {
-        rightRetracted = true;
+        System.out.println("Retract right requested");
+        rightSolenoids.set(Value.kReverse);
     }
     
-    @Override
-    public void periodic() {
-        if (leftRetracted) {
-            leftSolenoids.set(Value.kReverse);
-        } else {
-            leftSolenoids.set(Value.kForward);
-        }
-
-        if (rightRetracted) {
-            rightSolenoids.set(Value.kReverse);
-        } else {
-            rightSolenoids.set(Value.kForward);
-        }
-    }
 }

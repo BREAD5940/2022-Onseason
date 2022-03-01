@@ -96,6 +96,26 @@ public class Swerve extends SubsystemBase {
         br.drive.setNeutralMode(mode);
     }
 
+    public double getXVelocity() {
+        ChassisSpeeds speeds = kinematics.toChassisSpeeds(
+            fl.getState(),
+            fr.getState(),
+            bl.getState(),
+            br.getState()
+        );
+        return speeds.vxMetersPerSecond;
+    }
+
+    public double getYVelocity() {
+        ChassisSpeeds speeds = kinematics.toChassisSpeeds(
+            fl.getState(),
+            fr.getState(),
+            bl.getState(),
+            br.getState()
+        );
+        return speeds.vyMetersPerSecond;
+    }
+
     public double getVelocity() {
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(
             fl.getState(),

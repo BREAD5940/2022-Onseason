@@ -31,7 +31,7 @@ public class Superstructure extends SubsystemBase {
         neck.setSurfaceSpeed(0.0);
         dualIntake.setLeft(0.0);
         dualIntake.setRight(0.0);
-        if (RobotContainer.controller.getRightStickButton())
+        if (RobotContainer.operator.getRightStickButton())
             flywheel.setVelocity(3000.0);
         else 
             flywheel.setVelocity(0.0);
@@ -43,7 +43,7 @@ public class Superstructure extends SubsystemBase {
         dualIntake.setRight(-0.8);
         gut.setSurfaceSpeed(2.0);
         neck.setSurfaceSpeed(0.0);
-        if (RobotContainer.controller.getRightStickButton())
+        if (RobotContainer.operator.getRightStickButton())
             flywheel.setVelocity(3000.0);
         else 
             flywheel.setVelocity(0.0);
@@ -55,7 +55,7 @@ public class Superstructure extends SubsystemBase {
         dualIntake.setRight(0.8);
         gut.setSurfaceSpeed(-2.0);
         neck.setSurfaceSpeed(0.0);
-        if (RobotContainer.controller.getRightStickButton())
+        if (RobotContainer.operator.getRightStickButton())
             flywheel.setVelocity(3000.0);
         else 
             flywheel.setVelocity(0.0);
@@ -67,7 +67,7 @@ public class Superstructure extends SubsystemBase {
         dualIntake.setRight(0.0);
         gut.setSurfaceSpeed(0.0);
         neck.setSurfaceSpeed(2.0);
-        if (RobotContainer.controller.getRightStickButton())
+        if (RobotContainer.operator.getRightStickButton())
             flywheel.setVelocity(3000.0);
         else 
             flywheel.setVelocity(0.0);

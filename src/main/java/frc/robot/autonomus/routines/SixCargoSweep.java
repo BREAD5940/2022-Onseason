@@ -2,19 +2,24 @@ package frc.robot.autonomus.routines;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.autonomus.Trajectories;
+import frc.robot.commons.BreadLogger;
 import frc.robot.commons.BreadUtil;
 import frc.robot.statemachines.Superstructure;
 import frc.robot.subsystems.intake.IntakePneumatics;
+import frc.robot.subsystems.swerve.PointTurnCommand;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.TrajectoryFollowerController;
-
 import static frc.robot.Constants.Autonomus.*;
+
+import java.io.IOException;
 
 public class SixCargoSweep extends SequentialCommandGroup {
 
@@ -32,6 +37,8 @@ public class SixCargoSweep extends SequentialCommandGroup {
 
     private SixCargoSweepState systemState = SixCargoSweepState.INTAKE_FROM_RIGHT_WHILE_SHOOTING;
 
+    private final BreadLogger logger = new BreadLogger("six_cargo_data");
+
 
     public SixCargoSweep(Superstructure superstructure, IntakePneumatics intakePneumatics, Swerve swerve) {
         this.superstructure = superstructure;
@@ -42,16 +49,16 @@ public class SixCargoSweep extends SequentialCommandGroup {
             new TrajectoryFollowerController(
                 Trajectories.allianceSideSemiCircle, 
                 (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET).plus(getTargetOffset()),
-                () -> Rotation2d.fromDegrees(-40.63), 
+                () -> Rotation2d.fromDegrees(-43.57999897003174), 
                 swerve
             ),
             new WaitCommand(0.5).andThen(() -> {
                 inCircularSweep = false;
                 advancingToHumanPlayerStation = true;
-            }),
+            }).alongWith(new PointTurnCommand(() -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(-5.0)).getRadians(), swerve)),
             new TrajectoryFollowerController(
                 Trajectories.advanceToHumanPlayerStation, 
-                (point, time) -> Rotation2d.fromDegrees(MathUtil.clamp(81.28 + (135 - 81.28) * time/Trajectories.advanceToHumanPlayerStation.getTotalTimeSeconds(), 81.28, 135)), 
+                (point, time) -> Rotation2d.fromDegrees(MathUtil.clamp(86.6 + (135 - 86.6) * time/Trajectories.advanceToHumanPlayerStation.getTotalTimeSeconds(), 86.6, 135)), 
                 () -> swerve.getPose().getRotation(), 
                 swerve
             ).andThen(() -> {
@@ -80,25 +87,39 @@ public class SixCargoSweep extends SequentialCommandGroup {
         super.initialize();
         timer.reset();
         timer.start();
+        intakePneumatics.extendRight();
+        intakePneumatics.retractLeft();
     }
 
     @Override
     public void execute() {
         super.execute();
-         switch (systemState) {
+        if (inCircularSweep) {
+            try {
+                logger.write(
+                    timer.get(), 
+                    swerve.getPose().getRotation().getDegrees(),
+                    BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(getTargetOffset()).getDegrees()
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        switch (systemState) {
             case INTAKE_FROM_RIGHT_WHILE_SHOOTING:
-                intakePneumatics.extendRight();
-                intakePneumatics.retractLeft();
                 superstructure.dualIntake.setLeft(-1.0);
                 superstructure.dualIntake.setRight(1.0);
                 superstructure.gut.setSurfaceSpeed(-1.5);
                 superstructure.neck.setSurfaceSpeed(0.0);
                 superstructure.flywheel.setVelocity(CIRCULAR_SWEEP_FLYWHEEL_VELOCITY);
                 superstructure.hood.setPosition(CIRCULAR_SWEEP_HOOD_ANGLE);
-                if (superstructure.gut.getMiddleBeamBreak()&&superstructure.gut.getColorSensor()==RobotContainer.allianceColor) 
+                if (superstructure.gut.getMiddleBeamBreak()&&superstructure.gut.getColorSensor()==Robot.allianceColor) 
                     systemState = SixCargoSweepState.STOW_ALLIANCE_CARGO_IN_GUT_TO_SHOOT;
-                if (advancingToHumanPlayerStation)
+                if (advancingToHumanPlayerStation) {
                     systemState = SixCargoSweepState.INTAKE_FROM_LEFT_AT_HUMAN_PLAYER_STATION_NO_CARGO;
+                    intakePneumatics.extendRight();
+                    intakePneumatics.extendLeft();
+                }
                 break;
             case STOW_ALLIANCE_CARGO_IN_GUT_TO_SHOOT:
                 superstructure.dualIntake.setLeft(-1.0);
@@ -134,8 +155,6 @@ public class SixCargoSweep extends SequentialCommandGroup {
                 }
                 break;
             case INTAKE_FROM_LEFT_AT_HUMAN_PLAYER_STATION_NO_CARGO: 
-                intakePneumatics.extendLeft();
-                intakePneumatics.extendRight();
                 superstructure.dualIntake.setLeft(1.0);
                 superstructure.dualIntake.setRight(-1.0);
                 superstructure.gut.setSurfaceSpeed(1.0);
@@ -193,7 +212,6 @@ public class SixCargoSweep extends SequentialCommandGroup {
 
         }   
         SmartDashboard.putNumber("Ball Count", ballCount);
-        System.out.println(systemState.name());
     }
 
     public enum SixCargoSweepState {
@@ -209,9 +227,7 @@ public class SixCargoSweep extends SequentialCommandGroup {
     }
 
     private Rotation2d getTargetOffset() {
-        return new Rotation2d(Math.atan(swerve.getVelocity()*BALL_FLIGHT_TIME/RADIUS_TO_ROBOT_CENTER));
+        return new Rotation2d(Math.atan(swerve.getVelocity()*BALL_FLIGHT_TIME/(swerve.getPose().getTranslation().getDistance(FIELD_TO_TARGET))));
     }
-
-    
 
 }

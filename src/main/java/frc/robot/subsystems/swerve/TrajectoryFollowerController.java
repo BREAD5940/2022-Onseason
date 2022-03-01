@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems.swerve;
 
 import java.util.function.BiFunction;
@@ -25,9 +26,9 @@ public class TrajectoryFollowerController extends CommandBase {
     public final HolonomicDriveController autonomusController = new HolonomicDriveController(
         new PIDController(8, 0, 0), 
         new PIDController(8, 0, 0), 
-        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(180.0),
-            Units.degreesToRadians(90.0)
+        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(
+            Units.degreesToRadians(360.0),
+            Units.degreesToRadians(180.0)
         ))
     );
 

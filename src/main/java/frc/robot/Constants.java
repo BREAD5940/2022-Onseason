@@ -86,8 +86,8 @@ public final class Constants {
         public static final int RIGHT_INTAKE_ID = 10;
 
         // Intake Piston Channels
-        public static final int[] LEFT_INTAKE_PISTON_CHANNELS = {12, 2}; // [Forward, Reverse]
-        public static final int[] RIGHT_INTAKE_PISTON_CHANNELS = {10, 1}; // [Forward, Reverse]
+        public static final int[] LEFT_INTAKE_PISTON_CHANNELS = {6, 1}; // [Forward, Reverse]
+        public static final int[] RIGHT_INTAKE_PISTON_CHANNELS = {7, 0}; // [Forward, Reverse]
 
     }
 
@@ -125,7 +125,7 @@ public final class Constants {
     // Constants pertaining to the hood subsystem go here
     public static class Hood {
 
-        // Motors IDs 
+        // Motor IDs and Other Channels
         public static final int HOOD_ID = 15;
 
         // Constants/Measurements
@@ -133,6 +133,27 @@ public final class Constants {
         public static final double GEARING = (20.0/460.0);
         public static final double HOOD_IDLE_POS = 23.0;
 
+    }
+
+    // Constants pertaining the the climber subsystem go here
+    public static class Climber {
+
+        // Motor IDs
+        public static final int TOP_CLIMBER_MOTOR_ID = 16;
+        public static final int BOTTOM_CLIMBER_MOTOR_ID = 17;
+        public static final int CLIMBER_FORWARD_CHANNEL = 2;
+        public static final int CLIMBER_REVERSE_CHANNEL = 5;
+
+        // Measurements/Constants
+        public static final double CLIMBER_GEARING = 1.0/12.86;
+        public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
+        public static final double CLIMBER_MINIMUM_TRAVEL = 0.005;
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.62;
+        public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
+
+        // Other
+        public static final TalonFXInvertType TOP_CLIMBER_MOTOR_INVERT_TYPE = TalonFXInvertType.CounterClockwise;
+        public static final TalonFXInvertType BOTTOM_CLIMBER_MOTOR_INVERT_TYPE = TalonFXInvertType.CounterClockwise;
     }
 
     // Constants pertaining to the vision subsystem go here
@@ -151,15 +172,26 @@ public final class Constants {
     public static class Autonomus {
 
         // Circular Sweep Setpoints
-        public static final double CIRCULAR_SWEEP_FLYWHEEL_VELOCITY = 1750.0;
+        public static final double CIRCULAR_SWEEP_FLYWHEEL_VELOCITY = 1725.0;
         public static final double CIRCULAR_SWEEP_HOOD_ANGLE = 23.0;
 
-        public static final double RETURN_SHOT_FLYWHEEL_VELOCITY = 1600;
+        public static final double RETURN_SHOT_FLYWHEEL_VELOCITY = 1550;
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
+
+        // Two Cargo Auto Setpoints
+        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1600.0;
+        public static final double TWO_SHOT_HOOD_ANGLE = 23.0;
+
+        // Five Cargo Auto Setpoints
+        public static final double FIRST_CARGO_FLYWHEEL_VELOCITY = 1550.0;
+        public static final double FIRST_CARGO_HOOD_ANGLE = 23.0;
+
+        public static final double SECOND_CARGO_FLYWHEEL_VELOCITY = 1600.0;
+        public static final double SECOND_CARGO_HOOD_ANGLE = 23.0;
 
         // Measurements
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
-        public static final double BALL_FLIGHT_TIME = 1.1;
+        public static final double BALL_FLIGHT_TIME = 1.25;
         public static final double RADIUS_TO_BACK_BUMPER = Units.inchesToMeters(137.5);
         public static final double RADIUS_TO_ROBOT_CENTER = RADIUS_TO_BACK_BUMPER - Drive.ROBOT_LENGTH/2;
     }

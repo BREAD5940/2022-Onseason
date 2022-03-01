@@ -22,13 +22,13 @@ public class IDLE_MODE_ONE_ALLIANCE_CARGO_STOWED extends CommandBase {
     public void execute() {
         superstructure.idle();
 
-        if (RobotContainer.controller.getLeftTriggerAxis() >= 0.1) {
+        if (RobotContainer.operator.getLeftTriggerAxis() >= 0.1) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new INTAKE_FROM_LEFT_ONE_CARGO_STOWED(superstructure));
-        } else if (RobotContainer.controller.getRightTriggerAxis() >= 0.1) {
+        } else if (RobotContainer.operator.getRightTriggerAxis() >= 0.1) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new INTAKE_FROM_RIGHT_ONE_CARGO_STOWED(superstructure));
-        } else if (RobotContainer.controller.getAButton()) {
+        } else if (RobotContainer.operator.getAButton()) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new SETUP_SHOT_ONE_ALLIANCE_CARGO(superstructure));
         }

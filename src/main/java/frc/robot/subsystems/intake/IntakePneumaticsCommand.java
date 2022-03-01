@@ -11,24 +11,22 @@ public class IntakePneumaticsCommand extends CommandBase {
         this.intakePneumatics = intakePneumatics;
         addRequirements(intakePneumatics);
     }
+    @Override
+    public void initialize() {
+        intakePneumatics.retractLeft();
+        intakePneumatics.retractRight();
+    }
 
     @Override
     public void execute() {
-        if (RobotContainer.controller.getLeftBumperPressed()) {
-            if (intakePneumatics.leftRetracted) {
-                intakePneumatics.extendLeft();
-            } else {
-                intakePneumatics.retractLeft();
-            }
-        }
-
-        if (RobotContainer.controller.getRightBumperPressed()) {
-            if (intakePneumatics.rightRetracted) {
-                intakePneumatics.extendRight();
-            } else {
-                intakePneumatics.retractRight();
-            }
-        }
+        if (RobotContainer.operator.getLeftBumperPressed()) 
+            intakePneumatics.extendLeft();
+        if (RobotContainer.operator.getLeftBumperReleased())
+            intakePneumatics.retractLeft();
+        if (RobotContainer.operator.getRightBumperPressed())
+            intakePneumatics.extendRight();
+        if (RobotContainer.operator.getRightBumperReleased()) 
+            intakePneumatics.retractRight();
     }
 
 

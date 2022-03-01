@@ -20,7 +20,7 @@ public class SHOOT_TWO_ALLIANCE_CARGO extends CommandBase {
     public void execute() {
         superstructure.shoot();
 
-        if (!superstructure.gut.getMiddleBeamBreak()&&!superstructure.neck.getTopBeamBreak()&&!RobotContainer.controller.getAButton()) {
+        if (!superstructure.gut.getMiddleBeamBreak()&&!superstructure.neck.getTopBeamBreak()&&!RobotContainer.operator.getAButton()) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new IDLE_MODE_NO_CARGO_STOWED(superstructure));
         }

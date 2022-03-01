@@ -20,10 +20,10 @@ public class IDLE_MODE_NO_CARGO_STOWED extends CommandBase {
     @Override
     public void execute() {
         superstructure.idle();
-        if (RobotContainer.controller.getLeftTriggerAxis() >= 0.1) {
+        if (RobotContainer.operator.getLeftTriggerAxis() >= 0.1) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new INTAKE_FROM_LEFT_NO_CARGO_STOWED(superstructure));
-        } else if (RobotContainer.controller.getRightTriggerAxis() >= 0.1) {
+        } else if (RobotContainer.operator.getRightTriggerAxis() >= 0.1) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new INTAKE_FROM_RIGHT_NO_CARGO_STOWED(superstructure));
         }

@@ -20,7 +20,7 @@ public class IDLE_MODE_TWO_ALLIANCE_CARGO_STOWED extends CommandBase {
     public void execute() {
         superstructure.idle();
 
-        if (RobotContainer.controller.getAButton()) {
+        if (RobotContainer.operator.getAButton()) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new SETUP_SHOT_TWO_ALLIANCE_CARGO(superstructure));
         }

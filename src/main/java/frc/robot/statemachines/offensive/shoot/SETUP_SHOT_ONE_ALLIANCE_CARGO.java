@@ -23,7 +23,7 @@ public class SETUP_SHOT_ONE_ALLIANCE_CARGO extends CommandBase {
         if (superstructure.flywheel.atSetpoint()&&superstructure.hood.atReference()) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new SHOOT_ONE_ALLIANCE_CARGO(superstructure));
-        } else if (!RobotContainer.controller.getAButton()) {
+        } else if (!RobotContainer.operator.getAButton()) {
             CommandScheduler.getInstance().cancel(this);
             CommandScheduler.getInstance().schedule(new IDLE_MODE_ONE_ALLIANCE_CARGO_STOWED(superstructure));
         }

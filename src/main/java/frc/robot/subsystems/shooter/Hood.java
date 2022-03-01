@@ -23,12 +23,11 @@ public class Hood extends SubsystemBase {
     public Hood() {
         hoodEncoder.setPositionConversionFactor(GEARING * 360.0);
         pid.setFeedbackDevice(hoodEncoder);
-        pid.setP(0.5);
+        pid.setP(0.4);
         pid.setI(0.0);
         pid.setD(0.0);
         pid.setOutputRange(-1, 1);
-        hood.setSmartCurrentLimit(80);
-        hood.setSecondaryCurrentLimit(70.0);
+        setCurrentLimits(30, 40.0);
     }
 
     public void setPosition(double degrees) {
@@ -49,15 +48,29 @@ public class Hood extends SubsystemBase {
         hoodEncoder.setPosition(0.0);
     }
 
+    public double getVelocity() {
+        return hoodEncoder.getVelocity();
+    }
+
+    public void setPercent(double percent) {
+        hood.set(percent);
+    }
+
     public boolean atReference() {
         boolean atSetpoint = BreadUtil.atReference(getPosition(), getSetpoint(), 1, true);
         SmartDashboard.putBoolean("Hood at Setpoint", atSetpoint);
         return atSetpoint;
     }
 
+    public void setCurrentLimits(int smartCurrentLimit, double secondaryCurrentLimit) {
+        hood.setSmartCurrentLimit(smartCurrentLimit);
+        hood.setSecondaryCurrentLimit(secondaryCurrentLimit);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Hood Position", getPosition());
+        SmartDashboard.putNumber("Hood Velocity", getVelocity());
     }
     
 }

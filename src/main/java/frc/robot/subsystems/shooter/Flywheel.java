@@ -44,7 +44,7 @@ public class Flywheel extends SubsystemBase {
         rightMotorConfig.peakOutputReverse = -0.0;
         rightMotorConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
         rightMotorConfig.velocityMeasurementWindow = 8;
-        rightMotorConfig.voltageCompSaturation = 11.5;
+        rightMotorConfig.voltageCompSaturation = 11.0;
         rightMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
         rightMotor.configAllSettings(rightMotorConfig);
         rightMotor.setInverted(RIGHT_MOTOR_DIRECTION);

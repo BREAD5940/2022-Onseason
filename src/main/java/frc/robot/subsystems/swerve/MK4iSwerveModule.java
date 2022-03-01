@@ -134,9 +134,7 @@ public class MK4iSwerveModule {
 
     private final double wheelSpeedMetersPerSecondToIntegratedSensorUnits(double wheelSpeed) {
         return wheelSpeed * 60.0 / (MODULE_GEARING * (600.0/2048.0) * 2.0 * Math.PI * WHEEL_RADIUS);
-    }
-
-    
+    }  
 
 }
 

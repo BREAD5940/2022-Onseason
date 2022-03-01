@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.climber.DefaultClimberCommand;
 import frc.robot.subsystems.intake.DualIntake;
 import frc.robot.subsystems.intake.IntakePneumatics;
 import frc.robot.subsystems.intake.IntakePneumaticsCommand;
@@ -18,8 +19,9 @@ import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Neck;
 import frc.robot.subsystems.swerve.DefaultDriveController;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.autonomus.routines.SixCargoSweep;
-import frc.robot.sensors.ColorSensor.BallColor;
+import frc.robot.autonomus.routines.TwoCargoTurnToRight;
 import frc.robot.statemachines.Superstructure;
 
 public class RobotContainer {
@@ -31,24 +33,26 @@ public class RobotContainer {
   Neck neck = new Neck();
   Flywheel flywheel = new Flywheel();
   Hood hood = new Hood();
+  Climber climber = new Climber();
   Superstructure superstructure = new Superstructure(dualIntake, gut, neck, flywheel, hood);
-  Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
-  public static XboxController controller = new XboxController(0);
-  public static final BallColor allianceColor = NetworkTableInstance.getDefault().getEntry("FMSInfo/IsRedAlliance").getBoolean(true) ? BallColor.RED : BallColor.BLUE;
+  Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+  public static XboxController driver = new XboxController(0);
+  public static XboxController operator = new XboxController(1);
 
   public RobotContainer() {
-    swerve.setDefaultCommand(new DefaultDriveController(controller::getRightY, controller::getRightX, controller::getLeftX, swerve));
+    swerve.setDefaultCommand(new DefaultDriveController(driver::getRightY, driver::getRightX, driver::getLeftX, swerve));
     intakePneumatics.setDefaultCommand(new IntakePneumaticsCommand(intakePneumatics));
+    climber.setDefaultCommand(new DefaultClimberCommand(climber));
     configureButtonBindings();
   }
 
   private void configureButtonBindings() {
-    new JoystickButton(controller, Button.kStart.value).whenPressed(
+    new JoystickButton(driver, Button.kStart.value).whenPressed(
       new InstantCommand(() -> swerve.reset(new Pose2d()), swerve)
     );
   }
 
   public Command getAutonomousCommand() {
-    return new SixCargoSweep(superstructure, intakePneumatics, swerve);
+    return new TwoCargoTurnToRight(superstructure, intakePneumatics, swerve);
   }
 }
