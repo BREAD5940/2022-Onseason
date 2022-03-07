@@ -18,11 +18,11 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(Units.feetToMeters(21.838), Units.feetToMeters(19.19), Rotation2d.fromDegrees(135)),
-            new Pose2d(Units.feetToMeters(17.029), Units.feetToMeters(19.841), Rotation2d.fromDegrees(-111.473)),
+            new Pose2d(Units.feetToMeters(17.279), Units.feetToMeters(21.788), Rotation2d.fromDegrees(-111.473)),
             new Pose2d(Units.feetToMeters(15.423), Units.feetToMeters(10.819), Rotation2d.fromDegrees(-83.105)),
-            new Pose2d(Units.feetToMeters(19.636), Units.feetToMeters(4.304), Rotation2d.fromDegrees(-48.244)),
-            new Pose2d(Units.feetToMeters(25.063), Units.feetToMeters(1.498), Rotation2d.fromDegrees(-5.029))
-        ), 2.0, 1.5, 0.0, 0.0
+            new Pose2d(Units.feetToMeters(19.636), Units.feetToMeters(4.267), Rotation2d.fromDegrees(-48.244)),
+            new Pose2d(Units.feetToMeters(24.385), Units.feetToMeters(2.022), Rotation2d.fromDegrees(-5.029))
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory advanceToHumanPlayerStation = generateTrajectory(
@@ -30,7 +30,7 @@ public class Trajectories {
         List.of(
             new Pose2d(Units.feetToMeters(25.063), Units.feetToMeters(1.498), Rotation2d.fromDegrees(134.196)),
             new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(-135))
-        ), 3.0, 2.5, 0.0, 0.0
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory returnFromHumanPlayerStation = generateTrajectory(
@@ -38,7 +38,7 @@ public class Trajectories {
         List.of(
             new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(20)),
             new Pose2d(Units.feetToMeters(17.683), Units.feetToMeters(8.899), Rotation2d.fromDegrees(20))
-        ), 3.0, 2.5, 0.0, 0.0
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory twoCargoFromBackRight = generateTrajectory(
@@ -63,7 +63,7 @@ public class Trajectories {
         List.of(
             new Pose2d(Units.feetToMeters(24.032), Units.feetToMeters(2.86), Rotation2d.fromDegrees(145.199)),
             new Pose2d(Units.feetToMeters(18.209), Units.feetToMeters(5.78), Rotation2d.fromDegrees(149.962))
-        ), 2.0, 1.0, 0.0, 0.0
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory fiveCargoRightTarmac_advanceToHumanPlayerStation = generateTrajectory(
@@ -71,7 +71,7 @@ public class Trajectories {
         List.of(
             new Pose2d(Units.feetToMeters(18.209), Units.feetToMeters(5.78), Rotation2d.fromDegrees(-173.498)),
             new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(-175.333))
-        ), 2.0, 1.0, 0.0, 0.0
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory fiveCargoRightTarmac_returnFromHumanPlayerStation = generateTrajectory(
@@ -79,7 +79,7 @@ public class Trajectories {
         List.of(
             new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(12.743)),
             new Pose2d(Units.feetToMeters(16.923), Units.feetToMeters(6.802), Rotation2d.fromDegrees(10.874))
-        ), 2.0, 1.0, 0.0, 0.0
+        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory generateTrajectory(boolean clampedCubic, List<Pose2d> points, double maxVel, double maxAccel, double startVel, double endVel, TrajectoryConstraint... constraints) {

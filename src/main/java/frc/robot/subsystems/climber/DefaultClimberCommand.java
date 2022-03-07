@@ -20,7 +20,7 @@ public class DefaultClimberCommand extends CommandBase {
 
         // Control up/down movement of the climber
         if (Math.abs(RobotContainer.operator.getRightY()) > 0.2) {
-            climber.setPercent(RobotContainer.operator.getRightY() * 0.5);
+            climber.setPercent(-RobotContainer.operator.getRightY() * 0.9);
         } else {
             climber.setPercent(0.0);
         }

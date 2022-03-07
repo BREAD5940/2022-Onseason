@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.hal.CTREPCMJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Shooter Setpoint", 1350.0);
     SmartDashboard.putNumber("Hood Setpoint", 8.5);
     m_robotContainer.hood.reset();
+    m_robotContainer.compressor.enableDigital();
   }
 
   @Override

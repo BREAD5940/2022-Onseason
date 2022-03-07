@@ -45,13 +45,13 @@ public class Swerve extends SubsystemBase {
             thetaRadiansPerSecond, 
             pose.getRotation()
         ));
-        if (Math.abs(xMetersPerSecond) < 0.1 && Math.abs(yMetersPerSecond) < 0.1 && Math.abs(thetaRadiansPerSecond) < 0.1) {
-            double cross = new Rotation2d(ROBOT_LENGTH, ROBOT_WIDTH).getRadians();
-            states[0] = new SwerveModuleState(0.0, new Rotation2d(cross));
-            states[1] = new SwerveModuleState(0.0, new Rotation2d(-cross));
-            states[2] = new SwerveModuleState(0.0, new Rotation2d(-cross));
-            states[3] = new SwerveModuleState(0.0, new Rotation2d(cross));
-        }
+        // if (Math.abs(xMetersPerSecond) < 0.1 && Math.abs(yMetersPerSecond) < 0.1 && Math.abs(thetaRadiansPerSecond) < 0.1) {
+        //     double cross = new Rotation2d(ROBOT_LENGTH, ROBOT_WIDTH).getRadians();
+        //     states[0] = new SwerveModuleState(0.0, new Rotation2d(cross));
+        //     states[1] = new SwerveModuleState(0.0, new Rotation2d(-cross));
+        //     states[2] = new SwerveModuleState(0.0, new Rotation2d(-cross));
+        //     states[3] = new SwerveModuleState(0.0, new Rotation2d(cross));
+        // }
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
         fl.setState(states[0]);
         fr.setState(states[1]);
@@ -129,6 +129,7 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
+        SmartDashboard.putNumber("Swerve Rotation", fl.getAngle());
         updateOdometry();
     }
     

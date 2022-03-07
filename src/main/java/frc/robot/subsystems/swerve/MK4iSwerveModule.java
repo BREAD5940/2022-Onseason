@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -44,6 +45,8 @@ public class MK4iSwerveModule {
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
         drive.selectProfileSlot(0, 0);
+        drive.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+        drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
         // Create CAN Coder object
         azimuth = new CANCoder(azimuthID);
@@ -72,6 +75,8 @@ public class MK4iSwerveModule {
         steer.set(ControlMode.Velocity, 0.0);
         steer.configAllSettings(steerConfig);
         steer.selectProfileSlot(0, 0);
+        steer.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+        steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
     }
 

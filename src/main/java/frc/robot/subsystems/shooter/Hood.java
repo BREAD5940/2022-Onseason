@@ -21,7 +21,7 @@ public class Hood extends SubsystemBase {
     private double lastSetpoint = 0.0;
 
     public Hood() {
-        hoodEncoder.setPositionConversionFactor(GEARING * 360.0);
+        hoodEncoder.setPositionConversionFactor(HOOD_GEARING * 360.0);
         pid.setFeedbackDevice(hoodEncoder);
         pid.setP(0.4);
         pid.setI(0.0);

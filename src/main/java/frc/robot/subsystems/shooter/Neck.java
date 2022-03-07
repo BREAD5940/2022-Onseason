@@ -4,13 +4,18 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.BeamBreak;
 import static frc.robot.Constants.Neck.*;
+
+import java.io.ObjectInputFilter.Status;
 
 public class Neck extends SubsystemBase {
 
@@ -33,6 +38,8 @@ public class Neck extends SubsystemBase {
         neck.set(ControlMode.Velocity, 0.0);
         neck.configAllSettings(throatConfig);
         neck.selectProfileSlot(0, 0);
+        neck.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        neck.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
     }
 
     public boolean getTopBeamBreak() {
@@ -53,5 +60,10 @@ public class Neck extends SubsystemBase {
     
     private double neckSurfaceSpeedMetersPerSecondToIntegratedSensorUnits(double surfaceSpeed) {
         return surfaceSpeed * 60.0 / (NECK_GEARING * (600.0/2048.0) * Math.PI * NECK_PULLEY_DIAMETER);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Top Beam Break", topBeamBreak.get());
     }
 }

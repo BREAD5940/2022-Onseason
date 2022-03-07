@@ -49,7 +49,11 @@ public class Climber extends SubsystemBase {
     // }
 
     public void setPercent(double percent) {
-        topMotor.set(ControlMode.PercentOutput, -percent);
+        if ((getPositionMeters() < CLIMBER_MINIMUM_TRAVEL && percent < 0.0) || (getPositionMeters() > CLIMBER_MAXIMUM_TRAVEL && percent > 0.0)) {
+            topMotor.set(ControlMode.PercentOutput, 0.0);
+        } else {
+            topMotor.set(ControlMode.PercentOutput, percent);
+        }
     }
 
     public void neutral() {

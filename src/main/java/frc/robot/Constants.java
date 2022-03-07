@@ -60,9 +60,9 @@ public final class Constants {
         public static final int GUT_ID = 11;
         
         // Sensor Channels
-        public static final int LEFT_BEAM_BREAK_CHANNEL = 0;
+        public static final int LEFT_BEAM_BREAK_CHANNEL = 3;
         public static final int MIDDLE_BEAM_BREAK_CHANNEL = 1;
-        public static final int RIGHT_BEAM_BREAK_CHANNEL = 3;
+        public static final int RIGHT_BEAM_BREAK_CHANNEL = 2;
         public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kMXP;
 
         // Measurements/Gearings
@@ -113,7 +113,7 @@ public final class Constants {
         public static final int NECK_ID = 12;
 
         // Sensor Channels
-        public static final int TOP_BEAM_BREAK_CHANNEL = 2;
+        public static final int TOP_BEAM_BREAK_CHANNEL = 0;
         
         // Measurements/Gearings
         public static final double NECK_GEARING = (24.0/36.0);
@@ -126,11 +126,11 @@ public final class Constants {
     public static class Hood {
 
         // Motor IDs and Other Channels
-        public static final int HOOD_ID = 15;
+        public static final int HOOD_MOTOR_ID = 15;
 
         // Constants/Measurements
         public static final int COUNTS_PER_REVOLUTION = 8192;
-        public static final double GEARING = (20.0/460.0);
+        public static final double HOOD_GEARING = (20.0/460.0);
         public static final double HOOD_IDLE_POS = 23.0;
 
     }
@@ -147,8 +147,8 @@ public final class Constants {
         // Measurements/Constants
         public static final double CLIMBER_GEARING = 1.0/12.86;
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
-        public static final double CLIMBER_MINIMUM_TRAVEL = 0.005;
-        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.62;
+        public static final double CLIMBER_MINIMUM_TRAVEL = 0.01;
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.60;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 
         // Other
@@ -175,7 +175,7 @@ public final class Constants {
         public static final double CIRCULAR_SWEEP_FLYWHEEL_VELOCITY = 1725.0;
         public static final double CIRCULAR_SWEEP_HOOD_ANGLE = 23.0;
 
-        public static final double RETURN_SHOT_FLYWHEEL_VELOCITY = 1550;
+        public static final double RETURN_SHOT_FLYWHEEL_VELOCITY = 1725.0;
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
 
         // Two Cargo Auto Setpoints

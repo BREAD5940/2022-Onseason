@@ -8,11 +8,14 @@ import frc.robot.sensors.ColorSensor.BallColor;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import static frc.robot.Constants.Gut.*;
+
+import java.io.ObjectInputFilter.Status;
 
 public class Gut extends SubsystemBase {
     
@@ -45,6 +48,9 @@ public class Gut extends SubsystemBase {
         gut.setInverted(TalonFXInvertType.Clockwise);
         gut.configAllSettings(gutConfig);
         gut.selectProfileSlot(0, 0);
+        gut.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        gut.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+
     }
 
     public boolean getLeftBeamBreak() {
@@ -76,12 +82,13 @@ public class Gut extends SubsystemBase {
         gut.set(ControlMode.Velocity, gutSurfaceSpeedMetersPerSecondToIntegratedSensorUnits(speedMetersPerSecond));
     }
 
-    private double integratedSensorUnitsToGutSurfaceSpeedMetersPerSecond(double integratedSensorUnits) {
+
+    public double integratedSensorUnitsToGutSurfaceSpeedMetersPerSecond(double integratedSensorUnits) {
         return integratedSensorUnits * ((GUT_GEARING * (600.0/2048.0) * Math.PI * GUT_PULLEY_DIAMETER) / 60.0);
     }
 
-    private double gutSurfaceSpeedMetersPerSecondToIntegratedSensorUnits(double gutSurfaceSpeed) {
-        return gutSurfaceSpeed * (60.0/(GUT_GEARING * (600.0/2048.0) * Math.PI * GUT_PULLEY_DIAMETER));
+    public double gutSurfaceSpeedMetersPerSecondToIntegratedSensorUnits(double gutSurfaceSpeed) {
+        return gutSurfaceSpeed * (60.0/(GUT_GEARING * (600.0/2048.0) * Math.PI * GUT_PULLEY_DIAMETER));    
     }
 
     @Override
@@ -89,6 +96,7 @@ public class Gut extends SubsystemBase {
         SmartDashboard.putNumber("Gut Setpoint", lastSetpoint);
         SmartDashboard.putNumber("Gut Velocity", getSurfaceSpeed());
         SmartDashboard.putBoolean("Middle Beam Break", getMiddleBeamBreak());
+        System.out.println(getColorSensor().name());
     }
 
 }

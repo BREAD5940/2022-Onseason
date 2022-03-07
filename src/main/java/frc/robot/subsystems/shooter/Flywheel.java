@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -37,6 +38,8 @@ public class Flywheel extends SubsystemBase {
         leftMotor.selectProfileSlot(0, 0);
         leftMotor.setInverted(LEFT_MOTOR_DIRECTION);
         leftMotor.enableVoltageCompensation(true);
+        leftMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        leftMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
         // Configure right motor
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
@@ -50,6 +53,9 @@ public class Flywheel extends SubsystemBase {
         rightMotor.setInverted(RIGHT_MOTOR_DIRECTION);
         rightMotor.follow(leftMotor);
         rightMotor.enableVoltageCompensation(true);
+        rightMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        rightMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+
     }
 
     // Return the shooter velocity in RPM
