@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.statemachines;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -14,6 +14,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.BreadUtil;
@@ -35,10 +36,11 @@ public class Shooter extends SubsystemBase {
     private final SparkMaxPIDController hoodPID = hoodMotor.getPIDController();
 
     // State logic
-    private ShooterState systemState = ShooterState.HOMING;
+    private ShooterState systemState = ShooterState.IDLE;
 
     // State variables
-    private boolean homing = true;
+    Timer homingTimer = new Timer();
+    private boolean requestHome = false;
     private boolean requestShoot = false;
     private double hoodSetpoint = 0.0;
     private double flywheelSetpoint = 0.0;
@@ -68,9 +70,7 @@ public class Shooter extends SubsystemBase {
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
         rightMotorConfig.peakOutputForward = 1.0;
         rightMotorConfig.peakOutputReverse = -0.0;
-        rightMotorConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
-        rightMotorConfig.velocityMeasurementWindow = 8;
-        rightMotorConfig.voltageCompSaturation = 11.0;
+        rightMotorConfig.voltageCompSaturation = 11.5;
         rightMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
         rightFlywheelMotor.configAllSettings(rightMotorConfig);
         rightFlywheelMotor.setInverted(RIGHT_MOTOR_DIRECTION);
@@ -90,18 +90,18 @@ public class Shooter extends SubsystemBase {
     }
 
     // Private method to set the hood setpoint
-    private void setHoodSetpoint(double degrees) {
-        double adjustedSetpoint = MathUtil.clamp(degrees, 1.0, 35.0);
+    private void commandHoodPosition(double degrees) {
+        double adjustedSetpoint = MathUtil.clamp(degrees, MIN_HOOD_TRAVEL + 1, MAX_HOOD_TRAVEL - 1);
         hoodPID.setReference(adjustedSetpoint, CANSparkMax.ControlType.kPosition);
     }
 
     // Private method to set the hood percent
-    private void setHoodPercent(double percent) {
+    private void commandHoodPercent(double percent) {
         hoodMotor.set(percent);
     }
 
     // Private method to set the flywheel setpoint
-    private void setFlywheelSetpoint(double rpm) {
+    private void commandFlywheelVelocity(double rpm) {
         if (rpm==0.0) {
             leftFlywheelMotor.set(ControlMode.PercentOutput, 0.0);
         } else {
@@ -127,14 +127,12 @@ public class Shooter extends SubsystemBase {
 
     // Requests the shooter to home
     public void requestHome() {
-        homing = true;
+        requestHome = true;
     }
 
     // Requests the shooter rpm and hood angle
     public void requestShoot(double flywheelRPM, double hoodAngle) {
-        if (homing) {
-            // Do nothing because the shooter is homing
-        } else if (flywheelRPM == 0.0) {
+        if (flywheelRPM == 0.0) {
             requestIdle(); // Request idle because the flywheel rpm is 0.0
         } else {
             requestShoot = true;
@@ -159,6 +157,16 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getPosition();
     }
 
+    // Private method to reset the hood encoder
+    private void resetHood(double newPosition) {
+        hoodEncoder.setPosition(newPosition);
+    }
+
+    // Returns the hood velocity
+    public double getHoodVelocity() {
+        return hoodEncoder.getVelocity();
+    }
+
     // Returns the flywheel velocity
     public double getFlywheelVelocity() {
         return leftFlywheelMotor.getSelectedSensorVelocity();
@@ -176,7 +184,7 @@ public class Shooter extends SubsystemBase {
 
     // Returns whether the hood is at its setpoint
     public boolean hoodAtSetpoint() {
-        return BreadUtil.atReference(getHoodPosition(), getHoodSetpoint(), 1.0, true);
+        return BreadUtil.atReference(getHoodPosition(), getHoodSetpoint(), 0.5, true);
     }
 
     // Returns whether the flywheel is at its setpoint
@@ -195,36 +203,75 @@ public class Shooter extends SubsystemBase {
     // Handle statemachine in periodic
     @Override
     public void periodic() {
-        ShooterState nextState = null;
+        ShooterState nextSystemState = systemState;
         if (systemState == ShooterState.HOMING) {
+            // Outputs
+            commandHoodPercent(0.1);
+            commandFlywheelVelocity(0.0);
 
+            // State transitions
+            if (BreadUtil.atReference(getHoodVelocity(), 0.0, 20.0, true) && homingTimer.get() >= 0.25) {
+                exitHomingSequence();
+                nextSystemState = ShooterState.IDLE;
+            }
         } else if (systemState == ShooterState.IDLE) {
+            // Outputs
+            commandHoodPosition(HOOD_IDLE_POS);
+            commandFlywheelVelocity(SHOOTER_IDLE_VEL);
 
+            // State transitions
+            if (requestHome) {
+                beginHomingSequence();
+                nextSystemState = ShooterState.HOMING;
+            } else if (requestShoot) {
+                nextSystemState = ShooterState.APPROACHING_SETPOINT;
+            } 
         } else if (systemState == ShooterState.APPROACHING_SETPOINT) {
             // Outputs
-            setFlywheelSetpoint(flywheelSetpoint);
-            setHoodSetpoint(hoodSetpoint);
+            commandHoodPosition(flywheelSetpoint);
+            commandFlywheelVelocity(hoodSetpoint);
             
             // State transitions 
-            if (flywheelAtSetpoint() && hoodAtSetpoint()) {
-                nextState = ShooterState.AT_SETPOINT;
-            } else if (homing) {
-                nextState = ShooterState.HOMING;
-                // TODO
+            if (requestHome) {
+                beginHomingSequence();
+                nextSystemState = ShooterState.HOMING;
+            } else if (!requestShoot) {
+                nextSystemState = ShooterState.IDLE;
+            } else if (flywheelAtSetpoint() && hoodAtSetpoint()) {
+                nextSystemState = ShooterState.AT_SETPOINT;
             }
         } else if (systemState == ShooterState.AT_SETPOINT) {
             // Outputs
-            setFlywheelSetpoint(flywheelSetpoint);
-            setHoodSetpoint(hoodSetpoint);
+            commandHoodPosition(hoodSetpoint);
+            commandFlywheelVelocity(flywheelSetpoint);
 
             // State transitions
-            if (!flywheelAtSetpoint() && !hoodAtSetpoint()) {
-                nextState = ShooterState.APPROACHING_SETPOINT;
-            } else if (homing) {
-                nextState = ShooterState.HOMING;
+            if (requestHome) {
+                nextSystemState = ShooterState.HOMING;
+            } else if (!requestShoot) {
+                nextSystemState = ShooterState.IDLE;
+            } else if (!flywheelAtSetpoint() || !hoodAtSetpoint()) {
+                nextSystemState = ShooterState.APPROACHING_SETPOINT;
             }
         }
+        systemState = nextSystemState;
         SmartDashboard.putString("Shooter State", systemState.name());
+    }
+
+    // Method to be called when you begin homing
+    private void beginHomingSequence() {
+        homingTimer.reset();
+        homingTimer.start();
+        setHoodCurrentLimits(10, 20.0);
+    }   
+
+    // Method to be called when you exit homing 
+    private void exitHomingSequence() {
+        homingTimer.stop();
+        homingTimer.reset();
+        setHoodCurrentLimits(30, 40.0);
+        resetHood(MAX_HOOD_TRAVEL);
+        requestHome = false;
     }
      
 }

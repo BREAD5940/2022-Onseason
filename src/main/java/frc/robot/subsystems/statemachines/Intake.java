@@ -1,7 +1,8 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.statemachines;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -20,6 +21,7 @@ public class Intake extends SubsystemBase {
 
     // Variables to track system state
     private IntakeState systemState = IntakeState.IDLE_RETRACTED;
+    private boolean extended = false;
 
 
     public Intake(int motorID, TalonFXInvertType invertType, int pneumaticsForwardChannel, int pneumaticsReverseChannel, int pneumaticsModuleNumber) {
@@ -29,6 +31,8 @@ public class Intake extends SubsystemBase {
         config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 25.0, 25.0, 1.5);
         motor.setInverted(invertType);
         motor.setNeutralMode(NeutralMode.Coast);
+        motor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
         // Configure the double solenoid
         doubleSolenoids = new DoubleSolenoid(pneumaticsModuleNumber, PneumaticsModuleType.CTREPCM, pneumaticsForwardChannel, pneumaticsReverseChannel);
@@ -40,19 +44,31 @@ public class Intake extends SubsystemBase {
     }
 
     // Requests the intake to retract and spit
-    public void requestOuttake() {
+    public void requestOuttakeRetracted() {
         systemState = IntakeState.SPIT_RETRACTED;
     }
 
-    // Requests the intake to go into idle mode
-    public void requestIdle() {
+    // Requests the intake the extend and outtake
+    public void requestOuttakeExtended() {
+        systemState = IntakeState.SPIT_EXTENDED;
+    }
+
+    // Requests the intake to go into idle mode retracted
+    public void requestIdleRetracted() {
         systemState = IntakeState.IDLE_RETRACTED;
+    }
+
+    // Requests the intake to go into idle mode extended
+    public void requestIdleExtended() {
+        systemState = IntakeState.IDLE_EXTENDED;
     }
 
     public enum IntakeState {
         IDLE_RETRACTED, 
+        IDLE_EXTENDED,
         SUCK_EXTENDED,
         SPIT_RETRACTED, 
+        SPIT_EXTENDED
     }
     
     // Update the statemachine in the periodic method of the intake subsystem
@@ -60,13 +76,36 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         if (systemState == IntakeState.IDLE_RETRACTED) {
             motor.set(ControlMode.PercentOutput, 0.0);
-            doubleSolenoids.set(Value.kReverse);
+            if (extended) {
+                doubleSolenoids.set(Value.kReverse);
+                extended = false;
+            }
+        } else if (systemState == IntakeState.IDLE_EXTENDED) {
+            motor.set(ControlMode.PercentOutput, 0.0);
+            if (!extended) {
+                doubleSolenoids.set(Value.kForward);
+                extended = true;
+            }
         } else if (systemState == IntakeState.SUCK_EXTENDED) {
             motor.set(ControlMode.PercentOutput, 0.8);
-            doubleSolenoids.set(Value.kForward);
+            if (!extended) {
+                doubleSolenoids.set(Value.kForward);
+                extended = true;
+            }
         } else if (systemState == IntakeState.SPIT_RETRACTED) {
             motor.set(ControlMode.PercentOutput, -0.8);
-            doubleSolenoids.set(Value.kReverse); 
+            if (extended) {
+                doubleSolenoids.set(Value.kReverse); 
+                extended = false;
+            }
+        } else if (systemState == IntakeState.SPIT_EXTENDED) {
+            motor.set(ControlMode.PercentOutput, -0.8);
+            if (!extended) {
+                doubleSolenoids.set(Value.kForward);
+                extended = true;
+            }
+        } else {
+            System.out.println("Error: Intake statemachine is not working properly.");
         }
     }
     

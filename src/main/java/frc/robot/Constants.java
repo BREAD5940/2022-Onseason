@@ -100,6 +100,7 @@ public final class Constants {
 
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
+        public static final double SHOOTER_IDLE_VEL = 0.0;
 
         // Other
         public static final TalonFXInvertType RIGHT_MOTOR_DIRECTION = TalonFXInvertType.OpposeMaster;
@@ -132,6 +133,8 @@ public final class Constants {
         public static final int COUNTS_PER_REVOLUTION = 8192;
         public static final double HOOD_GEARING = (20.0/460.0);
         public static final double HOOD_IDLE_POS = 23.0;
+        public static final double MIN_HOOD_TRAVEL = 0.0;
+        public static final double MAX_HOOD_TRAVEL = 38.0; // TODO get the actual value
 
     }
 
