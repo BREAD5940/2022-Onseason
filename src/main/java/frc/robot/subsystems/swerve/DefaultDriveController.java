@@ -19,9 +19,9 @@ public class DefaultDriveController extends CommandBase {
 
     @Override
     public void execute() {
-        double dx = Math.pow(-x.getAsDouble(), 3) * ROBOT_MAX_SPEED * 0.7;
-        double dy = Math.pow(-y.getAsDouble(), 3) * ROBOT_MAX_SPEED * 0.7;
-        double rot = Math.pow(-omega.getAsDouble(), 3) * 2;
+        double dx = Math.abs(x.getAsDouble()) > 0.05 ? Math.pow(-x.getAsDouble(), 3) * ROBOT_MAX_SPEED * 0.7 : 0.0;
+        double dy = Math.abs(y.getAsDouble()) > 0.05 ? Math.pow(-y.getAsDouble(), 3) * ROBOT_MAX_SPEED * 0.7 : 0.0;
+        double rot = Math.abs(omega.getAsDouble()) > 0.05 ? Math.pow(-omega.getAsDouble(), 3) * 2 : 0.0;
         swerve.setSpeeds(dx, dy, rot);
     }
 

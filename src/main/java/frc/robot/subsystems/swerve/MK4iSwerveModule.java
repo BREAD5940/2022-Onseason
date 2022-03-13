@@ -6,8 +6,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
@@ -21,14 +22,15 @@ import static frc.robot.Constants.Drive.*;
 
 public class MK4iSwerveModule {
 
-    public final WPI_TalonFX steer;
-    public final WPI_TalonFX drive;
+    public final TalonFX steer;
+    public final TalonFX drive;
     public final CANCoder azimuth;
+    private double[] kDesiredState = {0, 0};
 
-    public MK4iSwerveModule(int driveID, int steerID, int azimuthID, Rotation2d offset, boolean driveReversed, boolean steerReversed, boolean azimuthReversed) {
+    public MK4iSwerveModule(int driveID, int steerID, int azimuthID, Rotation2d offset, TalonFXInvertType driveDirection, boolean steerReversed, boolean azimuthReversed) {
 
         // Configure the driving motor
-        drive = new WPI_TalonFX(driveID);
+        drive = new TalonFX(driveID);
         TalonFXConfiguration driveConfig = new TalonFXConfiguration();
         driveConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
         driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.001) * 1023.0; // TODO check this
@@ -39,7 +41,7 @@ public class MK4iSwerveModule {
         driveConfig.peakOutputForward = 1.0;
         driveConfig.peakOutputReverse = -1.0;
         driveConfig.voltageCompSaturation = 12.0;
-        drive.setInverted(driveReversed);
+        drive.setInverted(driveDirection);
         drive.setNeutralMode(NeutralMode.Brake);
         drive.configAllSettings(driveConfig);
         drive.set(ControlMode.Velocity, 0.0);
@@ -58,7 +60,7 @@ public class MK4iSwerveModule {
         azimuth.configAllSettings(azimuthConfig);
 
         // Configure the steering motor
-        steer = new WPI_TalonFX(steerID);
+        steer = new TalonFX(steerID);
         TalonFXConfiguration steerConfig = new TalonFXConfiguration();
         steerConfig.remoteFilter0.remoteSensorDeviceID = azimuth.getDeviceID();
         steerConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
@@ -92,10 +94,19 @@ public class MK4iSwerveModule {
         return new SwerveModuleState(getVelocity(), new Rotation2d(getAngle()));
     }
 
+    public double[] getDesiredState() {
+        return kDesiredState;
+    }
+
+    public double getMotorOutputPercent() {
+        return drive.getMotorOutputPercent();
+    }
+
     public void setState(SwerveModuleState desiredState) {
         double[] state = getContinousOutput(
             SwerveModuleState.optimize(desiredState, new Rotation2d(getAngle()))
         );
+        kDesiredState = state;
         drive.set(ControlMode.Velocity, wheelSpeedMetersPerSecondToIntegratedSensorUnits(state[0]));
         steer.set(TalonFXControlMode.Position, radiansToCANCoderSensorUnits(state[1]));
     }

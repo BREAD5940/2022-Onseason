@@ -5,6 +5,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,10 +20,10 @@ public class Swerve extends SubsystemBase {
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     // Modules
-    private final MK4iSwerveModule fl = new MK4iSwerveModule(DRIVE_IDS[0], STEER_IDS[0], AZIMUTH_CHANNELS[0], AZIMUTH_OFFSETS[0], DRIVES_ARE_REVERSED[0], STEERS_ARE_REVERSED[0], AZIMUTHS_ARE_REVERSED[0]);
-    private final MK4iSwerveModule fr = new MK4iSwerveModule(DRIVE_IDS[1], STEER_IDS[1], AZIMUTH_CHANNELS[1], AZIMUTH_OFFSETS[1], DRIVES_ARE_REVERSED[1], STEERS_ARE_REVERSED[1], AZIMUTHS_ARE_REVERSED[1]);
-    private final MK4iSwerveModule bl = new MK4iSwerveModule(DRIVE_IDS[2], STEER_IDS[2], AZIMUTH_CHANNELS[2], AZIMUTH_OFFSETS[2], DRIVES_ARE_REVERSED[2], STEERS_ARE_REVERSED[2], AZIMUTHS_ARE_REVERSED[2]);
-    private final MK4iSwerveModule br = new MK4iSwerveModule(DRIVE_IDS[3], STEER_IDS[3], AZIMUTH_CHANNELS[3], AZIMUTH_OFFSETS[3], DRIVES_ARE_REVERSED[3], STEERS_ARE_REVERSED[3], AZIMUTHS_ARE_REVERSED[3]);
+    private final MK4iSwerveModule fl = new MK4iSwerveModule(DRIVE_IDS[0], STEER_IDS[0], AZIMUTH_CHANNELS[0], AZIMUTH_OFFSETS[0], DRIVE_INVERT_TYPES[0], STEERS_ARE_REVERSED[0], AZIMUTHS_ARE_REVERSED[0]);
+    private final MK4iSwerveModule fr = new MK4iSwerveModule(DRIVE_IDS[1], STEER_IDS[1], AZIMUTH_CHANNELS[1], AZIMUTH_OFFSETS[1], DRIVE_INVERT_TYPES[1], STEERS_ARE_REVERSED[1], AZIMUTHS_ARE_REVERSED[1]);
+    private final MK4iSwerveModule bl = new MK4iSwerveModule(DRIVE_IDS[2], STEER_IDS[2], AZIMUTH_CHANNELS[2], AZIMUTH_OFFSETS[2], DRIVE_INVERT_TYPES[2], STEERS_ARE_REVERSED[2], AZIMUTHS_ARE_REVERSED[2]);
+    private final MK4iSwerveModule br = new MK4iSwerveModule(DRIVE_IDS[3], STEER_IDS[3], AZIMUTH_CHANNELS[3], AZIMUTH_OFFSETS[3], DRIVE_INVERT_TYPES[3], STEERS_ARE_REVERSED[3], AZIMUTHS_ARE_REVERSED[3]);
     
     // Kinematics & Odometry
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(FL_LOCATION, FR_LOCATION, BL_LOCATION, BR_LOCATION);
@@ -44,15 +45,13 @@ public class Swerve extends SubsystemBase {
             thetaRadiansPerSecond, 
             pose.getRotation()
         ));
-        // if (Math.abs(xMetersPerSecond) < 0.1 && Math.abs(yMetersPerSecond) < 0.1 && Math.abs(thetaRadiansPerSecond) < 0.1) {
-        //     double cross = new Rotation2d(ROBOT_LENGTH, ROBOT_WIDTH).getRadians();
-        //     states[0] = new SwerveModuleState(0.0, new Rotation2d(cross));
-        //     states[1] = new SwerveModuleState(0.0, new Rotation2d(-cross));
-        //     states[2] = new SwerveModuleState(0.0, new Rotation2d(-cross));
-        //     states[3] = new SwerveModuleState(0.0, new Rotation2d(cross));
-        // }
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
         fl.setState(states[0]);
+        SmartDashboard.putNumber("FL Desired Velocity (Before Optimization and Continous Output)", states[0].speedMetersPerSecond);
+        SmartDashboard.putNumber("FL Desired Angle (Before Optimization and Continous Output", states[0].angle.getDegrees());
+        SmartDashboard.putNumber("FL Desired Velocity (After Optimization and Continous Output)", fl.getDesiredState()[0]);
+        SmartDashboard.putNumber("FL Desired Angle (After Optimization and Continous Output", fl.getDesiredState()[1]);
+        SmartDashboard.putNumber("FL Motor Output Percent", fl.getMotorOutputPercent());
         fr.setState(states[1]);
         bl.setState(states[2]);
         br.setState(states[3]);
@@ -128,7 +127,10 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("Swerve Rotation", fl.getAngle());
+        SmartDashboard.putNumber("FL Angle", Units.radiansToDegrees(fl.getAngle()));
+        SmartDashboard.putNumber("FR Angle", Units.radiansToDegrees(fr.getAngle()));
+        SmartDashboard.putNumber("BL Angle", Units.radiansToDegrees(bl.getAngle()));
+        SmartDashboard.putNumber("BR Angle", Units.radiansToDegrees(br.getAngle()));
         updateOdometry();
     }
     

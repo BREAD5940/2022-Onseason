@@ -1,10 +1,8 @@
 package frc.robot.autonomus.routines;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomus.Trajectories;
 import frc.robot.commons.BreadUtil;
 import frc.robot.subsystems.statemachines.GutNeck;
@@ -12,12 +10,11 @@ import frc.robot.subsystems.statemachines.Intake;
 import frc.robot.subsystems.statemachines.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.TrajectoryFollowerController;
-
 import static frc.robot.Constants.Autonomus.*;
 
-public class FiveCargoRightTarmac extends SequentialCommandGroup {  
+public class ThreeCargoRightTarmac extends SequentialCommandGroup {
 
-    public FiveCargoRightTarmac(Swerve swerve, Shooter shooter, Intake leftIntake, Intake rightIntake, GutNeck gutNeck) {
+    public ThreeCargoRightTarmac(Swerve swerve, Shooter shooter, Intake leftIntake, Intake rightIntake, GutNeck gutNeck) {
         addRequirements(swerve, shooter, leftIntake, rightIntake, gutNeck);
         addCommands(
             new TrajectoryFollowerController(
@@ -35,30 +32,8 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new InstantCommand(() -> {
                 shooter.requestShoot(THREE_SHOT_FLYWHEEL_VELOCITY, THREE_SHOT_HOOD_ANGLE);
                 gutNeck.requestShoot(true);
-            }),
-            new WaitUntilCommand(3.0).andThen(
-                () -> {
-                    gutNeck.requestShoot(false);
-                }
-            ), 
-            new TrajectoryFollowerController(
-                Trajectories.advanceToHumanPlayerStationAfterThreeCargo, 
-                (point, time) -> Rotation2d.fromDegrees(135.0),
-                null,
-                swerve
-            ),
-            new WaitUntilCommand(1.0),
-            new TrajectoryFollowerController(
-                Trajectories.returnFromHumanPlayerStation, 
-                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
-                null, 
-                swerve
-            ),
-            new InstantCommand(() -> {
-                shooter.requestShoot(THREE_SHOT_FLYWHEEL_VELOCITY, THREE_SHOT_HOOD_ANGLE);
-                gutNeck.requestShoot(true);
             })
         );
     }
- 
+    
 }

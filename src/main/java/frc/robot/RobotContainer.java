@@ -2,11 +2,13 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.autonomus.AutonomusSelector;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;
 import frc.robot.subsystems.statemachines.Shooter;
@@ -24,9 +26,10 @@ public class RobotContainer {
   public static Intake leftIntake = new Intake(LEFT_INTAKE_ID, TalonFXInvertType.Clockwise, LEFT_INTAKE_PISTON_CHANNELS[0], LEFT_INTAKE_PISTON_CHANNELS[1], 0);
   public static Intake rightIntake = new Intake(RIGHT_INTAKE_ID, TalonFXInvertType.CounterClockwise, RIGHT_INTAKE_PISTON_CHANNELS[0], RIGHT_INTAKE_PISTON_CHANNELS[1], 0);
   public static GutNeck gutNeck = new GutNeck();
-  public static Superstructure superstructure = new Superstructure(shooter, leftIntake, rightIntake, gutNeck);
+  public static Vision vision = new Vision();
   public static XboxController driver = new XboxController(0);
   public static XboxController operator = new XboxController(1);
+  AutonomusSelector autonomusSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
 
   public RobotContainer() {
     swerve.setDefaultCommand(new DefaultDriveController(driver::getRightY, driver::getRightX, driver::getLeftX, swerve));
@@ -40,7 +43,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // return new SixCargoSweep(superstructure, intakePneumatics, swerve);
-    return null;
+    return autonomusSelector.get();
   }
 }

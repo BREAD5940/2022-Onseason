@@ -7,17 +7,21 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.Climber.*;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.ControlMode; 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public class Climber extends SubsystemBase {
 
-    DoubleSolenoid climberSolenoids = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, CLIMBER_FORWARD_CHANNEL, CLIMBER_REVERSE_CHANNEL);
-    TalonFX topMotor = new TalonFX(TOP_CLIMBER_MOTOR_ID);
-    TalonFX bottomMotor = new TalonFX(BOTTOM_CLIMBER_MOTOR_ID);
+    private final DoubleSolenoid climberSolenoids = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, CLIMBER_FORWARD_CHANNEL, CLIMBER_REVERSE_CHANNEL);
+    private final TalonFX topMotor = new TalonFX(TOP_CLIMBER_MOTOR_ID);
+    private final TalonFX bottomMotor = new TalonFX(BOTTOM_CLIMBER_MOTOR_ID);
+
+    // State variables
+    private ClimberStates systemState = ClimberStates.NEUTRAL_TILTED_IN;
+    private double climberSetpoint = CLIMBER_MINIMUM_TRAVEL;
+    private boolean extended = false;
 
     public Climber() {
 
@@ -40,57 +44,88 @@ public class Climber extends SubsystemBase {
         bottomMotor.configAllSettings(bottomMotorConfig);
         bottomMotor.setNeutralMode(NeutralMode.Brake);
         bottomMotor.follow(topMotor);
-
     }
 
-    // public void setPosition(double meters) {
-    //     double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL, CLIMBER_MAXIMUM_TRAVEL));
-    //     topMotor.set(ControlMode.MotionMagic, output);
-    // }
-
-    public void setPercent(double percent) {
-        if ((getPositionMeters() < CLIMBER_MINIMUM_TRAVEL && percent < 0.0) || (getPositionMeters() > CLIMBER_MAXIMUM_TRAVEL && percent > 0.0)) {
-            topMotor.set(ControlMode.PercentOutput, 0.0);
-        } else {
-            topMotor.set(ControlMode.PercentOutput, percent);
-        }
+    // Commands the climber to a certain setpoint
+    private void commandClimberSetpoint(double meters) {
+        double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL, CLIMBER_MAXIMUM_TRAVEL));
+        topMotor.set(ControlMode.MotionMagic, output);
     }
 
-    public void neutral() {
+    // Commands the climber to neutral
+    private void commandNeutral() {
         topMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    public void extend() {
+    // Commands the climber solenoids forward
+    private void commandSolenoidsForward() {
         climberSolenoids.set(Value.kForward);
     }
 
-    public void retract() {
+    // Commands the climber solenoids backward
+    private void commandSolenoidsReversed() {
         climberSolenoids.set(Value.kReverse);
     }
 
+    // Requests the climber to go to the mid rung height
+    private void requestMidRungHeight() {
+        // systemState = ClimberStates.MID_RUNG_HEIGHT;
+    }   
+
+    // Returns the position of the climber in meters
     public double getPositionMeters() {
         return integratedSensorUnitsToMeters(topMotor.getSelectedSensorPosition());
     }
 
+    // Converted integrated sensor units to meters
     private double integratedSensorUnitsToMeters(double integratedSensorUnits) {
         return integratedSensorUnits * ((CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER)/2048.0);
     }
 
+    // Converts meters to integrated sensor units
     private double metersToIntegratedSensorUnits(double meters) {
         return meters * (2048.0/(CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER));
     }
 
+    // Converts integrated sensor units to meters per second
     private double integratedSensorUnitsToMetersPerSecond(double integratedSensorUnits) {
         return integratedSensorUnits * ((CLIMBER_GEARING * (600.0/2048.0) * Math.PI * CLIMBER_PITCH_DIAMETER)/60.0);
     }
 
+    // Converts meters per second to integrated sensor units
     private double metersPerSecondToIntegratedSensorUnits(double metersPerSecond) {
         return metersPerSecond * (60.0/(CLIMBER_GEARING * (600.0/2048.0) * Math.PI * CLIMBER_PITCH_DIAMETER));
     }
 
+    // Defines all of the climber states
+    public enum ClimberStates { 
+        NEUTRAL_TILTED_IN,
+        RETRACTED_TILTED_IN,
+        MID_RUNG_HEIGHT_TILTED_IN,
+
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", getPositionMeters());
+        if (systemState == ClimberStates.NEUTRAL_TILTED_IN) {
+            commandNeutral();
+            if (extended) {
+                commandSolenoidsReversed();
+                extended = false;
+            } 
+        } else if (systemState == ClimberStates.RETRACTED_TILTED_IN) {
+            commandClimberSetpoint(CLIMBER_MINIMUM_TRAVEL);
+            if (extended) {
+                commandSolenoidsReversed();
+                extended = false;
+            }
+        } else if (systemState == ClimberStates.MID_RUNG_HEIGHT_TILTED_IN) {
+            commandClimberSetpoint(CLIMBER_MID_RUNG_HEIGHT);
+            if (extended) {
+                commandSolenoidsReversed();
+                extended = false;
+            }
+        }
     }
     
 }

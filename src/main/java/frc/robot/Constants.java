@@ -24,16 +24,22 @@ public final class Constants {
         public static final int[] AZIMUTH_CHANNELS = {21, 22, 23, 24};
 
         // Reversed Constants
-        public static final boolean[] DRIVES_ARE_REVERSED = {false, true, false, true};
+        public static final TalonFXInvertType[] DRIVE_INVERT_TYPES = {
+            TalonFXInvertType.CounterClockwise, 
+            TalonFXInvertType.Clockwise, 
+            TalonFXInvertType.CounterClockwise, 
+            TalonFXInvertType.Clockwise
+        };
         public static final boolean[] STEERS_ARE_REVERSED = {true, true, true, true};
         public static final boolean[] AZIMUTHS_ARE_REVERSED = {false, false, false, false};
 
         // Offsets (calculate offsets by measuring the values shown in the pheonix tuner self-test snapshot when all offsets are set to 0.0)
+        // Offsers change on boot
         public static final Rotation2d[] AZIMUTH_OFFSETS = {
-            Rotation2d.fromDegrees(-107.139), // FL
-            Rotation2d.fromDegrees(54.492), // FR
-            Rotation2d.fromDegrees(-58.535), // BL
-            Rotation2d.fromDegrees(-47.725) //BR
+            Rotation2d.fromDegrees(-106.12), // FL
+            Rotation2d.fromDegrees(54.053), // FR
+            Rotation2d.fromDegrees(-57.744), // BL
+            Rotation2d.fromDegrees(-41.748) //BR
         };
 
         // Measurements/Gearings
@@ -132,9 +138,9 @@ public final class Constants {
         // Constants/Measurements
         public static final int COUNTS_PER_REVOLUTION = 8192;
         public static final double HOOD_GEARING = (20.0/460.0);
-        public static final double HOOD_IDLE_POS = 23.0;
+        public static final double HOOD_IDLE_POS = 1.0;
         public static final double MIN_HOOD_TRAVEL = 0.0;
-        public static final double MAX_HOOD_TRAVEL = 38.0; // TODO get the actual value
+        public static final double MAX_HOOD_TRAVEL = 37.928627014160156; 
 
     }
 
@@ -151,6 +157,7 @@ public final class Constants {
         public static final double CLIMBER_GEARING = 1.0/12.86;
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
         public static final double CLIMBER_MINIMUM_TRAVEL = 0.01;
+        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.40;
         public static final double CLIMBER_MAXIMUM_TRAVEL = 0.60;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 
@@ -182,8 +189,12 @@ public final class Constants {
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
 
         // Two Cargo Auto Setpoints
-        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1600.0;
-        public static final double TWO_SHOT_HOOD_ANGLE = 23.0;
+        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1775.0;
+        public static final double TWO_SHOT_HOOD_ANGLE = 25.0;
+
+        // Three Cargo Auto Setpoints
+        public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1775.0;
+        public static final double THREE_SHOT_HOOD_ANGLE = 25.0;
 
         // Five Cargo Auto Setpoints
         public static final double FIRST_CARGO_FLYWHEEL_VELOCITY = 1550.0;

@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.Vision.*;
@@ -11,7 +12,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
-
+    
+    private final NetworkTable photonvisionTable = NetworkTableInstance.getDefault().getTable("photonvision");
     private final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
     private volatile PhotonTrackedTarget bestTarget = null;
 
@@ -31,6 +33,14 @@ public class Vision extends SubsystemBase {
             CAMERA_PITCH_RADIANS,
             Units.degreesToRadians(bestTarget.getPitch())
         );
+    }
+
+    public double getYaw() {
+        return bestTarget.getYaw();
+    }
+
+    public void setLEDOn(boolean set) {
+        photonvisionTable.getEntry("ledMode").setDouble(set ? -1.0 : 0.0);
     }
 
 

@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
 
     // Variables to track system state
     private IntakeState systemState = IntakeState.IDLE_RETRACTED;
-    private boolean extended = false;
+    private boolean extended = true;
 
 
     public Intake(int motorID, TalonFXInvertType invertType, int pneumaticsForwardChannel, int pneumaticsReverseChannel, int pneumaticsModuleNumber) {
