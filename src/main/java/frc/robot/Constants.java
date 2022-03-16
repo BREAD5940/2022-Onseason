@@ -95,6 +95,10 @@ public final class Constants {
         public static final int[] LEFT_INTAKE_PISTON_CHANNELS = {6, 1}; // [Forward, Reverse]
         public static final int[] RIGHT_INTAKE_PISTON_CHANNELS = {7, 0}; // [Forward, Reverse]
 
+        // Measurements
+        public static final double INTAKE_SPEED = 0.8;
+        public static final double SPIT_SPEED = 0.3;
+
     }
 
     // Constants pertaining to the flywheel subsystem go here
@@ -138,7 +142,7 @@ public final class Constants {
         // Constants/Measurements
         public static final int COUNTS_PER_REVOLUTION = 8192;
         public static final double HOOD_GEARING = (20.0/460.0);
-        public static final double HOOD_IDLE_POS = 1.0;
+        public static final double HOOD_IDLE_POS = 8.5;
         public static final double MIN_HOOD_TRAVEL = 0.0;
         public static final double MAX_HOOD_TRAVEL = 37.928627014160156; 
 
@@ -156,9 +160,15 @@ public final class Constants {
         // Measurements/Constants
         public static final double CLIMBER_GEARING = 1.0/12.86;
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
-        public static final double CLIMBER_MINIMUM_TRAVEL = 0.01;
-        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.40;
-        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.60;
+        public static final double CLIMBER_MINIMUM_TRAVEL = 0;
+        public static final double CLIMBER_RETRACTED_HEIGHT = 0.00025;
+        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.58;
+        public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.3;
+        public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.61;
+        public static final double CLIMBER_HEIGHT_PULLED_OFF = 0.5;
+        public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = Units.inchesToMeters(5.0);
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.619;
+        public static final double CLIMBER_SETPOINT_TOLERANCE = 0.01;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 
         // Other
@@ -173,9 +183,9 @@ public final class Constants {
         public static final String CAMERA_NAME = "BreadCam";
 
         // Measurements/Constants
-        public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(20.0);
-        public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(8.0 * 12 + 5.625);
-        public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(20.0);
+        public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(31.0);
+        public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(104.0);
+        public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(30.0);
     }
 
     // Constants pertaining to the autonomus period of the match
@@ -189,19 +199,19 @@ public final class Constants {
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
 
         // Two Cargo Auto Setpoints
-        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1775.0;
-        public static final double TWO_SHOT_HOOD_ANGLE = 25.0;
+        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1700.0;
+        public static final double TWO_SHOT_HOOD_ANGLE = 24.0;
 
         // Three Cargo Auto Setpoints
-        public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1775.0;
+        public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1725.0;
         public static final double THREE_SHOT_HOOD_ANGLE = 25.0;
 
         // Five Cargo Auto Setpoints
-        public static final double FIRST_CARGO_FLYWHEEL_VELOCITY = 1550.0;
-        public static final double FIRST_CARGO_HOOD_ANGLE = 23.0;
+        public static final double FIRST_SHOT_FLYWHEEL_VELOCITY = 1450.0;
+        public static final double FIRST_SHOT_HOOD_ANGLE = 24.0;
 
-        public static final double SECOND_CARGO_FLYWHEEL_VELOCITY = 1600.0;
-        public static final double SECOND_CARGO_HOOD_ANGLE = 23.0;
+        public static final double SECOND_SHOT_FLYWHEEL_VELOCITY = 1725.0;
+        public static final double SECOND_SHOT_HOOD_ANGLE = 24.0;
 
         // Measurements
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));

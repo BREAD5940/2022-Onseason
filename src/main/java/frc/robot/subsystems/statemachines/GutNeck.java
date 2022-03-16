@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.drivers.TalonFXFactory;
@@ -301,7 +302,7 @@ public class GutNeck extends SubsystemBase {
             } else if (requestSpitRight) {
                 nextSystemState = GutNeckStates.SPIT_RIGHT;
             } else if (requestShoot) {
-                systemState = GutNeckStates.IDLE_ONE_CARGO;
+                nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
             } else if (!requestIntakeLeft) {
                 nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
             } else if (getMiddleBeamBreakTriggered() && checkCargo(getMiddleColor())) {
@@ -392,6 +393,10 @@ public class GutNeck extends SubsystemBase {
             }
         }
         systemState = nextSystemState;
+        SmartDashboard.putString("GutNeck State", getSystemState().name());
+        SmartDashboard.putBoolean("GutNeck Request Shoot", requestShoot);
+        SmartDashboard.putBoolean("Middle BeamBreak", getMiddleBeamBreakTriggered());
+        SmartDashboard.putBoolean("Top BeamBreak", getTopBeamBreakTriggered());
     }
 
     // Private method to begin the shooting sequence

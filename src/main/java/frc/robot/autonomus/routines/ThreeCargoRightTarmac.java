@@ -18,7 +18,7 @@ public class ThreeCargoRightTarmac extends SequentialCommandGroup {
         addRequirements(swerve, shooter, leftIntake, rightIntake, gutNeck);
         addCommands(
             new TrajectoryFollowerController(
-                Trajectories.threeCargoRightTarmac, 
+                Trajectories.getFirstCargoRightTarmac, 
                 (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
                 () -> Rotation2d.fromDegrees(87.52), 
                 swerve

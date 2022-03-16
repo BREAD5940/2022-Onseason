@@ -21,6 +21,7 @@ public class Intake extends SubsystemBase {
 
     // Variables to track system state
     private IntakeState systemState = IntakeState.IDLE_RETRACTED;
+    private boolean spit = false;
     private boolean extended = true;
 
 
@@ -38,18 +39,20 @@ public class Intake extends SubsystemBase {
         doubleSolenoids = new DoubleSolenoid(pneumaticsModuleNumber, PneumaticsModuleType.CTREPCM, pneumaticsForwardChannel, pneumaticsReverseChannel);
     }
 
-    // Requests the intake to extend and suck
+    // Requests the intake to extend and suck; value between [0, 1]
     public void requestIntake() {
         systemState = IntakeState.SUCK_EXTENDED;
     }
 
-    // Requests the intake to retract and spit
-    public void requestOuttakeRetracted() {
+    // Requests the intake to retract and spit; value between [0, 1]
+    public void requestOuttakeRetracted(boolean spit) {
+        this.spit = spit;
         systemState = IntakeState.SPIT_RETRACTED;
     }
 
-    // Requests the intake the extend and outtake
-    public void requestOuttakeExtended() {
+    // Requests the intake the extend and outtake; value between [0, 1]
+    public void requestOuttakeExtended(boolean spit) {
+        this.spit = spit;
         systemState = IntakeState.SPIT_EXTENDED;
     }
 
@@ -93,13 +96,13 @@ public class Intake extends SubsystemBase {
                 extended = true;
             }
         } else if (systemState == IntakeState.SPIT_RETRACTED) {
-            motor.set(ControlMode.PercentOutput, -0.8);
+            motor.set(ControlMode.PercentOutput, spit ? -0.3 : -0.8);
             if (extended) {
                 doubleSolenoids.set(Value.kReverse); 
                 extended = false;
             }
         } else if (systemState == IntakeState.SPIT_EXTENDED) {
-            motor.set(ControlMode.PercentOutput, -0.8);
+            motor.set(ControlMode.PercentOutput, spit ? -0.3 : -0.8);
             if (!extended) {
                 doubleSolenoids.set(Value.kForward);
                 extended = true;

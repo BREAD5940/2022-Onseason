@@ -10,9 +10,9 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,9 +32,10 @@ public class Shooter extends SubsystemBase {
     private final CANSparkMax hoodMotor = new CANSparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
     private final RelativeEncoder hoodEncoder = hoodMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
     private final SparkMaxPIDController hoodPID = hoodMotor.getPIDController();
+    private final SparkMaxAnalogSensor hoodLimit = hoodMotor.getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
 
     // State logic
-    private ShooterState systemState = ShooterState.IDLE;
+    private ShooterState systemState = ShooterState.HOMING;
 
     // State variables
     Timer homingTimer = new Timer();
@@ -80,21 +81,25 @@ public class Shooter extends SubsystemBase {
         // Configure hood motor 
         hoodEncoder.setPositionConversionFactor(HOOD_GEARING * 360.0);
         hoodPID.setFeedbackDevice(hoodEncoder);
-        hoodPID.setP(0.4);
+        hoodPID.setP(0.3);
         hoodPID.setI(0.0);
-        hoodPID.setD(0.0);
-        hoodPID.setOutputRange(-1, 1);
+        hoodPID.setD(0.05);
+        hoodPID.setOutputRange(-0.4, 0.4);
     }
 
     // Private method to set the hood setpoint
     private void commandHoodPosition(double degrees) {
-        // double adjustedSetpoint = MathUtil.clamp(degrees, MIN_HOOD_TRAVEL + 1, MAX_HOOD_TRAVEL - 1);
-        // hoodPID.setReference(adjustedSetpoint, CANSparkMax.ControlType.kPosition);
+        double adjustedSetpoint = MathUtil.clamp(degrees, MIN_HOOD_TRAVEL + 1, MAX_HOOD_TRAVEL - 1);
+        if ((getHoodLimitSwitchTriggered() && degrees < getHoodPosition())) {
+            hoodMotor.set(0.0);
+        } else {
+            hoodPID.setReference(adjustedSetpoint, CANSparkMax.ControlType.kPosition);
+        }
     }
 
     // Private method to set the hood percent
     private void commandHoodVoltage(double volts) {
-        // hoodMotor.setVoltage(volts);
+        hoodMotor.setVoltage(volts);
     }
 
     // Private method to set the flywheel setpoint
@@ -164,6 +169,11 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getVelocity();
     }
 
+    // Returns the voltage of the hood limit switch
+    public boolean getHoodLimitSwitchTriggered() {
+        return hoodLimit.getVoltage() < 1.5;
+    }
+
     // Returns the flywheel velocity
     public double getFlywheelVelocity() {
         return integratedSensorUnitsToFlywheelRPM(leftFlywheelMotor.getSelectedSensorVelocity());
@@ -203,11 +213,11 @@ public class Shooter extends SubsystemBase {
         ShooterState nextSystemState = systemState;
         if (systemState == ShooterState.HOMING) {
             // Outputs
-            commandHoodVoltage(-3);
+            commandHoodVoltage(-1);
             commandFlywheelVelocity(0.0);
 
             // State transitions
-            if (BreadUtil.atReference(getHoodVelocity(), 0.0, 10.0, true) && homingTimer.get() >= 0.4) {
+            if (getHoodLimitSwitchTriggered()) {
                 exitHomingSequence();
                 nextSystemState = ShooterState.IDLE;
             }
@@ -234,7 +244,7 @@ public class Shooter extends SubsystemBase {
                 nextSystemState = ShooterState.HOMING;
             } else if (!requestShoot) {
                 nextSystemState = ShooterState.IDLE;
-            } else if (flywheelAtSetpoint() && hoodAtSetpoint()) {
+            } else if (flywheelAtSetpoint()) {
                 nextSystemState = ShooterState.AT_SETPOINT;
             } 
         } else if (systemState == ShooterState.AT_SETPOINT) {
@@ -247,7 +257,7 @@ public class Shooter extends SubsystemBase {
                 nextSystemState = ShooterState.HOMING;
             } else if (!requestShoot) {
                 nextSystemState = ShooterState.IDLE;
-            } else if (!flywheelAtSetpoint() || !hoodAtSetpoint()) {
+            } else if (!flywheelAtSetpoint()) {
                 nextSystemState = ShooterState.APPROACHING_SETPOINT;
             }
         }
@@ -257,6 +267,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Hood Angle", getHoodPosition());
         SmartDashboard.putBoolean("Hood AtSetpoint", hoodAtSetpoint());
         SmartDashboard.putBoolean("FlywheelAtSetpoint", flywheelAtSetpoint());
+        SmartDashboard.putBoolean("Hood Limit Switch Triggered", getHoodLimitSwitchTriggered());
     }
 
     // Method to be called when you begin homing

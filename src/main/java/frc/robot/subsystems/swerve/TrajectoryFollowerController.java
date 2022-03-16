@@ -3,8 +3,6 @@ package frc.robot.subsystems.swerve;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.commons.BreadHolonomicDriveController;
 
 public class TrajectoryFollowerController extends CommandBase {
 
@@ -23,7 +22,7 @@ public class TrajectoryFollowerController extends CommandBase {
     private final Supplier<Rotation2d> startHeading;
     private final Swerve swerve;
     private final Timer timer = new Timer();
-    public final HolonomicDriveController autonomusController = new HolonomicDriveController(
+    public final BreadHolonomicDriveController autonomusController = new BreadHolonomicDriveController(
         new PIDController(8, 0, 0), 
         new PIDController(8, 0, 0), 
         new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(

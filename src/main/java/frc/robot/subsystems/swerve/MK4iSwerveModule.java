@@ -27,7 +27,7 @@ public class MK4iSwerveModule {
     public final CANCoder azimuth;
     private double[] kDesiredState = {0, 0};
 
-    public MK4iSwerveModule(int driveID, int steerID, int azimuthID, Rotation2d offset, TalonFXInvertType driveDirection, boolean steerReversed, boolean azimuthReversed) {
+    public MK4iSwerveModule(int driveID, int steerID, int azimuthID, Rotation2d offset, TalonFXInvertType driveDirection, boolean steerReversed, boolean azimuthReversed, String moduleIdentifier) {
 
         // Configure the driving motor
         drive = new TalonFX(driveID);
@@ -78,7 +78,7 @@ public class MK4iSwerveModule {
         steer.configAllSettings(steerConfig);
         steer.selectProfileSlot(0, 0);
         steer.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
-        steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
     }
 

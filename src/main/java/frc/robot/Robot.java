@@ -1,19 +1,30 @@
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.interpolation.InterpolatingTable;
+import frc.robot.interpolation.ShotParameter;
 import frc.robot.sensors.ColorSensor.BallColor;
+import frc.robot.subsystems.climber.ClimbToHighRung;
+import frc.robot.subsystems.climber.ClimbToNextRung;
+import frc.robot.subsystems.climber.ExtendToMidRung;
+import frc.robot.subsystems.climber.LatchToNextRung;
+import frc.robot.subsystems.climber.PopOffStaticHooks;
+import frc.robot.subsystems.climber.ReadyForNextRung;
+import frc.robot.subsystems.climber.TransitioningToNextRung;
+
 import static frc.robot.Constants.Hood.*;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private boolean homed = false;
   public static BallColor allianceColor = BallColor.NONE;
 
   @Override
@@ -27,6 +38,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    SmartDashboard.putNumber("Distance To Target", RobotContainer.vision.getDistance());
+    SmartDashboard.putNumber("Pitch", RobotContainer.vision.getPitch());
+    SmartDashboard.putNumber("Yaw", RobotContainer.vision.getYaw());
+    SmartDashboard.putNumber("Vision Timestamp", RobotContainer.vision.getMeasurementTimestamp());
+    RobotContainer.vision.setLEDsOn(true);
   }
 
   @Override
@@ -45,10 +61,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    if (!homed) {
-      RobotContainer.shooter.requestHome();
-      homed = true;
-    }
   }
 
   @Override
@@ -56,12 +68,8 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopInit() {
-    if (!homed) {
-      RobotContainer.shooter.requestHome();
-      homed = true;
-    }
-    
+  public void teleopInit() {    
+    RobotContainer.gutNeck.acceptOpposingCargo(false);
     // Set alliance color
     allianceColor = DriverStation.getAlliance() == Alliance.Red ? BallColor.RED : BallColor.BLUE;
   }
@@ -87,24 +95,26 @@ public class Robot extends TimedRobot {
             RobotContainer.shooter.requestIdle();
         }
         if (RobotContainer.operator.getAButton()) {
-            RobotContainer.vision.setLEDOn(true);
             RobotContainer.shooter.requestShoot(1400, 10);
             RobotContainer.gutNeck.requestShoot(true);
         } else if (RobotContainer.operator.getBButton()) {
-            RobotContainer.vision.setLEDOn(true);
-            RobotContainer.shooter.requestShoot(1600, 27);
+            // 1600 27
+            ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
+            RobotContainer.shooter.requestShoot(
+              shot.flywheelRPM,
+              shot.hoodAngleRadians 
+            );
             RobotContainer.gutNeck.requestShoot(true);
         } else {
-            RobotContainer.vision.setLEDOn(false);
             RobotContainer.shooter.requestIdle();
             RobotContainer.gutNeck.requestShoot(false);
         }
         if (RobotContainer.driver.getLeftTriggerAxis() > 0.1) {
             RobotContainer.leftIntake.requestIntake();
-            RobotContainer.rightIntake.requestOuttakeRetracted();
+            RobotContainer.rightIntake.requestOuttakeRetracted(false);
             RobotContainer.gutNeck.requestIntakeLeft(true);
         } else if (RobotContainer.driver.getRightTriggerAxis() > 0.1) {
-            RobotContainer.leftIntake.requestOuttakeRetracted();
+            RobotContainer.leftIntake.requestOuttakeRetracted(false);
             RobotContainer.rightIntake.requestIntake();
             RobotContainer.gutNeck.requestIntakeRight(true);
         } else {
@@ -124,7 +134,7 @@ public class Robot extends TimedRobot {
 
         if (RobotContainer.operator.getLeftBumper()) {
             RobotContainer.gutNeck.requestSpitLeft(true);
-            RobotContainer.leftIntake.requestOuttakeRetracted();
+            RobotContainer.leftIntake.requestOuttakeRetracted(true);
             RobotContainer.rightIntake.requestIdleRetracted();
         } else {
             RobotContainer.gutNeck.requestSpitLeft(false);
@@ -133,10 +143,34 @@ public class Robot extends TimedRobot {
         if (RobotContainer.operator.getRightBumper()) {
             RobotContainer.gutNeck.requestSpitRight(true);
             RobotContainer.leftIntake.requestIdleRetracted();
-            RobotContainer.rightIntake.requestOuttakeRetracted();
+            RobotContainer.rightIntake.requestOuttakeRetracted(true);
         } else {
             RobotContainer.gutNeck.requestSpitRight(false);
         }
+
+        // if (RobotContainer.operator.getPOV() == 0.0) {
+        //   CommandScheduler.getInstance().schedule(new ExtendToMidRung(RobotContainer.climber));
+        // } 
+        // if (RobotContainer.operator.getPOV() == 180.0) {
+        //   CommandScheduler.getInstance().schedule(new ClimbToNextRung(RobotContainer.climber));
+        // }
+        // if (RobotContainer.operator.getPOV() == 90.0) {
+        //   CommandScheduler.getInstance().schedule(new ReadyForNextRung(RobotContainer.climber));
+        // }
+        // if (RobotContainer.operator.getPOV() == 270.0) {
+        //   CommandScheduler.getInstance().schedule(new TransitioningToNextRung(RobotContainer.climber));
+        // }
+        // if (RobotContainer.operator.getRightStickButton()) {
+        //   CommandScheduler.getInstance().schedule(new LatchToNextRung(RobotContainer.climber));
+        // }
+        // if (RobotContainer.operator.getLeftStickButtonPressed()) {
+        //   CommandScheduler.getInstance().schedule(new ClimbToHighRung(RobotContainer.climber));
+        // }
+        // if (RobotContainer.operator.getXButton()) {
+        //   CommandScheduler.getInstance().schedule(new PopOffStaticHooks(RobotContainer.climber));
+        // }
+        // RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
+
   }
 
 }
