@@ -94,16 +94,13 @@ public class Robot extends TimedRobot {
         } else {
             RobotContainer.shooter.requestIdle();
         }
-        if (RobotContainer.operator.getAButton()) {
+        if (RobotContainer.driver.getLeftStickButton()) {
             RobotContainer.shooter.requestShoot(1400, 10);
             RobotContainer.gutNeck.requestShoot(true);
-        } else if (RobotContainer.operator.getBButton()) {
+        } else if (RobotContainer.driver.getRightStickButton()) {
             // 1600 27
             ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
-            RobotContainer.shooter.requestShoot(
-              shot.flywheelRPM,
-              shot.hoodAngleRadians 
-            );
+            RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
             RobotContainer.gutNeck.requestShoot(true);
         } else {
             RobotContainer.shooter.requestIdle();

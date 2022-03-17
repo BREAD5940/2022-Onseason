@@ -3,13 +3,11 @@ package frc.robot.subsystems.vision;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 public class RobotPositionHistory {
 
-    private static TreeMap<Double, Rotation2d> timeInterpolatingTreeMap = new TreeMap<Double, Rotation2d>();
+    private static TreeMap<Double, Double> timeInterpolatingTreeMap = new TreeMap<Double, Double>();
 
-    public static void update(double timestamp, Rotation2d robotAngle) {
+    public static void update(double timestamp, double robotAngle) {
         timeInterpolatingTreeMap.put(timestamp, robotAngle);
 
         if (timeInterpolatingTreeMap.size() > 50.0) {
@@ -17,9 +15,9 @@ public class RobotPositionHistory {
         }
     }
 
-    public static Rotation2d get(double timestamp) {
-        Entry<Double, Rotation2d> ceil = timeInterpolatingTreeMap.ceilingEntry(timestamp);
-        Entry<Double, Rotation2d> floor = timeInterpolatingTreeMap.floorEntry(timestamp);
+    public static double get(double timestamp) {
+        Entry<Double, Double> ceil = timeInterpolatingTreeMap.ceilingEntry(timestamp);
+        Entry<Double, Double> floor = timeInterpolatingTreeMap.floorEntry(timestamp);
         if (ceil == null) return floor.getValue();
         if (floor == null) return ceil.getValue();
         if (ceil.getValue().equals(floor.getValue())) return ceil.getValue();
@@ -31,8 +29,8 @@ public class RobotPositionHistory {
         timeInterpolatingTreeMap.clear();
     }
 
-    private static Rotation2d lerp(Rotation2d y2, Rotation2d y1, double t) {
-        return y1.plus((y2.minus(y1)).times(t));
+    private static double lerp(double y1, double y2, double t) {
+        return y1 + (y2 - y1) + t;
         // y1 + (y2 - y1) * t
     }
     

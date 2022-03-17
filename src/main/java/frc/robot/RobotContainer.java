@@ -45,7 +45,7 @@ public class RobotContainer {
       new InstantCommand(() -> swerve.reset(new Pose2d()), swerve)
     );
 
-    new JoystickButton(operator, Button.kB.value).whileHeld(
+    new JoystickButton(driver, Button.kRightStick.value).whileHeld(
       new VisionTurnCommand(swerve)
     );
 

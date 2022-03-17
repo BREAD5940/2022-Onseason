@@ -218,5 +218,6 @@ public final class Constants {
         public static final double BALL_FLIGHT_TIME = 1.25;
         public static final double RADIUS_TO_BACK_BUMPER = Units.inchesToMeters(137.5);
         public static final double RADIUS_TO_ROBOT_CENTER = RADIUS_TO_BACK_BUMPER - Drive.ROBOT_LENGTH/2;
+        public static final double LIMELIGHT_MOUNTING_ANGLE_ERROR = 3.41; // Degrees
     }
 }

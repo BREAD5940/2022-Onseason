@@ -11,10 +11,14 @@ public class InterpolatingTable {
 
     public static TreeMap<Double, ShotParameter> table = new TreeMap<>(
         Map.ofEntries(
-            entry(1.51, new ShotParameter(17.0, 1500.0)),
-            entry(2.05, new ShotParameter(18.0, 1550.0)),
-            entry(3.1, new ShotParameter(24, 1725)),
-            entry(4.4, new ShotParameter(23, 1875))
+            entry(1.654, new ShotParameter(18, 1500)), // 44 inches to front of bumper from hub wall
+            entry(2.32, new ShotParameter(20, 1600)), // 68 inches to front of bumper from hub wall
+            entry(2.649, new ShotParameter(21.5, 1700)), // 80 inches
+            entry(3.163, new ShotParameter(21.5, 1775)), // 98 inches
+            entry(3.72, new ShotParameter(22.5, 1850)), // 117 inches
+            entry(4.264, new ShotParameter(24, 1950)), // 136 inches
+            entry(4.86, new ShotParameter(25.5, 2100)) // 156 inches
+
         )
     );
 

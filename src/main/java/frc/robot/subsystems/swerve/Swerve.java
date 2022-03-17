@@ -57,6 +57,10 @@ public class Swerve extends SubsystemBase {
         br.setState(states[3]);
     }
 
+    public double getRawGyro() {
+        return -gyro.getAngle();
+    }
+
     public void setSpeeds(ChassisSpeeds robotRelativeSpeeds) {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(robotRelativeSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
@@ -131,6 +135,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("FR Angle", Units.radiansToDegrees(fr.getAngle()));
         SmartDashboard.putNumber("BL Angle", Units.radiansToDegrees(bl.getAngle()));
         SmartDashboard.putNumber("BR Angle", Units.radiansToDegrees(br.getAngle()));
+        SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
     }
     

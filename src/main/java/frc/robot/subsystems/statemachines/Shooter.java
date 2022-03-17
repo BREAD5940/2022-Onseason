@@ -39,6 +39,7 @@ public class Shooter extends SubsystemBase {
 
     // State variables
     Timer homingTimer = new Timer();
+    Timer stabalizingTimer = new Timer();
     private boolean requestHome = false;
     private boolean requestShoot = false;
     private double hoodSetpoint = 0.0;
@@ -204,6 +205,7 @@ public class Shooter extends SubsystemBase {
         HOMING,
         IDLE, 
         APPROACHING_SETPOINT, 
+        STABALIZING,
         AT_SETPOINT
     }
     
@@ -244,7 +246,23 @@ public class Shooter extends SubsystemBase {
                 nextSystemState = ShooterState.HOMING;
             } else if (!requestShoot) {
                 nextSystemState = ShooterState.IDLE;
-            } else if (flywheelAtSetpoint()) {
+            } else if (flywheelAtSetpoint()&&hoodAtSetpoint()) {
+                beginStabalizing();
+                nextSystemState = ShooterState.STABALIZING;
+            } 
+        } else if (systemState == ShooterState.STABALIZING) {
+            // Outputs
+            commandHoodPosition(hoodSetpoint);
+            commandFlywheelVelocity(flywheelSetpoint);
+
+            // State transitions
+            if (requestHome) {
+                beginHomingSequence();
+                nextSystemState = ShooterState.HOMING;
+            } else if (!requestShoot) {
+                nextSystemState = ShooterState.IDLE;
+            } else if (stabalizingTimer.get() >= 0.25) {
+                exitStabalizing();
                 nextSystemState = ShooterState.AT_SETPOINT;
             } 
         } else if (systemState == ShooterState.AT_SETPOINT) {
@@ -257,7 +275,7 @@ public class Shooter extends SubsystemBase {
                 nextSystemState = ShooterState.HOMING;
             } else if (!requestShoot) {
                 nextSystemState = ShooterState.IDLE;
-            } else if (!flywheelAtSetpoint()) {
+            } else if (!flywheelAtSetpoint()||!hoodAtSetpoint()) {
                 nextSystemState = ShooterState.APPROACHING_SETPOINT;
             }
         }
@@ -285,6 +303,17 @@ public class Shooter extends SubsystemBase {
         resetHood(0.0);
         commandHoodVoltage(0.0);
         requestHome = false;
+    }
+
+    // Method to be called when you begin stabalizing
+    private void beginStabalizing() {
+        stabalizingTimer.reset();
+        stabalizingTimer.start();
+    }
+
+    // Method to be called when you exit stabalizing
+    private void exitStabalizing() {
+        stabalizingTimer.stop();
     }
 
      
