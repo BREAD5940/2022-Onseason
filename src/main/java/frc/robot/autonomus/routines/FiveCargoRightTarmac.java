@@ -47,7 +47,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }),
-            new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO).andThen(
+            new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO || gutNeck.getSystemState() == GutNeckStates.INTAKE_LEFT_NO_CARGO).andThen(
                 () -> {
                     gutNeck.requestShoot(false);
                     shooter.requestShoot(SECOND_SHOT_FLYWHEEL_VELOCITY, SECOND_SHOT_HOOD_ANGLE);
@@ -72,7 +72,9 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                 (point, time) -> Rotation2d.fromDegrees(135.0), 
                 null, 
                 swerve
-            ),
+            ).beforeStarting(() -> {
+                gutNeck.requestShoot(false);
+            }),
             new WaitCommand(0.25),
             new TrajectoryFollowerController(
                 Trajectories.returnFromHumanPlayerStationAfterThreeBall,

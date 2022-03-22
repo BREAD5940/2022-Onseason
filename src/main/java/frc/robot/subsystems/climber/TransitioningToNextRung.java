@@ -10,7 +10,7 @@ public class TransitioningToNextRung extends SequentialCommandGroup {
     public TransitioningToNextRung(Climber climber) {
         addRequirements(climber);
         addCommands(
-            new InstantCommand(() -> climber.requestHeightToTransitionToNextRung(true, false, 1.4)),
+            new InstantCommand(() -> climber.requestHeightToTransitionToNextRung(true, false, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

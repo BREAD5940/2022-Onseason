@@ -25,7 +25,7 @@ public class TrajectoryFollowerController extends CommandBase {
     public final BreadHolonomicDriveController autonomusController = new BreadHolonomicDriveController(
         new PIDController(8, 0, 0), 
         new PIDController(8, 0, 0), 
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(
+        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints( // P was 6 at madtown field
             Units.degreesToRadians(360.0),
             Units.degreesToRadians(180.0)
         ))

@@ -14,9 +14,18 @@ public class BreadUtil {
         return new Rotation2d(targetToRobot.getX(), targetToRobot.getY());
     }
 
-    // Converts a Rotation2d object to an double within the range of [0, 2pi]
+    // Converts a Rotation2d object to a double within the range of [0, 2pi]
     public static double getRadians0To2PI(Rotation2d angle) {
         return angle.getRadians() < 0.0 ? 2 * Math.PI + angle.getRadians() : angle.getRadians();
+    }
+
+    // Converts an angle in radians to a double within the range of [0, 2pi]
+    public static double getRadians0to2PI(double angle) {
+        angle %= (2 * Math.PI);
+        if (angle < 0.0) {
+            angle += (2 * Math.PI);
+        }
+        return angle;
     }
 
     // At reference method

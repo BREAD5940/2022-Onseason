@@ -9,18 +9,21 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commons.BreadLogger;
 import frc.robot.commons.BreadUtil;
 import frc.robot.drivers.TalonFXFactory;
 import static frc.robot.Constants.Flywheel.*;
 import static frc.robot.Constants.Hood.*;
+
+import java.io.IOException;
 
 public class Shooter extends SubsystemBase {
 
@@ -30,12 +33,16 @@ public class Shooter extends SubsystemBase {
 
     // Hood hardware
     private final CANSparkMax hoodMotor = new CANSparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
-    private final RelativeEncoder hoodEncoder = hoodMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+    private final RelativeEncoder hoodEncoder = hoodMotor.getEncoder();
     private final SparkMaxPIDController hoodPID = hoodMotor.getPIDController();
     private final SparkMaxAnalogSensor hoodLimit = hoodMotor.getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
 
     // State logic
     private ShooterState systemState = ShooterState.HOMING;
+    private double flywheelCalibration = FLYWHEEL_CALIBRATION;
+
+    // Logging Code
+    private BreadLogger flywheelLogger = new BreadLogger("FlywheelData");
 
     // State variables
     Timer homingTimer = new Timer();
@@ -56,21 +63,21 @@ public class Shooter extends SubsystemBase {
         leftMotorConfig.peakOutputForward = 1.0;
         leftMotorConfig.peakOutputReverse = 0.0;
         leftMotorConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_10Ms;
-        leftMotorConfig.velocityMeasurementWindow = 16;
-        leftMotorConfig.voltageCompSaturation = 11.5;
+        leftMotorConfig.velocityMeasurementWindow = 8;
+        leftMotorConfig.voltageCompSaturation = 9.5;
         leftMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
         leftFlywheelMotor.configAllSettings(leftMotorConfig);
         leftFlywheelMotor.selectProfileSlot(0, 0);
         leftFlywheelMotor.setInverted(LEFT_MOTOR_DIRECTION);
         leftFlywheelMotor.enableVoltageCompensation(true);
-        leftFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        leftFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        leftFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 10);
+        leftFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10);
 
         // Configure right flywheel motor
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
         rightMotorConfig.peakOutputForward = 1.0;
         rightMotorConfig.peakOutputReverse = -0.0;
-        rightMotorConfig.voltageCompSaturation = 11.5;
+        rightMotorConfig.voltageCompSaturation = 9.5;
         rightMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
         rightFlywheelMotor.configAllSettings(rightMotorConfig);
         rightFlywheelMotor.setInverted(RIGHT_MOTOR_DIRECTION);
@@ -108,7 +115,8 @@ public class Shooter extends SubsystemBase {
         if (rpm==0.0) {
             leftFlywheelMotor.set(ControlMode.PercentOutput, 0.0);
         } else {
-            leftFlywheelMotor.set(ControlMode.Velocity, flywheelRPMToIntegratedSensorUnits(rpm), DemandType.ArbitraryFeedForward, (rpm+261.0)/6163.0);
+            leftFlywheelMotor.set(ControlMode.Velocity, flywheelRPMToIntegratedSensorUnits(rpm), DemandType.ArbitraryFeedForward, FeedForwardInterpolatingTable.get((rpm-50.0)/FLYWHEEL_GEARING));
+            SmartDashboard.putNumber("Flywheel FF", FeedForwardInterpolatingTable.get((rpm-50.0)/FLYWHEEL_GEARING));
         }
     }
 
@@ -120,12 +128,12 @@ public class Shooter extends SubsystemBase {
 
     // Converts integrated sensor units to flyweel rpm
     private double integratedSensorUnitsToFlywheelRPM(double integratedSensorUnits) {
-        return integratedSensorUnits * (600/2048.0);
+        return integratedSensorUnits * ((600/2048.0) * FLYWHEEL_GEARING);
     }
 
     // Converts flywheel rpm to integrated sensor units
     private double flywheelRPMToIntegratedSensorUnits(double flywheelRPM) {
-        return flywheelRPM * (2048.0/600);
+        return flywheelRPM / ((600/2048.0) * FLYWHEEL_GEARING);
     }
 
     // Requests the shooter to home
@@ -139,7 +147,7 @@ public class Shooter extends SubsystemBase {
             requestIdle(); // Request idle because the flywheel rpm is 0.0
         } else {
             requestShoot = true;
-            this.flywheelSetpoint = flywheelRPM;
+            this.flywheelSetpoint = flywheelRPM * flywheelCalibration;
             this.hoodSetpoint = hoodAngle;
         }
 
@@ -215,7 +223,7 @@ public class Shooter extends SubsystemBase {
         ShooterState nextSystemState = systemState;
         if (systemState == ShooterState.HOMING) {
             // Outputs
-            commandHoodVoltage(-1);
+            commandHoodVoltage(-3);
             commandFlywheelVelocity(0.0);
 
             // State transitions
@@ -239,6 +247,12 @@ public class Shooter extends SubsystemBase {
             // Outputs
             commandHoodPosition(hoodSetpoint);
             commandFlywheelVelocity(flywheelSetpoint);
+
+            try {
+                flywheelLogger.write(RobotController.getFPGATime(), getFlywheelVelocity(), getFlywheelSetpoint());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             
             // State transitions 
             if (requestHome) {
@@ -255,6 +269,12 @@ public class Shooter extends SubsystemBase {
             commandHoodPosition(hoodSetpoint);
             commandFlywheelVelocity(flywheelSetpoint);
 
+            try {
+                flywheelLogger.write(RobotController.getFPGATime(), getFlywheelVelocity(), getFlywheelSetpoint());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             // State transitions
             if (requestHome) {
                 beginHomingSequence();
@@ -270,6 +290,12 @@ public class Shooter extends SubsystemBase {
             commandHoodPosition(hoodSetpoint);
             commandFlywheelVelocity(flywheelSetpoint);
 
+            try {
+                flywheelLogger.write(RobotController.getFPGATime(), getFlywheelVelocity(), getFlywheelSetpoint());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             // State transitions
             if (requestHome) {
                 nextSystemState = ShooterState.HOMING;
@@ -281,8 +307,12 @@ public class Shooter extends SubsystemBase {
         }
         systemState = nextSystemState;
         SmartDashboard.putString("Shooter State", systemState.name());
+        SmartDashboard.putBoolean("Shooter Request Shoot", requestShoot);
         SmartDashboard.putNumber("Flywheel Value", getFlywheelVelocity());
+        SmartDashboard.putNumber("Flywheel Setpoint", flywheelSetpoint);
         SmartDashboard.putNumber("Hood Angle", getHoodPosition());
+        SmartDashboard.putNumber("Flywheel Motor Output", leftFlywheelMotor.getMotorOutputPercent());
+        flywheelCalibration = SmartDashboard.getNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
         SmartDashboard.putBoolean("Hood AtSetpoint", hoodAtSetpoint());
         SmartDashboard.putBoolean("FlywheelAtSetpoint", flywheelAtSetpoint());
         SmartDashboard.putBoolean("Hood Limit Switch Triggered", getHoodLimitSwitchTriggered());

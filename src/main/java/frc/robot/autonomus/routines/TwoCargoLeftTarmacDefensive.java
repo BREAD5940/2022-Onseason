@@ -40,7 +40,8 @@ public class TwoCargoLeftTarmacDefensive extends SequentialCommandGroup {
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }), 
-            new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO).andThen(() -> {
+            new WaitCommand(1.0),
+            new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO || gutNeck.getSystemState() == GutNeckStates.INTAKE_LEFT_NO_CARGO).andThen(() -> {
                 gutNeck.requestShoot(false);
                 shooter.requestIdle();
                 gutNeck.acceptOpposingCargo(true);
@@ -63,10 +64,7 @@ public class TwoCargoLeftTarmacDefensive extends SequentialCommandGroup {
                 null,
                 swerve
             ),
-            new WaitCommand(0.2).andThen(() -> {
-                rightIntake.requestIdleRetracted();
-                gutNeck.requestIntakeRight(false);
-            }),
+            new WaitCommand(0.2),
             new TrajectoryFollowerController(
                 Trajectories.spitOpposingCargoTwoCargoDefensive, 
                 (point, time) -> Rotation2d.fromDegrees(90.0), 
@@ -80,6 +78,9 @@ public class TwoCargoLeftTarmacDefensive extends SequentialCommandGroup {
             new WaitCommand(2.0),
             new InstantCommand(() -> {
                 leftIntake.requestIdleRetracted();
+                rightIntake.requestIdleRetracted();
+                gutNeck.requestIntakeLeft(false);
+                gutNeck.requestIntakeRight(false);
                 gutNeck.requestSpitLeft(false);
             })
         );

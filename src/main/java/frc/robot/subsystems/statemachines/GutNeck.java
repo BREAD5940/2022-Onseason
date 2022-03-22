@@ -30,16 +30,17 @@ public class GutNeck extends SubsystemBase {
     private final BeamBreak rightBeamBreak = new BeamBreak(RIGHT_BEAM_BREAK_CHANNEL);
     private final BeamBreak middleBeamBreak = new BeamBreak(MIDDLE_BEAM_BREAK_CHANNEL);
     private final BeamBreak topBeamBreak = new BeamBreak(TOP_BEAM_BREAK_CHANNEL);
-    private final ColorSensor colorSensor = new ColorSensor(
+    public final ColorSensor colorSensor = new ColorSensor(
         COLOR_SENSOR_PORT,
         COLOR_SENSOR_RED_TARGET,
         COLOR_SENSOR_BLUE_TARGET,
-        COLOR_SENSOR_NO_TARGET
+        COLOR_SENSOR_NONE_TARGET
     );
 
     // State logic
     private GutNeckStates systemState = GutNeckStates.IDLE_NO_CARGO;
     private Timer shootingTimer = new Timer();
+    private Timer stowingTimer = new Timer();
     private boolean ballsExpelledFromNeck = false;
 
     // Statemachine inputs
@@ -269,7 +270,8 @@ public class GutNeck extends SubsystemBase {
                 nextSystemState = GutNeckStates.SPIT_RIGHT;
             } else if (!requestIntakeLeft) {
                 nextSystemState = GutNeckStates.IDLE_NO_CARGO;
-            } else if (getMiddleBeamBreakTriggered() && checkCargo(getMiddleColor())) {
+            } else if (checkCargo(getMiddleColor())) {
+                beginStowingSequence();
                 nextSystemState = GutNeckStates.STOW_ONE_CARGO_IN_NECK;
             }
         } else if (systemState == GutNeckStates.INTAKE_RIGHT_NO_CARGO) {
@@ -286,7 +288,8 @@ public class GutNeck extends SubsystemBase {
                 nextSystemState = GutNeckStates.SPIT_RIGHT;
             } else if (!requestIntakeRight) {
                 nextSystemState = GutNeckStates.IDLE_NO_CARGO;
-            } else if (getMiddleBeamBreakTriggered() && checkCargo(getMiddleColor())) {
+            } else if (checkCargo(getMiddleColor())) {
+                beginStowingSequence();
                 nextSystemState = GutNeckStates.STOW_ONE_CARGO_IN_NECK;
             }
         } else if (systemState == GutNeckStates.INTAKE_LEFT_ONE_CARGO) {
@@ -305,7 +308,7 @@ public class GutNeck extends SubsystemBase {
                 nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
             } else if (!requestIntakeLeft) {
                 nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
-            } else if (getMiddleBeamBreakTriggered() && checkCargo(getMiddleColor())) {
+            } else if (checkCargo(getMiddleColor())) {
                 nextSystemState = GutNeckStates.IDLE_TWO_CARGO;
             }
         } else if (systemState == GutNeckStates.INTAKE_RIGHT_ONE_CARGO) {
@@ -321,10 +324,10 @@ public class GutNeck extends SubsystemBase {
             } else if (requestSpitRight) {
                 nextSystemState = GutNeckStates.SPIT_RIGHT;
             } else if (requestShoot) {
-                systemState = GutNeckStates.IDLE_ONE_CARGO;
+                nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
             } else if (!requestIntakeRight) {
                 nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
-            } else if (getMiddleBeamBreakTriggered() && checkCargo(getMiddleColor())) {
+            } else if (checkCargo(getMiddleColor())) {
                 nextSystemState = GutNeckStates.IDLE_TWO_CARGO;
             }
         } else if (systemState == GutNeckStates.STOW_ONE_CARGO_IN_NECK) {
@@ -340,7 +343,11 @@ public class GutNeck extends SubsystemBase {
             } else if (requestSpitRight) {
                 nextSystemState = GutNeckStates.SPIT_RIGHT;
             } else if (getTopBeamBreakTriggered()) {
+                exitStowingSequence();
                 nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
+            } else if (stowingTimer.get() > 3.0) {
+                exitStowingSequence();
+                nextSystemState = GutNeckStates.IDLE_NO_CARGO;
             }
         } else if (systemState == GutNeckStates.SHOOT_CARGO) {
             /* The neck is moving in the up direction; the gut is stationary; it is current shooting the balls stored in the neck */
@@ -411,12 +418,24 @@ public class GutNeck extends SubsystemBase {
         shootingTimer.stop();
     }
 
+    // Private method to begin the stow sequence
+    private void beginStowingSequence() {
+        stowingTimer.reset();
+        stowingTimer.start();
+    }
+
+    // Private method to exit the stow sequence
+    private void exitStowingSequence() {
+        stowingTimer.reset();
+        stowingTimer.stop();
+    }
+
     // Private method to check whether or not to accept a given cargo
     private boolean checkCargo(BallColor color) { // TODO check what happens if you unplug the sensor
         if (acceptOpposingCargo) {
-            return color != BallColor.NONE;
+            return getMiddleBeamBreakTriggered(); // Uses beam break
         } else {
-            return color == Robot.allianceColor;
+            return color == Robot.allianceColor; // Uses color sensor
         }
     }
     

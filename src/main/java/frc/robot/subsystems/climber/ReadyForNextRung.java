@@ -10,7 +10,7 @@ public class ReadyForNextRung extends SequentialCommandGroup {
     public ReadyForNextRung(Climber climber) {
         addRequirements(climber);
         addCommands(
-            new InstantCommand(() -> climber.requestHeightBeforeNextRung(true, false, 1.4)),
+            new InstantCommand(() -> climber.requestHeightBeforeNextRung(true, false, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

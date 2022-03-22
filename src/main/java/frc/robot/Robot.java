@@ -18,6 +18,8 @@ import frc.robot.subsystems.climber.LatchToNextRung;
 import frc.robot.subsystems.climber.PopOffStaticHooks;
 import frc.robot.subsystems.climber.ReadyForNextRung;
 import frc.robot.subsystems.climber.TransitioningToNextRung;
+import frc.robot.subsystems.climber.Climber.ClimberActions;
+import static frc.robot.Constants.Flywheel.*;
 
 import static frc.robot.Constants.Hood.*;
 
@@ -25,14 +27,13 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  public static BallColor allianceColor = BallColor.NONE;
+  public static BallColor allianceColor = BallColor.RED;
+  private ClimberActions nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-    SmartDashboard.putString("State", "NA");
-    SmartDashboard.putNumber("Shooter Setpoint", 1350.0);
-    SmartDashboard.putNumber("Hood Setpoint", 8.5);
+    SmartDashboard.putNumber("Flywheel Callibration", FLYWHEEL_CALIBRATION);
   }
 
   @Override
@@ -42,14 +43,22 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pitch", RobotContainer.vision.getPitch());
     SmartDashboard.putNumber("Yaw", RobotContainer.vision.getYaw());
     SmartDashboard.putNumber("Vision Timestamp", RobotContainer.vision.getMeasurementTimestamp());
-    RobotContainer.vision.setLEDsOn(true);
+    double[] d = RobotContainer.gutNeck.colorSensor.getRaw();
+    SmartDashboard.putNumber("R (sensor)", d[0]);
+    SmartDashboard.putNumber("G (sensor)", d[1]);
+    SmartDashboard.putNumber("B (sensor)", d[2]);
+    SmartDashboard.putString("Next Climber Action", nextClimberAction.name());
+    SmartDashboard.putNumber("Compressor Pressure", RobotContainer.compressor.getPressure());
+    // System.out.println(RobotContainer.gutNeck.colorSensor.get().name());
   }
 
   @Override
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    RobotContainer.vision.setLEDsOn(false);
+  }
 
   @Override
   public void autonomousInit() {
@@ -65,6 +74,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    RobotContainer.vision.setLEDsOn(true);
   }
 
   @Override
@@ -76,6 +86,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    RobotContainer.vision.setLEDsOn(true);
     configureTeleopControls();
   }
 
@@ -85,65 +96,102 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    RobotContainer.vision.setLEDsOn(false);
+    RobotContainer.shooter.requestIdle();
+  }
 
   // Method to handle teleoperated controls
   public void configureTeleopControls() {
-       if (RobotContainer.operator.getLeftStickButton()) {
-            RobotContainer.shooter.requestShoot(1350.0, HOOD_IDLE_POS);
-        } else {
-            RobotContainer.shooter.requestIdle();
-        }
-        if (RobotContainer.driver.getLeftStickButton()) {
-            RobotContainer.shooter.requestShoot(1400, 10);
-            RobotContainer.gutNeck.requestShoot(true);
-        } else if (RobotContainer.driver.getRightStickButton()) {
-            // 1600 27
-            ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
-            RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
-            RobotContainer.gutNeck.requestShoot(true);
-        } else {
-            RobotContainer.shooter.requestIdle();
-            RobotContainer.gutNeck.requestShoot(false);
-        }
-        if (RobotContainer.driver.getLeftTriggerAxis() > 0.1) {
-            RobotContainer.leftIntake.requestIntake();
-            RobotContainer.rightIntake.requestOuttakeRetracted(false);
-            RobotContainer.gutNeck.requestIntakeLeft(true);
-        } else if (RobotContainer.driver.getRightTriggerAxis() > 0.1) {
-            RobotContainer.leftIntake.requestOuttakeRetracted(false);
-            RobotContainer.rightIntake.requestIntake();
-            RobotContainer.gutNeck.requestIntakeRight(true);
-        } else {
-            RobotContainer.gutNeck.requestIntakeLeft(false);
-            RobotContainer.gutNeck.requestIntakeRight(false);
-            if (RobotContainer.driver.getRawButtonPressed(9)) {
-                RobotContainer.leftIntake.requestIdleExtended();
-            } else {
-                RobotContainer.leftIntake.requestIdleRetracted();
-            }
-            if (RobotContainer.driver.getRawButton(10)) {
-                RobotContainer.rightIntake.requestIdleExtended();
-            } else {
-                RobotContainer.rightIntake.requestIdleRetracted();
-            }
-        } 
 
-        if (RobotContainer.operator.getLeftBumper()) {
-            RobotContainer.gutNeck.requestSpitLeft(true);
-            RobotContainer.leftIntake.requestOuttakeRetracted(true);
-            RobotContainer.rightIntake.requestIdleRetracted();
-        } else {
-            RobotContainer.gutNeck.requestSpitLeft(false);
-        }
+    // Driver shooting signals
+    if (RobotContainer.driver.getAButton()) {
+      RobotContainer.shooter.requestShoot(1400, 10);
+      RobotContainer.gutNeck.requestShoot(true);
+    } else if (RobotContainer.driver.getRightStickButton()) {
+      ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
+      RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
+      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()) {
+        RobotContainer.gutNeck.requestShoot(true);
+      }
+    } else {
+      RobotContainer.shooter.requestShoot(1000.0, HOOD_IDLE_POS);
+      RobotContainer.gutNeck.requestShoot(false);
+    }
 
-        if (RobotContainer.operator.getRightBumper()) {
-            RobotContainer.gutNeck.requestSpitRight(true);
-            RobotContainer.leftIntake.requestIdleRetracted();
-            RobotContainer.rightIntake.requestOuttakeRetracted(true);
-        } else {
-            RobotContainer.gutNeck.requestSpitRight(false);
-        }
+    // Driver intaking signals
+    if (RobotContainer.driver.getLeftTriggerAxis() > 0.1) {
+      RobotContainer.leftIntake.requestIntake();
+      RobotContainer.rightIntake.requestOuttakeRetracted(false);
+      RobotContainer.gutNeck.requestIntakeLeft(true);
+    } else if (RobotContainer.driver.getRightTriggerAxis() > 0.1) {
+      RobotContainer.leftIntake.requestOuttakeRetracted(false);
+      RobotContainer.rightIntake.requestIntake();
+      RobotContainer.gutNeck.requestIntakeRight(true);
+    } else {
+      RobotContainer.gutNeck.requestIntakeLeft(false);
+      RobotContainer.gutNeck.requestIntakeRight(false);
+      RobotContainer.leftIntake.requestIdleRetracted();
+      RobotContainer.rightIntake.requestIdleRetracted();
+    } 
+
+    // Operator spit left button
+    if (RobotContainer.operator.getLeftBumper()) {
+      RobotContainer.gutNeck.requestSpitLeft(true);
+      RobotContainer.leftIntake.requestOuttakeRetracted(true);
+      RobotContainer.rightIntake.requestIdleRetracted();
+    } else {
+      RobotContainer.gutNeck.requestSpitLeft(false);
+    }
+
+    // Operator spit right button
+    if (RobotContainer.operator.getRightBumper()) {
+      RobotContainer.gutNeck.requestSpitRight(true);
+      RobotContainer.leftIntake.requestIdleRetracted();
+      RobotContainer.rightIntake.requestOuttakeRetracted(true);
+    } else {
+      RobotContainer.gutNeck.requestSpitRight(false);
+    }
+
+    // Overrides the intake signals from the driver
+    if (RobotContainer.operator.getLeftStickButton()) {
+      RobotContainer.leftIntake.requestOuttakeExtended(false);
+    } 
+    if (RobotContainer.operator.getRightStickButton()) {
+      RobotContainer.rightIntake.requestOuttakeExtended(false);
+    } 
+
+    // Overrides the gutneck intake signals from the driver
+    if (RobotContainer.operator.getLeftTriggerAxis() > 0.1) {
+      RobotContainer.gutNeck.requestIntakeLeft(true);
+      RobotContainer.gutNeck.requestIntakeRight(false);
+      RobotContainer.shooter.requestIdle();
+      RobotContainer.gutNeck.requestShoot(false);
+    }
+    if (RobotContainer.operator.getRightTriggerAxis() > 0.1) {
+      RobotContainer.gutNeck.requestIntakeRight(true);
+      RobotContainer.gutNeck.requestIntakeLeft(false);
+      RobotContainer.shooter.requestIdle();
+      RobotContainer.gutNeck.requestShoot(false);
+    }
+
+    // Buttons for the operator to control what cargo is accepted
+    if (RobotContainer.operator.getPOV() == 0.0) {
+      RobotContainer.gutNeck.acceptOpposingCargo(false);
+    } else if (RobotContainer.operator.getPOV() == 90.0) {
+      RobotContainer.gutNeck.acceptOpposingCargo(true);
+    } 
+
+    // "Auto" Climber Buttons
+    if (RobotContainer.operator.getAButtonPressed()) {
+      if (nextClimberAction != ClimberActions.DONE) 
+        CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+      nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
+    }
+    if (RobotContainer.operator.getBButtonPressed()) {
+      nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
+      CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+    }
 
         // if (RobotContainer.operator.getPOV() == 0.0) {
         //   CommandScheduler.getInstance().schedule(new ExtendToMidRung(RobotContainer.climber));

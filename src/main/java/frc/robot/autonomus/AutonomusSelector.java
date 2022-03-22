@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.autonomus.routines.FiveCargoRightTarmac;
-import frc.robot.autonomus.routines.ThreeCargoRightTarmac;
+import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;
 import frc.robot.subsystems.statemachines.Shooter;
@@ -20,14 +20,13 @@ public class AutonomusSelector {
             new SequentialCommandGroup()
         );
         autonomusSelector.addOption(
-            "THREE_CARGO_RIGHT_TARMAC", 
-            new ThreeCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
+            "TWO_CARGO_DEFNESIVE_LEFT_TARMAC", 
+            new TwoCargoLeftTarmacDefensive(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
         autonomusSelector.addOption(
             "FIVE_CARGO_RIGHT_TARMAC", 
             new FiveCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
-
         SmartDashboard.putData(autonomusSelector);
     }
 

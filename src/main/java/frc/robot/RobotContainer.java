@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +21,7 @@ import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.VisionTurnCommand;
 
 import static frc.robot.Constants.DualIntake.*;
+import static frc.robot.Constants.Drive.*;
 
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 
@@ -31,12 +34,14 @@ public class RobotContainer {
   public static GutNeck gutNeck = new GutNeck();
   public static Vision vision = new Vision();
   public static Climber climber = new Climber();
+  public static Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static XboxController driver = new XboxController(0);
   public static XboxController operator = new XboxController(1);
-  AutonomusSelector autonomusSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
+  public static AutonomusSelector autoSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
+  public static AutonomusSelector autonomusSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
 
   public RobotContainer() {
-    swerve.setDefaultCommand(new DefaultDriveController(driver::getRightY, driver::getRightX, driver::getLeftX, swerve));
+    swerve.setDefaultCommand(new DefaultDriveController(swerve, () -> 1.5));
     configureButtonBindings();
   }
 
@@ -49,9 +54,13 @@ public class RobotContainer {
       new VisionTurnCommand(swerve)
     );
 
+    new JoystickButton(driver, Button.kLeftStick.value).whileHeld(
+      new DefaultDriveController(swerve, () -> ROBOT_MAX_SPEED)
+    );
+
   }
 
   public Command getAutonomousCommand() {
-    return new FiveCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck);
+    return autonomusSelector.get();
   }
 }

@@ -14,7 +14,6 @@ import frc.robot.subsystems.swerve.PointTurnCommand;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.TrajectoryFollowerController;
 import static frc.robot.Constants.Autonomus.*;
-import static frc.robot.Constants.DualIntake.*;
 
 public class TwoCargoLeftTarmac extends SequentialCommandGroup {
 

@@ -11,8 +11,13 @@ import edu.wpi.first.wpilibj.util.Color;
 // All Constants
 public final class Constants {
 
+    public static void main(String[] args) {
+        System.out.println(Climber.MAX_CLIMBER_TRAVEL_SPEED);
+    }
+
     // Constants pertaining to the drive subsystem go here
     public static class Drive {
+        
 
         // Motor IDs 
         public static final int[] DRIVE_IDS = {1, 2, 3, 4};
@@ -46,7 +51,8 @@ public final class Constants {
         public static final double MODULE_GEARING = (14.0/50.0) * (28.0/16.0) * (15.0/45.0);
         public static final double ROBOT_WIDTH = Units.inchesToMeters(25.0);
         public static final double ROBOT_LENGTH = Units.inchesToMeters(30.0);
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0) * 0.9442667069;
+        // Madtown field callibration constant factor is 0.97
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0) * 0.9442667069 * 1.0;
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
         public static final double ROBOT_MAX_SPEED = (6380.0 * MODULE_GEARING * 2.0 * Math.PI * WHEEL_RADIUS) / 60.0;
         public static final Translation2d FL_LOCATION = new Translation2d(ROBOT_LENGTH/2, ROBOT_WIDTH/2);
@@ -78,10 +84,9 @@ public final class Constants {
         public static final double MAX_GUT_SURFACE_SPEED = (MAX_GUT_FALCON_SHAFT_SPEED * GUT_GEARING * Math.PI * GUT_PULLEY_DIAMETER)/60.0;
 
         // Color Sensor Targets
-        public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5634765625, 0.320556640625, 0.1166992187);
-        public static final Color COLOR_SENSOR_BLUE_TARGET = new Color(0.134521484375, 0.370849609375, 0.4951171875);
-        public static final Color COLOR_SENSOR_NO_TARGET = new Color(0.2578125, 0.464111328125, 0.464111328125);
-
+        public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
+        public static final Color COLOR_SENSOR_BLUE_TARGET = new Color(0.1181640625, 0.3466796875, 0.53125);
+        public static final Color COLOR_SENSOR_NONE_TARGET = new Color(0.2470703125, 0.46923828125, 0.2841796875);
     }   
 
     // Constants pertaining to the dual intake subsystem go here
@@ -111,6 +116,8 @@ public final class Constants {
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
         public static final double SHOOTER_IDLE_VEL = 0.0;
+        public static final double FLYWHEEL_CALIBRATION = 1.0;
+        public static final double FLYWHEEL_GEARING = 19.0/36.0;
 
         // Other
         public static final TalonFXInvertType RIGHT_MOTOR_DIRECTION = TalonFXInvertType.OpposeMaster;
@@ -141,7 +148,7 @@ public final class Constants {
 
         // Constants/Measurements
         public static final int COUNTS_PER_REVOLUTION = 8192;
-        public static final double HOOD_GEARING = (20.0/460.0);
+        public static final double HOOD_GEARING = (12/60.0)*(20.0/460.0);
         public static final double HOOD_IDLE_POS = 8.5;
         public static final double MIN_HOOD_TRAVEL = 0.0;
         public static final double MAX_HOOD_TRAVEL = 37.928627014160156; 
@@ -165,9 +172,9 @@ public final class Constants {
         public static final double CLIMBER_MID_RUNG_HEIGHT = 0.58;
         public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.3;
         public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.61;
-        public static final double CLIMBER_HEIGHT_PULLED_OFF = 0.5;
+        public static final double CLIMBER_HEIGHT_PULLED_OFF = 0.35;
         public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = Units.inchesToMeters(5.0);
-        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.619;
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.615025221351613;
         public static final double CLIMBER_SETPOINT_TOLERANCE = 0.01;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 

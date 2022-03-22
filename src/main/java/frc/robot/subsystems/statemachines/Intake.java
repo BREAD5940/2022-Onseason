@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.drivers.TalonFXFactory;
@@ -23,13 +24,14 @@ public class Intake extends SubsystemBase {
     private IntakeState systemState = IntakeState.IDLE_RETRACTED;
     private boolean spit = false;
     private boolean extended = true;
+    private Timer intakingTimer = new Timer();
 
 
     public Intake(int motorID, TalonFXInvertType invertType, int pneumaticsForwardChannel, int pneumaticsReverseChannel, int pneumaticsModuleNumber) {
         // Configure the intake motor
         TalonFXConfiguration config = new TalonFXConfiguration();
         motor = TalonFXFactory.createDefaultTalon(motorID);
-        config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 25.0, 25.0, 1.5);
+        config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80.0, 80.0, 1.5);
         motor.setInverted(invertType);
         motor.setNeutralMode(NeutralMode.Coast);
         motor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
@@ -110,6 +112,16 @@ public class Intake extends SubsystemBase {
         } else {
             System.out.println("Error: Intake statemachine is not working properly.");
         }
+    }
+
+    private void beginIntaking() {
+        intakingTimer.reset();
+        intakingTimer.start();
+    }
+
+    private void exitIntaking() {
+        intakingTimer.reset();
+        intakingTimer.start();
     }
     
 }

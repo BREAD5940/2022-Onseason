@@ -10,7 +10,7 @@ public class LatchToNextRung extends SequentialCommandGroup {
     public LatchToNextRung(Climber climber) {
         addRequirements(climber);
         addCommands(
-            new InstantCommand(() -> climber.requestHeightToTransitionToNextRung(false, false, 1.4)),
+            new InstantCommand(() -> climber.requestHeightToTransitionToNextRung(false, false, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

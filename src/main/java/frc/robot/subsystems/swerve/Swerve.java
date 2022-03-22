@@ -33,6 +33,9 @@ public class Swerve extends SubsystemBase {
     private Pose2d pose = odometry.getPoseMeters();
     private final Field2d field = new Field2d();
 
+    // State variables
+    private boolean atVisionHeadingSetpoint = false;
+
     public Swerve() {
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
@@ -47,11 +50,11 @@ public class Swerve extends SubsystemBase {
         ));
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
         fl.setState(states[0]);
-        SmartDashboard.putNumber("FL Desired Velocity (Before Optimization and Continous Output)", states[0].speedMetersPerSecond);
-        SmartDashboard.putNumber("FL Desired Angle (Before Optimization and Continous Output", states[0].angle.getDegrees());
-        SmartDashboard.putNumber("FL Desired Velocity (After Optimization and Continous Output)", fl.getDesiredState()[0]);
-        SmartDashboard.putNumber("FL Desired Angle (After Optimization and Continous Output", fl.getDesiredState()[1]);
-        SmartDashboard.putNumber("FL Motor Output Percent", fl.getMotorOutputPercent());
+        // SmartDashboard.putNumber("FL Desired Velocity (Before Optimization and Continous Output)", states[0].speedMetersPerSecond);
+        // SmartDashboard.putNumber("FL Desired Angle (Before Optimization and Continous Output)", states[0].angle.getDegrees());
+        // SmartDashboard.putNumber("FL Desired Velocity (After Optimization and Continous Output)", fl.getReferenceVelocity());
+        // SmartDashboard.putNumber("FL Desired Angle (After Optimization and Continous Output", fl.getReferenceAngle());
+        // SmartDashboard.putNumber("FL Motor Output Percent", fl.getDriveOutputPercent());
         fr.setState(states[1]);
         bl.setState(states[2]);
         br.setState(states[3]);
@@ -118,6 +121,14 @@ public class Swerve extends SubsystemBase {
         return speeds.vyMetersPerSecond;
     }
 
+    public void setAtVisionHeadingSetpoint(boolean set) {
+        atVisionHeadingSetpoint = set;
+    }
+
+    public boolean getAtVisionHeadingSetpoint() {
+        return atVisionHeadingSetpoint;
+    }
+
     public double getVelocity() {
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(
             fl.getState(),
@@ -131,10 +142,6 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("FL Angle", Units.radiansToDegrees(fl.getAngle()));
-        SmartDashboard.putNumber("FR Angle", Units.radiansToDegrees(fr.getAngle()));
-        SmartDashboard.putNumber("BL Angle", Units.radiansToDegrees(bl.getAngle()));
-        SmartDashboard.putNumber("BR Angle", Units.radiansToDegrees(br.getAngle()));
         SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
     }

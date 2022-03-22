@@ -6,6 +6,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch Constants$Gut",
+      "request": "launch",
+      "mainClass": "frc.robot.Constants$Gut",
+      "projectName": "2022-Onseason"
+    },
+    {
+      "type": "java",
+      "name": "Launch Constants",
+      "request": "launch",
+      "mainClass": "frc.robot.Constants",
+      "projectName": "2022-Onseason"
+    },
+    {
+      "type": "java",
       "name": "Launch SixCargoSweep",
       "request": "launch",
       "mainClass": "frc.robot.autonomus.routines.SixCargoSweep",
