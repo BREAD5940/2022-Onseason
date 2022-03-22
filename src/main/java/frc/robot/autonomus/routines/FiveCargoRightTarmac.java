@@ -36,12 +36,12 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new WaitCommand(0.2),
             new TrajectoryFollowerController(
                 Trajectories.returnFirstCargoRightTarmac, 
-                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
+                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(5.0)), 
                 null,
                 swerve
             ),
             new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
+                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(5.0)).getRadians(), 
                 swerve
             ),
             new InstantCommand(() -> {
@@ -78,12 +78,12 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new WaitCommand(0.25),
             new TrajectoryFollowerController(
                 Trajectories.returnFromHumanPlayerStationAfterThreeBall,
-                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
+                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(5.0)), 
                 null, 
                 swerve
             ),
             new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
+                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(5.0)).getRadians(), 
                 swerve
             ),
             new InstantCommand(() -> {

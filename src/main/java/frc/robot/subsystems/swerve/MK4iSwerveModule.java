@@ -235,7 +235,7 @@ public class MK4iSwerveModule {
         drive = new TalonFX(driveID);
         TalonFXConfiguration driveConfig = new TalonFXConfiguration();
         driveConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-        driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.05) * 1023.0; // TODO check this
+        driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.001) * 1023.0; // TODO check this
         driveConfig.slot0.kI = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
         driveConfig.slot0.kD = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
         driveConfig.slot0.kF = 1023.0/wheelSpeedMetersPerSecondToIntegratedSensorUnits(ROBOT_MAX_SPEED);
@@ -250,8 +250,8 @@ public class MK4iSwerveModule {
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
         drive.selectProfileSlot(0, 0);
-        drive.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
-        drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        drive.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
+        drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
         // Create CAN Coder object
         azimuth = new CANCoder(azimuthID);
@@ -281,7 +281,7 @@ public class MK4iSwerveModule {
         steer.set(ControlMode.Velocity, 0.0);
         steer.configAllSettings(steerConfig);
         steer.selectProfileSlot(0, 0);
-        steer.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+        steer.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
     }
