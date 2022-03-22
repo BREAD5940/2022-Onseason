@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
 
-public class ClimbToNextRung extends SequentialCommandGroup {
+public class ClimbToMidRung extends SequentialCommandGroup {
 
-    public ClimbToNextRung(Climber climber) {
+    public ClimbToMidRung(Climber climber) {
         addRequirements(climber);
         addCommands(
             new InstantCommand(() -> climber.requestRetracted(false, true, 1.5)),

@@ -172,8 +172,8 @@ public final class Constants {
         public static final double CLIMBER_MID_RUNG_HEIGHT = 0.58;
         public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.3;
         public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.61;
-        public static final double CLIMBER_HEIGHT_PULLED_OFF = 0.35;
-        public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = Units.inchesToMeters(5.0);
+        public static final double CLIMBER_HEIGHT_PULLED_OFF = 0;
+        public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = 0.61;
         public static final double CLIMBER_MAXIMUM_TRAVEL = 0.615025221351613;
         public static final double CLIMBER_SETPOINT_TOLERANCE = 0.01;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;

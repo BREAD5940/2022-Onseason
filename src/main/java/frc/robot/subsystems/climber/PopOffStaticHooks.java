@@ -10,7 +10,7 @@ public class PopOffStaticHooks extends SequentialCommandGroup {
     public PopOffStaticHooks(Climber climber) {
         addRequirements(climber);
         addCommands(
-            new InstantCommand(() -> climber.requestPullOffHeight(false, true, 1.5)),
+            new InstantCommand(() -> climber.requestPullOffHeight(true, true, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

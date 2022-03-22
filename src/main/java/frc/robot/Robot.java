@@ -1,8 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,13 +9,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.interpolation.InterpolatingTable;
 import frc.robot.interpolation.ShotParameter;
 import frc.robot.sensors.ColorSensor.BallColor;
-import frc.robot.subsystems.climber.ClimbToHighRung;
-import frc.robot.subsystems.climber.ClimbToNextRung;
-import frc.robot.subsystems.climber.ExtendToMidRung;
-import frc.robot.subsystems.climber.LatchToNextRung;
-import frc.robot.subsystems.climber.PopOffStaticHooks;
-import frc.robot.subsystems.climber.ReadyForNextRung;
-import frc.robot.subsystems.climber.TransitioningToNextRung;
 import frc.robot.subsystems.climber.Climber.ClimberActions;
 import static frc.robot.Constants.Flywheel.*;
 
@@ -29,6 +20,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   public static BallColor allianceColor = BallColor.RED;
   private ClimberActions nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+  private boolean climbing = false;
 
   @Override
   public void robotInit() {
@@ -70,6 +62,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    RobotContainer.swerve.setDriveSlots(1);
   }
 
   @Override
@@ -82,6 +76,8 @@ public class Robot extends TimedRobot {
     RobotContainer.gutNeck.acceptOpposingCargo(false);
     // Set alliance color
     allianceColor = DriverStation.getAlliance() == Alliance.Red ? BallColor.RED : BallColor.BLUE;
+    
+    RobotContainer.swerve.setDriveSlots(0);
   }
 
   @Override
@@ -191,6 +187,19 @@ public class Robot extends TimedRobot {
     if (RobotContainer.operator.getBButtonPressed()) {
       nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
       CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+    }
+
+    if (RobotContainer.operator.getYButton()) {
+      if (climbing) {
+        climbing = false;
+      } else {
+        climbing = true;
+      }
+    }
+
+    if (climbing) {
+      RobotContainer.shooter.requestIdle();
+      RobotContainer.vision.setLEDsOn(false);
     }
 
         // if (RobotContainer.operator.getPOV() == 0.0) {

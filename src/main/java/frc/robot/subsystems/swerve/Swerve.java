@@ -60,6 +60,13 @@ public class Swerve extends SubsystemBase {
         br.setState(states[3]);
     }
 
+    public void setDriveSlots(int slot) {
+        fl.setDriveSlot(slot);
+        fr.setDriveSlot(slot);
+        bl.setDriveSlot(slot);
+        br.setDriveSlot(slot);
+    }
+
     public double getRawGyro() {
         return -gyro.getAngle();
     }

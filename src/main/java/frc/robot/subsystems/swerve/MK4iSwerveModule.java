@@ -235,10 +235,14 @@ public class MK4iSwerveModule {
         drive = new TalonFX(driveID);
         TalonFXConfiguration driveConfig = new TalonFXConfiguration();
         driveConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-        driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.001) * 1023.0; // TODO check this
+        driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.05) * 1023.0; // TODO check this
         driveConfig.slot0.kI = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
         driveConfig.slot0.kD = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
         driveConfig.slot0.kF = 1023.0/wheelSpeedMetersPerSecondToIntegratedSensorUnits(ROBOT_MAX_SPEED);
+        driveConfig.slot1.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.001) * 1023.0;
+        driveConfig.slot1.kI = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
+        driveConfig.slot1.kD = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.0);
+        driveConfig.slot1.kF = 1023.0/wheelSpeedMetersPerSecondToIntegratedSensorUnits(ROBOT_MAX_SPEED);
         driveConfig.slot0.closedLoopPeakOutput = 1.0;
         driveConfig.peakOutputForward = 1.0;
         driveConfig.peakOutputReverse = -1.0;
@@ -249,7 +253,7 @@ public class MK4iSwerveModule {
         drive.configAllSettings(driveConfig);
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
-        drive.selectProfileSlot(0, 0);
+        drive.selectProfileSlot(1, 0);
         drive.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
@@ -284,6 +288,10 @@ public class MK4iSwerveModule {
         steer.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
+    }
+
+    public void setDriveSlot(int slot) {
+        drive.selectProfileSlot(slot, 0);
     }
 
     public double getVelocity() {

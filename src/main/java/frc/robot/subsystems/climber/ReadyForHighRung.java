@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
 
-public class TransitioningToNextRung extends SequentialCommandGroup {
+public class ReadyForHighRung extends SequentialCommandGroup {
 
-    public TransitioningToNextRung(Climber climber) {
+    public ReadyForHighRung(Climber climber) {
         addRequirements(climber);
         addCommands(
-            new InstantCommand(() -> climber.requestHeightToTransitionToNextRung(true, false, 1.5)),
+            new InstantCommand(() -> climber.requestReadyForNextRung(true, false, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

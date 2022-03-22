@@ -144,29 +144,31 @@ public class Climber extends SubsystemBase {
         return systemState;
     }
 
-    // Returns the next climber action given the current climber action
+    // Returns the previous climber action given the current climber action
+    public ClimberActions getPreviousClimberAction(ClimberActions action) {
+        if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
+            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+        } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
+            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
+            return ClimberActions.CLIMB_TO_MID_RUNG;
+        } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
+            return ClimberActions.READY_FOR_HIGH_RUNG;
+        } else if (action == ClimberActions.DONE) {
+            return ClimberActions.CLIMB_TO_HIGH_RUNG;
+        }
+        return null;
+    } 
+
+    // Returns the next climber actions given the current climber action
     public ClimberActions getNextClimberAction(ClimberActions action) {
         if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
             return ClimberActions.CLIMB_TO_MID_RUNG;
         } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_BEFORE_HIGH_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_HIGH_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_AFTER_HIGH_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_HIGH_RUNG) {
-            return ClimberActions.RETRACT_CLIMBER_AFTER_HIGH_RUNG;
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_HIGH_RUNG) {
-            return ClimberActions.POP_STATIC_HOOKS_OFF_MID_RUNG;
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_MID_RUNG) {
+            return ClimberActions.READY_FOR_HIGH_RUNG;
+        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
             return ClimberActions.CLIMB_TO_HIGH_RUNG;
         } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return ClimberActions.RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return ClimberActions.POP_STATIC_HOOKS_OFF_HIGH_RUNG;
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_HIGH_RUNG) {
             return ClimberActions.DONE;
         } else if (action == ClimberActions.DONE) {
             return ClimberActions.DONE;
@@ -174,59 +176,15 @@ public class Climber extends SubsystemBase {
         return null;
     }
 
-    // Returns the previous climber action given the current climber action 
-    public ClimberActions getPreviousClimberAction(ClimberActions action) {
-        if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
-            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
-        } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_HIGH_RUNG) {
-            return ClimberActions.CLIMB_TO_MID_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_HIGH_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_BEFORE_HIGH_RUNG;
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_HIGH_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_AFTER_HIGH_RUNG;
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_MID_RUNG) {
-            return ClimberActions.RETRACT_CLIMBER_AFTER_HIGH_RUNG;
-        } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return ClimberActions.POP_STATIC_HOOKS_OFF_MID_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG) {
-            return ClimberActions.CLIMB_TO_HIGH_RUNG;
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return ClimberActions.EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_HIGH_RUNG) {
-            return ClimberActions.RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG;
-        } else if (action == ClimberActions.DONE) {
-            return ClimberActions.POP_STATIC_HOOKS_OFF_HIGH_RUNG;
-        }
-        return null;
-    } 
-
     public SequentialCommandGroup getCommandFromAction(ClimberActions action) {
         if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
             return new ExtendToMidRung(this);
         } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return new ClimbToNextRung(this);
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_HIGH_RUNG) {
-            return new ReadyForNextRung(this);
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_HIGH_RUNG) {
-            return new TransitioningToNextRung(this);
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_HIGH_RUNG) {
-            return new LatchToNextRung(this);
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_MID_RUNG) {
-            return new PopOffStaticHooks(this);
+            return new ClimbToMidRung(this);
+        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
+            return new ReadyForHighRung(this);
         } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return new ClimbToNextRung(this);
-        } else if (action == ClimberActions.EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG) {
-            return new ReadyForNextRung(this);
-        } else if (action == ClimberActions.EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return new TransitioningToNextRung(this);
-        } else if (action == ClimberActions.RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG) {
-            return new LatchToNextRung(this);
-        } else if (action == ClimberActions.POP_STATIC_HOOKS_OFF_HIGH_RUNG) {
-            return new PopOffStaticHooks(this);
+            return new ClimbToHighRung(this);
         } else if (action == ClimberActions.DONE) {
             SequentialCommandGroup command = new SequentialCommandGroup();
             command.addRequirements(this);
@@ -270,15 +228,8 @@ public class Climber extends SubsystemBase {
     public enum ClimberActions {
         GO_TO_MID_RUNG_HEIGHT,
         CLIMB_TO_MID_RUNG, 
-        EXTEND_CLIMBER_BEFORE_HIGH_RUNG,
-        EXTEND_CLIMBER_AFTER_HIGH_RUNG,
-        RETRACT_CLIMBER_AFTER_HIGH_RUNG,
-        POP_STATIC_HOOKS_OFF_MID_RUNG,
+        READY_FOR_HIGH_RUNG,
         CLIMB_TO_HIGH_RUNG,
-        EXTEND_CLIMBER_BEFORE_TRAVERSAL_RUNG,
-        EXTEND_CLIMBER_AFTER_TRAVERSAL_RUNG,
-        RETRACT_CLIMBER_AFTER_TRAVERSAL_RUNG,
-        POP_STATIC_HOOKS_OFF_HIGH_RUNG,
         DONE
     }
 

@@ -27,7 +27,7 @@ public class AutonomusSelector {
             "FIVE_CARGO_RIGHT_TARMAC", 
             new FiveCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
-        SmartDashboard.putData(autonomusSelector);
+        SmartDashboard.putData("Autonomus Selector", autonomusSelector);
     }
 
     public SequentialCommandGroup get() {
