@@ -14,7 +14,7 @@ public class ClimbToMidRung extends SequentialCommandGroup {
             new InstantCommand(() -> climber.requestRetracted(false, true, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL),
             new WaitCommand(0.4),
-            new InstantCommand(() -> climber.requestReadyForNextRung(false, false, 1.5)),
+            new InstantCommand(() -> climber.requestHeightBeforeNextRung(false, false, 1.5)),
             new WaitUntilCommand(() -> climber.getSystemState() == ClimberStates.NEUTRAL)
         );
     }

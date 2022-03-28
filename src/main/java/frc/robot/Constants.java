@@ -116,7 +116,7 @@ public final class Constants {
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
         public static final double SHOOTER_IDLE_VEL = 0.0;
-        public static final double FLYWHEEL_CALIBRATION = 1.0;
+        public static final double FLYWHEEL_CALIBRATION = 0.98;
         public static final double FLYWHEEL_GEARING = 19.0/36.0;
 
         // Other
@@ -169,8 +169,8 @@ public final class Constants {
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
         public static final double CLIMBER_MINIMUM_TRAVEL = 0;
         public static final double CLIMBER_RETRACTED_HEIGHT = 0.00025;
-        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.58;
-        public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.3;
+        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.536372477688169;
+        public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.5;
         public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.61;
         public static final double CLIMBER_HEIGHT_PULLED_OFF = 0;
         public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = 0.61;

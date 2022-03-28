@@ -60,7 +60,7 @@ public class Climber extends SubsystemBase {
     }
 
     // Commands the height setpoint of the climber
-    private void commandHeightSetpoint(double meters, boolean isLifting) {
+    public void commandHeightSetpoint(double meters, boolean isLifting) {
         double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL + 0.01, CLIMBER_MAXIMUM_TRAVEL - 0.01));
         topMotor.set(ControlMode.MotionMagic, output, DemandType.ArbitraryFeedForward, isLifting ? -0.16893148154 : 0.0);
     }
@@ -146,8 +146,10 @@ public class Climber extends SubsystemBase {
 
     // Returns the previous climber action given the current climber action
     public ClimberActions getPreviousClimberAction(ClimberActions action) {
-        if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
-            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+        if (action == ClimberActions.RETRACTED) {
+            return ClimberActions.RETRACTED;
+        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
+            return ClimberActions.RETRACTED;
         } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
             return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
         } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
@@ -162,7 +164,9 @@ public class Climber extends SubsystemBase {
 
     // Returns the next climber actions given the current climber action
     public ClimberActions getNextClimberAction(ClimberActions action) {
-        if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
+        if (action == ClimberActions.RETRACTED) {
+            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
             return ClimberActions.CLIMB_TO_MID_RUNG;
         } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
             return ClimberActions.READY_FOR_HIGH_RUNG;
@@ -177,7 +181,9 @@ public class Climber extends SubsystemBase {
     }
 
     public SequentialCommandGroup getCommandFromAction(ClimberActions action) {
-        if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
+        if (action == ClimberActions.RETRACTED) {
+            return new RetractFully(this);
+        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
             return new ExtendToMidRung(this);
         } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
             return new ClimbToMidRung(this);
@@ -226,6 +232,7 @@ public class Climber extends SubsystemBase {
 
     // Defines all of the climber actions
     public enum ClimberActions {
+        RETRACTED,
         GO_TO_MID_RUNG_HEIGHT,
         CLIMB_TO_MID_RUNG, 
         READY_FOR_HIGH_RUNG,

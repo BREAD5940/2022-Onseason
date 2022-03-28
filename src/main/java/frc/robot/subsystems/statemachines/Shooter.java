@@ -148,7 +148,7 @@ public class Shooter extends SubsystemBase {
         } else {
             requestShoot = true;
             this.flywheelSetpoint = flywheelRPM * flywheelCalibration;
-            this.hoodSetpoint = hoodAngle;
+            this.hoodSetpoint = hoodAngle + 0.5;
         }
 
     }

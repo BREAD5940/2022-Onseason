@@ -20,7 +20,7 @@ public class AutonomusSelector {
             new SequentialCommandGroup()
         );
         autonomusSelector.addOption(
-            "TWO_CARGO_DEFNESIVE_LEFT_TARMAC", 
+            "TWO_CARGO_DEFENSIVE_LEFT_TARMAC", 
             new TwoCargoLeftTarmacDefensive(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
         autonomusSelector.addOption(

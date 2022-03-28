@@ -46,22 +46,22 @@ public class Trajectories {
         List.of(
             new Pose2d(5.877, 4.854, new Rotation2d(-3.114)),
             new Pose2d(4.69, 4.957, new Rotation2d(1.126)),
-            new Pose2d(5.071, 6.07, new Rotation2d(1.052))
+            new Pose2d(5.071 + Units.inchesToMeters(8.0), 6.07, new Rotation2d(1.052))
         ), 2.0, 1.0, 0.0, 0.0
     );
 
     public static Trajectory getFirstOpposingCargoTwoCargoDefensive = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(5.071, 6.07, new Rotation2d(1.052)),
-            new Pose2d(5.931, 6.88, new Rotation2d(0.248))
+            new Pose2d(5.071 + Units.inchesToMeters(8.0), 6.07, new Rotation2d(1.052)),
+            new Pose2d(5.931 + Units.inchesToMeters(8.0), 6.88, new Rotation2d(0.248))
         ), 3.0, 2.0, 0.0, 0.0
     );
 
     public static Trajectory getSecondOpposingCargoTwoCargoDefensive = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(5.931, 6.88, new Rotation2d(-3.027)),
+            new Pose2d(5.931 + Units.inchesToMeters(8.0), 6.88, new Rotation2d(-3.027)),
             new Pose2d(4.853, 4.975, new Rotation2d(-1.445)),
             new Pose2d(4.93, 3.708, new Rotation2d(-1.465))
         ), 3.0, 2.0, 0.0, 0.0
@@ -103,48 +103,17 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(5.169, 1.974, new Rotation2d(-3.002)),
-            new Pose2d(1.286, 1.462, new Rotation2d(-2.5))
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0), new Rotation2d(-2.5))
         ), 3.5, 2.5, 0.0, 0.0
     );
+
 
     public static Trajectory returnFromHumanPlayerStationAfterThreeBall = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(1.286, 1.462, new Rotation2d(0.17)),
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0), new Rotation2d(0.17)),
             new Pose2d(5.017, 2.1, new Rotation2d(0.222))
         ), 3.5, 2.5, 0.0, 0.0
-    );
-
-    public static Trajectory fiveCargoRightTarmac_getFirstBall = generateTrajectory(
-        true, 
-        List.of(
-            new Pose2d(Units.feetToMeters(23.671), Units.feetToMeters(6.192), Rotation2d.fromDegrees(-135)),
-            new Pose2d(Units.feetToMeters(24.032), Units.feetToMeters(2.86), Rotation2d.fromDegrees(-38.346))
-        ), 2.0, 1.0, 0.0, 0.0
-    );
-
-    public static Trajectory fiveCargoRightTarmac_getSecondBall = generateTrajectory(
-        true, 
-        List.of(
-            new Pose2d(Units.feetToMeters(24.032), Units.feetToMeters(2.86), Rotation2d.fromDegrees(145.199)),
-            new Pose2d(Units.feetToMeters(18.209), Units.feetToMeters(5.78), Rotation2d.fromDegrees(149.962))
-        ), 1.0, 0.5, 0.0, 0.0
-    );
-
-    public static Trajectory fiveCargoRightTarmac_advanceToHumanPlayerStation = generateTrajectory(
-        true, 
-        List.of(
-            new Pose2d(Units.feetToMeters(18.209), Units.feetToMeters(5.78), Rotation2d.fromDegrees(-173.498)),
-            new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(-175.333))
-        ), 1.0, 0.5, 0.0, 0.0
-    );
-
-    public static Trajectory fiveCargoRightTarmac_returnFromHumanPlayerStation = generateTrajectory(
-        true, 
-        List.of(
-            new Pose2d(Units.feetToMeters(5.355), Units.feetToMeters(4.39), Rotation2d.fromDegrees(12.743)),
-            new Pose2d(Units.feetToMeters(16.923), Units.feetToMeters(6.802), Rotation2d.fromDegrees(10.874))
-        ), 1.0, 0.5, 0.0, 0.0
     );
 
     public static Trajectory generateTrajectory(boolean clampedCubic, List<Pose2d> points, double maxVel, double maxAccel, double startVel, double endVel, TrajectoryConstraint... constraints) {

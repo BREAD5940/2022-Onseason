@@ -49,7 +49,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    RobotContainer.vision.setLEDsOn(false);
+    RobotContainer.vision.setLEDsOn(true);
+    RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
   }
 
   @Override
@@ -78,6 +79,9 @@ public class Robot extends TimedRobot {
     allianceColor = DriverStation.getAlliance() == Alliance.Red ? BallColor.RED : BallColor.BLUE;
     
     RobotContainer.swerve.setDriveSlots(0);
+
+    nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
+    RobotContainer.operator.getAButtonPressed();
   }
 
   @Override
@@ -189,7 +193,7 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
     }
 
-    if (RobotContainer.operator.getYButton()) {
+    if (RobotContainer.operator.getYButtonPressed()) {
       if (climbing) {
         climbing = false;
       } else {
@@ -199,7 +203,6 @@ public class Robot extends TimedRobot {
 
     if (climbing) {
       RobotContainer.shooter.requestIdle();
-      RobotContainer.vision.setLEDsOn(false);
     }
 
         // if (RobotContainer.operator.getPOV() == 0.0) {
