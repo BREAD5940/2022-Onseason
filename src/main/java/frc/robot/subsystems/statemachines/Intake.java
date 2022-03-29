@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.drivers.TalonFXFactory;
+import frc.robot.drivers.TalonUtil;
 
 public class Intake extends SubsystemBase {
 
@@ -33,6 +34,7 @@ public class Intake extends SubsystemBase {
         motor.setNeutralMode(NeutralMode.Coast);
         motor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        TalonUtil.checkError(motor.configAllSettings(config), "Intake Configuration with ID " + motorID + " Failed");
 
         // Configure the double solenoid
         doubleSolenoids = new DoubleSolenoid(pneumaticsModuleNumber, PneumaticsModuleType.CTREPCM, pneumaticsForwardChannel, pneumaticsReverseChannel);
@@ -79,31 +81,31 @@ public class Intake extends SubsystemBase {
         if (systemState == IntakeState.IDLE_RETRACTED) {
             motor.set(ControlMode.PercentOutput, 0.0);
             if (extended) {
-                doubleSolenoids.set(Value.kReverse);
+                doubleSolenoids.set(Value.kForward);
                 extended = false;
             }
         } else if (systemState == IntakeState.IDLE_EXTENDED) {
             motor.set(ControlMode.PercentOutput, 0.0);
             if (!extended) {
-                doubleSolenoids.set(Value.kForward);
+                doubleSolenoids.set(Value.kReverse);
                 extended = true;
             }
         } else if (systemState == IntakeState.SUCK_EXTENDED) {
             motor.set(ControlMode.PercentOutput, 1.0);
             if (!extended) {
-                doubleSolenoids.set(Value.kForward);
+                doubleSolenoids.set(Value.kReverse);
                 extended = true;
             }
         } else if (systemState == IntakeState.SPIT_RETRACTED) {
             motor.set(ControlMode.PercentOutput, spit ? -0.3 : -1.0);
             if (extended) {
-                doubleSolenoids.set(Value.kReverse); 
+                doubleSolenoids.set(Value.kForward); 
                 extended = false;
             }
         } else if (systemState == IntakeState.SPIT_EXTENDED) {
             motor.set(ControlMode.PercentOutput, spit ? -0.3 : -1.0);
             if (!extended) {
-                doubleSolenoids.set(Value.kForward);
+                doubleSolenoids.set(Value.kReverse);
                 extended = true;
             }
         } else {

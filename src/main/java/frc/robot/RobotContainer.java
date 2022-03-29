@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.autonomus.AutonomusSelector;
-import frc.robot.autonomus.routines.FiveCargoRightTarmac;
-import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;

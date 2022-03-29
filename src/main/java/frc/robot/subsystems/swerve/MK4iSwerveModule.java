@@ -213,12 +213,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.commons.BreadUtil;
+import frc.robot.drivers.TalonUtil;
 
 import static frc.robot.Constants.Drive.*;
 
@@ -250,7 +250,7 @@ public class MK4iSwerveModule {
         driveConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 80.0, 80.0, 1.5);
         drive.setInverted(driveDirection);
         drive.setNeutralMode(NeutralMode.Brake);
-        drive.configAllSettings(driveConfig);
+        TalonUtil.checkError(drive.configAllSettings(driveConfig), moduleIdentifier + " drive motor configuration failed");
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
         drive.selectProfileSlot(1, 0);
@@ -259,12 +259,10 @@ public class MK4iSwerveModule {
 
         // Create CAN Coder object
         azimuth = new CANCoder(azimuthID);
-        CANCoderConfiguration azimuthConfig = new CANCoderConfiguration();
-        azimuthConfig.magnetOffsetDegrees = offset.getDegrees();
-        azimuthConfig.sensorDirection = false;
-        azimuthConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        azimuthConfig.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
-        azimuth.configAllSettings(azimuthConfig);
+        TalonUtil.checkError(azimuth.configMagnetOffset(offset.getDegrees()), "CANCoder Magnet Offset Configuration Failed");
+        TalonUtil.checkError(azimuth.configSensorDirection(false), "CANCoder Sensor Direction Configuration Failed");
+        TalonUtil.checkError(azimuth.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition), "CANCoder Initialization Strategy Configuration Failed");
+        TalonUtil.checkError(azimuth.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180), "CANCoder Absolute Sensor Range Configuration Failed");
 
         // Configure the steering motor
         steer = new TalonFX(steerID);
@@ -283,7 +281,7 @@ public class MK4iSwerveModule {
         steer.setNeutralMode(NeutralMode.Brake);
         steer.setSensorPhase(true);
         steer.set(ControlMode.Velocity, 0.0);
-        steer.configAllSettings(steerConfig);
+        TalonUtil.checkError(steer.configAllSettings(steerConfig), moduleIdentifier + " steer motor configuration failed");
         steer.selectProfileSlot(0, 0);
         steer.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);

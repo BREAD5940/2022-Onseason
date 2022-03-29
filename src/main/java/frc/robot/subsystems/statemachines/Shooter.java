@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.BreadLogger;
 import frc.robot.commons.BreadUtil;
 import frc.robot.drivers.TalonFXFactory;
+import frc.robot.drivers.TalonUtil;
+
 import static frc.robot.Constants.Flywheel.*;
 import static frc.robot.Constants.Hood.*;
 
@@ -66,7 +68,7 @@ public class Shooter extends SubsystemBase {
         leftMotorConfig.velocityMeasurementWindow = 8;
         leftMotorConfig.voltageCompSaturation = 9.5;
         leftMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
-        leftFlywheelMotor.configAllSettings(leftMotorConfig);
+        TalonUtil.checkError(leftFlywheelMotor.configAllSettings(leftMotorConfig), "Left Flywheel Motor Configuration Failed");
         leftFlywheelMotor.selectProfileSlot(0, 0);
         leftFlywheelMotor.setInverted(LEFT_MOTOR_DIRECTION);
         leftFlywheelMotor.enableVoltageCompensation(true);
@@ -79,7 +81,7 @@ public class Shooter extends SubsystemBase {
         rightMotorConfig.peakOutputReverse = -0.0;
         rightMotorConfig.voltageCompSaturation = 9.5;
         rightMotorConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 1.5);
-        rightFlywheelMotor.configAllSettings(rightMotorConfig);
+        TalonUtil.checkError(rightFlywheelMotor.configAllSettings(rightMotorConfig), "Right Flywheel Motor Configuration Failed");
         rightFlywheelMotor.setInverted(RIGHT_MOTOR_DIRECTION);
         rightFlywheelMotor.follow(leftFlywheelMotor);
         rightFlywheelMotor.enableVoltageCompensation(true);

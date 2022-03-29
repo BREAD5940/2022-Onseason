@@ -46,8 +46,32 @@ public class Trajectories {
         List.of(
             new Pose2d(5.877, 4.854, new Rotation2d(-3.114)),
             new Pose2d(4.69, 4.957, new Rotation2d(1.126)),
-            new Pose2d(5.071 + Units.inchesToMeters(8.0), 6.07, new Rotation2d(1.052))
+            new Pose2d(5.2742, 6.07, new Rotation2d(1.052))
         ), 2.0, 1.0, 0.0, 0.0
+    );
+
+    public static Trajectory getFirstOpposingCargoBilliards = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(5.274, 6.07, new Rotation2d(1.116)),
+            new Pose2d(6.703, 7.387, new Rotation2d(0.384))
+        ), 3.0, 2.0, 0.0, 0.0
+    );
+
+    public static Trajectory getUnstagedBallBilliards = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(6.703, 7.387, new Rotation2d(-1.184)),
+            new Pose2d(7.585, 7.448, new Rotation2d(1.599))
+        ), 3.0, 2.0, 0.0, 0.0
+    );
+
+    public static Trajectory returnUnstagedBallBilliards = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(7.585, 7.447, new Rotation2d(-2.801)),
+            new Pose2d(6.159, 6.934, new Rotation2d(-2.756))
+        ), 3.0, 2.0, 0.0, 0.0
     );
 
     public static Trajectory getFirstOpposingCargoTwoCargoDefensive = generateTrajectory(

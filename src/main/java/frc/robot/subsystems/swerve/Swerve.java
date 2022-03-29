@@ -5,7 +5,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -108,26 +107,6 @@ public class Swerve extends SubsystemBase {
         br.drive.setNeutralMode(mode);
     }
 
-    public double getXVelocity() {
-        ChassisSpeeds speeds = kinematics.toChassisSpeeds(
-            fl.getState(),
-            fr.getState(),
-            bl.getState(),
-            br.getState()
-        );
-        return speeds.vxMetersPerSecond;
-    }
-
-    public double getYVelocity() {
-        ChassisSpeeds speeds = kinematics.toChassisSpeeds(
-            fl.getState(),
-            fr.getState(),
-            bl.getState(),
-            br.getState()
-        );
-        return speeds.vyMetersPerSecond;
-    }
-
     public void setAtVisionHeadingSetpoint(boolean set) {
         atVisionHeadingSetpoint = set;
     }
@@ -136,14 +115,22 @@ public class Swerve extends SubsystemBase {
         return atVisionHeadingSetpoint;
     }
 
-    public double getVelocity() {
+    public double[] getVelocities() {
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(
             fl.getState(),
             fr.getState(),
             bl.getState(),
             br.getState()
         );
-        return Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2));
+        return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond};
+    }
+
+    public double getXVelocity() {
+        return getVelocities()[0];
+    }
+
+    public double getYVelocity() {
+        return getVelocities()[1];
     }
 
     @Override

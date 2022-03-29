@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.commons.BreadUtil;
 import frc.robot.subsystems.vision.RobotPositionHistory;
-import static frc.robot.Constants.Drive.*;
 
 public class VisionTurnCommand extends CommandBase {
 

@@ -220,6 +220,14 @@ public final class Constants {
         public static final double SECOND_SHOT_FLYWHEEL_VELOCITY = 1725.0;
         public static final double SECOND_SHOT_HOOD_ANGLE = 24.0;
 
+        // Billiards Auto Setpoints
+        public static final double BILLIARDS_FLYWHEEL_VELOCITY = 1725.0;
+        public static final double BILLIARDS_HOOD_ANGLE = 23.0;
+
+        // Bumper Shot Setpoints
+        public static final double BUMPER_FLYWHEEL_VELOCITY = 1500.0;
+        public static final double BUMPER_HOOD_ANGLE = 18.0;
+
         // Measurements
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
         public static final double BALL_FLIGHT_TIME = 1.25;

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.BreadUtil;
+import frc.robot.drivers.TalonUtil;
 
 import static frc.robot.Constants.Climber.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -43,13 +44,13 @@ public class Climber extends SubsystemBase {
         topMotor.setInverted(TOP_CLIMBER_MOTOR_INVERT_TYPE);
         topMotor.setNeutralMode(NeutralMode.Brake);
         topMotor.enableVoltageCompensation(true);
-        topMotor.configAllSettings(topMotorConfig);
+        TalonUtil.checkError(topMotor.configAllSettings(topMotorConfig), "Top Climber Motor Configuration Failed");
         topMotor.setSelectedSensorPosition(0.0);
 
         // Configure the bottom climber motor 
         TalonFXConfiguration bottomMotorConfig = new TalonFXConfiguration();
         bottomMotor.setInverted(BOTTOM_CLIMBER_MOTOR_INVERT_TYPE);
-        bottomMotor.configAllSettings(bottomMotorConfig);
+        TalonUtil.checkError(bottomMotor.configAllSettings(bottomMotorConfig), "Bottom Climber Motor Configuration Failed");
         bottomMotor.setNeutralMode(NeutralMode.Brake);
         bottomMotor.follow(topMotor);
     }

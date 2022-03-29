@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.drivers.TalonFXFactory;
+import frc.robot.drivers.TalonUtil;
 import frc.robot.sensors.BeamBreak;
 import frc.robot.sensors.ColorSensor;
 import frc.robot.sensors.ColorSensor.BallColor;
@@ -63,7 +64,7 @@ public class GutNeck extends SubsystemBase {
         gutMotor.setNeutralMode(NeutralMode.Brake);
         gutMotor.set(ControlMode.Velocity, 0.0);
         gutMotor.setInverted(TalonFXInvertType.Clockwise);
-        gutMotor.configAllSettings(gutConfig);
+        TalonUtil.checkError(gutMotor.configAllSettings(gutConfig), "Gut Motor Configuration Failed");
         gutMotor.selectProfileSlot(0, 0);
         gutMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         gutMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
@@ -78,7 +79,7 @@ public class GutNeck extends SubsystemBase {
         neckMotor.setNeutralMode(NeutralMode.Brake);
         neckMotor.setInverted(TalonFXInvertType.Clockwise);
         neckMotor.set(ControlMode.Velocity, 0.0);
-        neckMotor.configAllSettings(neckConfig);
+        TalonUtil.checkError(neckMotor.configAllSettings(neckConfig), "Neck Motor Configuration Failed");
         neckMotor.selectProfileSlot(0, 0);
         neckMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
         neckMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
