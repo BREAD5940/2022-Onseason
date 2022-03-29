@@ -40,7 +40,7 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }), 
-            new WaitCommand(1.0),
+            new WaitCommand(2.0),
             new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO || gutNeck.getSystemState() == GutNeckStates.INTAKE_LEFT_NO_CARGO).andThen(() -> {
                 gutNeck.requestShoot(false);
                 shooter.requestIdle();
@@ -48,37 +48,37 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
             }),
             new TrajectoryFollowerController(
                 Trajectories.getFirstOpposingCargoBilliards, 
-                (point, time) -> Rotation2d.fromDegrees(22.5), 
+                (point, time) -> time > 2.0 ? Rotation2d.fromDegrees(-180.0) : Rotation2d.fromDegrees(-45.0), 
                 null, 
                 swerve
+            ).alongWith(
+                new SequentialCommandGroup(
+                    new WaitCommand(2.0),
+                    new InstantCommand(() -> leftIntake.requestIdleRetracted())
+                )
             ),
-            new WaitCommand(1.5),
-            new InstantCommand(() ->  {
-                leftIntake.requestOuttakeExtended(true);
-                gutNeck.requestSpitLeft(true);
-            }),
-            new WaitCommand(2.0).andThen(() -> {
-                gutNeck.requestIntakeLeft(true);
-                leftIntake.requestIntake();
+            new WaitCommand(2.0).beforeStarting(() -> {
+                gutNeck.requestSpitRight(true);
+                rightIntake.requestOuttakeExtended(true);
+            }).andThen(() -> {
+                gutNeck.requestSpitRight(false);
+                gutNeck.requestIntakeRight(true);
+                rightIntake.requestIntake();
             }),
             new TrajectoryFollowerController(
                 Trajectories.getUnstagedBallBilliards, 
-                (point, time) -> Rotation2d.fromDegrees(0.0), 
+                (point, time) -> Rotation2d.fromDegrees(-180.0), 
                 null, 
                 swerve
             ),
-            new WaitCommand(1.0),
+            new WaitCommand(2.0).andThen(() -> {
+                rightIntake.requestIdleRetracted();
+            }),
             new TrajectoryFollowerController(
                 Trajectories.returnUnstagedBallBilliards, 
-                (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
+                (point, time) -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET), 
                 null, 
                 swerve
-            ).beforeStarting(
-                () -> {
-                    shooter.requestShoot(BILLIARDS_FLYWHEEL_VELOCITY, BILLIARDS_HOOD_ANGLE);
-                    leftIntake.requestIntake();
-                    gutNeck.requestIntakeLeft(true);
-                }
             ),
             new PointTurnCommand(
                 () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
@@ -86,13 +86,7 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
             ),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
-            }), 
-            new WaitCommand(1.0),
-            new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO || gutNeck.getSystemState() == GutNeckStates.INTAKE_LEFT_NO_CARGO).andThen(() -> {
-                gutNeck.requestShoot(false);
-                shooter.requestIdle();
-                gutNeck.acceptOpposingCargo(false);
-                leftIntake.requestIdleRetracted();
+                shooter.requestShoot(BILLIARDS_FLYWHEEL_VELOCITY, BILLIARDS_HOOD_ANGLE);
             })
         );
     }

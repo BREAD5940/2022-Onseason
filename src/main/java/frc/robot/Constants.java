@@ -82,6 +82,7 @@ public final class Constants {
         public static final double GUT_PULLEY_DIAMETER = Units.inchesToMeters(1.0);
         public static final double MAX_GUT_FALCON_SHAFT_SPEED = 5366.082442; // RPM
         public static final double MAX_GUT_SURFACE_SPEED = (MAX_GUT_FALCON_SHAFT_SPEED * GUT_GEARING * Math.PI * GUT_PULLEY_DIAMETER)/60.0;
+        public static final double GUT_INTAKING_SPEED = 4.0;
 
         // Color Sensor Targets
         public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
@@ -98,7 +99,7 @@ public final class Constants {
 
         // Intake Piston Channels
         public static final int[] LEFT_INTAKE_PISTON_CHANNELS = {6, 1}; // [Forward, Reverse]
-        public static final int[] RIGHT_INTAKE_PISTON_CHANNELS = {7, 0}; // [Forward, Reverse]
+        public static final int[] RIGHT_INTAKE_PISTON_CHANNELS = {0, 7}; // [Forward, Reverse]
 
         // Measurements
         public static final double INTAKE_SPEED = 0.8;
@@ -210,7 +211,7 @@ public final class Constants {
         public static final double TWO_SHOT_HOOD_ANGLE = 24.0;
 
         // Three Cargo Auto Setpoints
-        public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1725.0;
+        public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1625.0;
         public static final double THREE_SHOT_HOOD_ANGLE = 25.0;
 
         // Five Cargo Auto Setpoints

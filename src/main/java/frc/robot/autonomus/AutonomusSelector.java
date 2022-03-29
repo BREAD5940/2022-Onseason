@@ -3,6 +3,7 @@ package frc.robot.autonomus;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.autonomus.routines.BilliardsThreeBallLeftTarmac;
 import frc.robot.autonomus.routines.FiveCargoRightTarmac;
 import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
 import frc.robot.subsystems.statemachines.GutNeck;
@@ -26,6 +27,10 @@ public class AutonomusSelector {
         autonomusSelector.addOption(
             "FIVE_CARGO_RIGHT_TARMAC", 
             new FiveCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
+        );
+        autonomusSelector.addOption(
+            "BILLIARD_THREE_BALL_LEFT_TARMAC", 
+            new BilliardsThreeBallLeftTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
         SmartDashboard.putData("Autonomus Selector", autonomusSelector);
     }

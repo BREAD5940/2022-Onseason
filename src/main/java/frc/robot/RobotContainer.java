@@ -31,7 +31,7 @@ public class RobotContainer {
   public static Intake rightIntake = new Intake(RIGHT_INTAKE_ID, TalonFXInvertType.CounterClockwise, RIGHT_INTAKE_PISTON_CHANNELS[0], RIGHT_INTAKE_PISTON_CHANNELS[1], 0);
   public static GutNeck gutNeck = new GutNeck();
   public static Vision vision = new Vision();
-  public static Climber climber = new Climber();
+  // public static Climber climber = new Climber();
   public static Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static XboxController driver = new XboxController(0);
   public static XboxController operator = new XboxController(1);

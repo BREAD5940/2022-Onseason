@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     RobotContainer.vision.setLEDsOn(true);
-    RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
+    // RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
   }
 
   @Override
@@ -183,15 +183,15 @@ public class Robot extends TimedRobot {
     } 
 
     // "Auto" Climber Buttons
-    if (RobotContainer.operator.getAButtonPressed()) {
-      if (nextClimberAction != ClimberActions.DONE) 
-        CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-      nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
-    }
-    if (RobotContainer.operator.getBButtonPressed()) {
-      nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
-      CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-    }
+    // if (RobotContainer.operator.getAButtonPressed()) {
+    //   if (nextClimberAction != ClimberActions.DONE) 
+    //     CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+    //   nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
+    // }
+    // if (RobotContainer.operator.getBButtonPressed()) {
+    //   nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
+    //   CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+    // }
 
     if (RobotContainer.operator.getYButtonPressed()) {
       if (climbing) {

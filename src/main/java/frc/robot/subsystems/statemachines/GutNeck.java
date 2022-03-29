@@ -261,7 +261,7 @@ public class GutNeck extends SubsystemBase {
             /* Gut is moving in the left direction; the neck is stationary; no cargo is stored */
 
             // Outputs
-            commandGutSurfaceSpeed(1.5);
+            commandGutSurfaceSpeed(GUT_INTAKING_SPEED);
             commandNeckSurfaceSpeed(0.0);
 
             // State transitions
@@ -279,7 +279,7 @@ public class GutNeck extends SubsystemBase {
             /* Gut is moving in the right direction; the neck is stationary; no cargo is stored */
 
             // Output 
-            commandGutSurfaceSpeed(-1.5);
+            commandGutSurfaceSpeed(-GUT_INTAKING_SPEED);
             commandNeckSurfaceSpeed(0.0);
 
             // State transitions
@@ -297,7 +297,7 @@ public class GutNeck extends SubsystemBase {
             /* Gut is moving in the left direction; the neck is stationary; one cargo is stored in the neck */
 
             // Outputs
-            commandGutSurfaceSpeed(1.5);
+            commandGutSurfaceSpeed(GUT_INTAKING_SPEED);
             commandNeckSurfaceSpeed(0.0);
 
             // State transitions
@@ -316,7 +316,7 @@ public class GutNeck extends SubsystemBase {
             /* The gut is moving in the right direction; the neck is stationary; one cargo is stored in the neck */
 
             // Outputs
-            commandGutSurfaceSpeed(-1.5);
+            commandGutSurfaceSpeed(-GUT_INTAKING_SPEED);
             commandNeckSurfaceSpeed(0.0);
 
             // State transitions
