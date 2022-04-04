@@ -12,9 +12,10 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public class ColorSensor {
 
-    public final ColorSensorV3 sensor;
-    private final ColorMatch match = new ColorMatch();
+    public ColorSensorV3 sensor;
+    private ColorMatch match = new ColorMatch();
     private final Color redBallTarget, blueBallTarget, noneTarget;
+    private final I2C.Port port;
 
 
     public ColorSensor(I2C.Port port, Color redBallTarget, Color blueBallTarget, Color noneTarget) {
@@ -26,6 +27,7 @@ public class ColorSensor {
         this.redBallTarget = redBallTarget;
         this.blueBallTarget = blueBallTarget;
         this.noneTarget = noneTarget;
+        this.port = port;
     }
 
     public BallColor get() {
@@ -40,6 +42,18 @@ public class ColorSensor {
         } else {
             return BallColor.NONE;
         }
+    }
+
+    public boolean hasReset() {
+        return sensor.getBlue() == 0.0 && sensor.getGreen() == 0.0 && sensor.getRed() == 0.0;
+    }
+
+    public void initalize() {
+        sensor = new ColorSensorV3(port);
+        sensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain1x);
+        match.addColorMatch(redBallTarget);
+        match.addColorMatch(blueBallTarget);
+        match.addColorMatch(noneTarget);
     }
 
     public double[] getRaw() {

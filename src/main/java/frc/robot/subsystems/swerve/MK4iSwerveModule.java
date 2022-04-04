@@ -292,6 +292,10 @@ public class MK4iSwerveModule {
         drive.selectProfileSlot(slot, 0);
     }
 
+    public void resetToAbsolute() {
+        azimuth.setPositionToAbsolute();
+    }
+
     public double getVelocity() {
         return (MODULE_GEARING * drive.getSelectedSensorVelocity() * (600.0/2048.0) * 2.0 * Math.PI * WHEEL_RADIUS) / 60.0;
     }

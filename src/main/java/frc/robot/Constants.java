@@ -82,7 +82,7 @@ public final class Constants {
         public static final double GUT_PULLEY_DIAMETER = Units.inchesToMeters(1.0);
         public static final double MAX_GUT_FALCON_SHAFT_SPEED = 5366.082442; // RPM
         public static final double MAX_GUT_SURFACE_SPEED = (MAX_GUT_FALCON_SHAFT_SPEED * GUT_GEARING * Math.PI * GUT_PULLEY_DIAMETER)/60.0;
-        public static final double GUT_INTAKING_SPEED = 4.0;
+        public static final double GUT_INTAKING_SPEED = 2.0;
 
         // Color Sensor Targets
         public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
@@ -91,7 +91,14 @@ public final class Constants {
     }   
 
     // Constants pertaining to the dual intake subsystem go here
-    public static class DualIntake {
+    public static class DualIntake {public static double calculateDistanceToTargetMeters(
+        double cameraHeightMeters,
+        double targetHeightMeters,
+        double cameraPitchRadians,
+        double targetPitchRadians) {
+    return (targetHeightMeters - cameraHeightMeters)
+            / Math.tan(cameraPitchRadians + targetPitchRadians);
+}
 
         // Motor IDs 
         public static final int LEFT_INTAKE_ID = 9;
@@ -194,6 +201,13 @@ public final class Constants {
         public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(31.0);
         public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(104.0);
         public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(30.0);
+        public static final double MAX_SHOT_DISTANCE = 4.3; // Distance in meters
+
+        // Camera
+        public static final double STREAM_RESOLUTION_X = 960.0;
+        public static final double STREAM_RESOLUTION_Y = 720.0;
+        public static final double MAX_PITCH = 24.85;
+        public static final double CAMERA_BASIS_PIXELS = (STREAM_RESOLUTION_Y/2.0)/Math.tan(Units.degreesToRadians(MAX_PITCH));
     }
 
     // Constants pertaining to the autonomus period of the match

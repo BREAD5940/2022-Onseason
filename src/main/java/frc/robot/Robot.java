@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,9 +11,8 @@ import frc.robot.interpolation.InterpolatingTable;
 import frc.robot.interpolation.ShotParameter;
 import frc.robot.sensors.ColorSensor.BallColor;
 import frc.robot.subsystems.climber.Climber.ClimberActions;
-import static frc.robot.Constants.Flywheel.*;
-
 import static frc.robot.Constants.Hood.*;
+import static frc.robot.Constants.Vision.*;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -21,36 +21,40 @@ public class Robot extends TimedRobot {
   public static BallColor allianceColor = BallColor.RED;
   private ClimberActions nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
   private boolean climbing = false;
+  private double lastResetToAbsolute = 0.0;
+  private double lastCheckedColorSensorConnected = 0.0;
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-    SmartDashboard.putNumber("Flywheel Callibration", FLYWHEEL_CALIBRATION);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    SmartDashboard.putNumber("Distance To Target", RobotContainer.vision.getDistance());
-    SmartDashboard.putNumber("Pitch", RobotContainer.vision.getPitch());
-    SmartDashboard.putNumber("Yaw", RobotContainer.vision.getYaw());
-    SmartDashboard.putNumber("Vision Timestamp", RobotContainer.vision.getMeasurementTimestamp());
+
     double[] d = RobotContainer.gutNeck.colorSensor.getRaw();
-    SmartDashboard.putNumber("R (sensor)", d[0]);
-    SmartDashboard.putNumber("G (sensor)", d[1]);
-    SmartDashboard.putNumber("B (sensor)", d[2]);
-    SmartDashboard.putString("Next Climber Action", nextClimberAction.name());
-    SmartDashboard.putNumber("Compressor Pressure", RobotContainer.compressor.getPressure());
-    // System.out.println(RobotContainer.gutNeck.colorSensor.get().name());
+
+    if ((RobotController.getFPGATime()/1.0E6) - lastCheckedColorSensorConnected > 1.0) {
+      if (d[0] == 0.0 && d[1] == 0.0 && d[2] == 0.0) {
+        RobotContainer.gutNeck.colorSensor.initalize();
+      }
+      lastCheckedColorSensorConnected = RobotController.getFPGATime()/1.0E6;
+    }
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    lastResetToAbsolute = RobotController.getFPGATime()/1.0E6;
+  }
 
   @Override
   public void disabledPeriodic() {
     RobotContainer.vision.setLEDsOn(true);
-    // RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
+    if ((RobotController.getFPGATime()/1.0E6) - lastResetToAbsolute > 1.0) {
+      RobotContainer.swerve.resetAllToAbsolute();
+      lastResetToAbsolute = RobotController.getFPGATime()/1.0E6;
+    }
   }
 
   @Override
@@ -82,11 +86,14 @@ public class Robot extends TimedRobot {
 
     nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
     RobotContainer.operator.getAButtonPressed();
+    RobotContainer.operator.getYButtonPressed();
+    climbing = false;
+
+    lastCheckedColorSensorConnected = RobotController.getFPGATime()/1.0E6;
   }
 
   @Override
   public void teleopPeriodic() {
-    RobotContainer.vision.setLEDsOn(true);
     configureTeleopControls();
   }
 
@@ -97,24 +104,32 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    RobotContainer.vision.setLEDsOn(false);
+    RobotContainer.vision.setLEDsOn(true);
     RobotContainer.shooter.requestIdle();
   }
 
   // Method to handle teleoperated controls
   public void configureTeleopControls() {
 
+    double distance = RobotContainer.vision.getDistance();
+
+    SmartDashboard.putBoolean("Valid Shot Distance", distance<=MAX_SHOT_DISTANCE);
+
     // Driver shooting signals
     if (RobotContainer.driver.getAButton()) {
       RobotContainer.shooter.requestShoot(1400, 10);
       RobotContainer.gutNeck.requestShoot(true);
-    } else if (RobotContainer.driver.getRightStickButton()) {
+      RobotContainer.vision.setLEDsOn(true);
+    } else if (RobotContainer.driver.getRightStickButton()||RobotContainer.driver.getRightBumper()) {
       ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
+      RobotContainer.vision.setLEDsOn(true);
       RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
-      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()) {
+      // RobotContainer.shooter.requestShoot(SmartDashboard.getNumber("Flywheel Tuning", 0.0), SmartDashboard.getNumber("Hood Tuning", 8.5));
+      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&distance<=MAX_SHOT_DISTANCE) {
         RobotContainer.gutNeck.requestShoot(true);
       }
     } else {
+      RobotContainer.vision.setLEDsOn(true);
       RobotContainer.shooter.requestShoot(1000.0, HOOD_IDLE_POS);
       RobotContainer.gutNeck.requestShoot(false);
     }
@@ -183,15 +198,15 @@ public class Robot extends TimedRobot {
     } 
 
     // "Auto" Climber Buttons
-    // if (RobotContainer.operator.getAButtonPressed()) {
-    //   if (nextClimberAction != ClimberActions.DONE) 
-    //     CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-    //   nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
-    // }
-    // if (RobotContainer.operator.getBButtonPressed()) {
-    //   nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
-    //   CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-    // }
+    if (RobotContainer.operator.getAButtonPressed()) {
+      if (nextClimberAction != ClimberActions.DONE) 
+        CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+      nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
+    }
+    if (RobotContainer.operator.getBButtonPressed()) {
+      nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
+      CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
+    }
 
     if (RobotContainer.operator.getYButtonPressed()) {
       if (climbing) {

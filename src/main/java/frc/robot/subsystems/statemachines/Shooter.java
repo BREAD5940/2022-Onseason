@@ -309,12 +309,10 @@ public class Shooter extends SubsystemBase {
         }
         systemState = nextSystemState;
         SmartDashboard.putString("Shooter State", systemState.name());
-        SmartDashboard.putBoolean("Shooter Request Shoot", requestShoot);
-        SmartDashboard.putNumber("Flywheel Value", getFlywheelVelocity());
+        SmartDashboard.putNumber("Flywheel Velocity", getFlywheelVelocity());
         SmartDashboard.putNumber("Flywheel Setpoint", flywheelSetpoint);
         SmartDashboard.putNumber("Hood Angle", getHoodPosition());
         SmartDashboard.putNumber("Flywheel Motor Output", leftFlywheelMotor.getMotorOutputPercent());
-        flywheelCalibration = SmartDashboard.getNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
         SmartDashboard.putBoolean("Hood AtSetpoint", hoodAtSetpoint());
         SmartDashboard.putBoolean("FlywheelAtSetpoint", flywheelAtSetpoint());
         SmartDashboard.putBoolean("Hood Limit Switch Triggered", getHoodLimitSwitchTriggered());

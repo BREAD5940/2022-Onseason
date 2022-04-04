@@ -256,7 +256,9 @@ public class GutNeck extends SubsystemBase {
             } else if (requestShoot && RobotContainer.shooter.getSystemState() == ShooterState.AT_SETPOINT) {
                 beginShootingSequence();
                 nextSystemState = GutNeckStates.SHOOT_CARGO;
-            } 
+            } else if (!checkCargo(getMiddleColor())) { // TODO Check this
+                nextSystemState = GutNeckStates.IDLE_ONE_CARGO;
+            }
         } else if (systemState == GutNeckStates.INTAKE_LEFT_NO_CARGO) {
             /* Gut is moving in the left direction; the neck is stationary; no cargo is stored */
 

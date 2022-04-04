@@ -40,6 +40,13 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putData(field);
     }
 
+    public void resetAllToAbsolute() {
+        fl.resetToAbsolute();
+        fr.resetToAbsolute();
+        bl.resetToAbsolute();
+        br.resetToAbsolute();
+    }
+
     public void setSpeeds(double xMetersPerSecond, double yMetersPerSecond, double thetaRadiansPerSecond) {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(
             xMetersPerSecond, 
