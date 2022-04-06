@@ -124,10 +124,12 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Distance To Target", getDistance());
+        SmartDashboard.putNumber("Distance", Units.metersToInches(getDistance() - Units.inchesToMeters(19)));
         SmartDashboard.putNumber("Center Pitch", originalPitch);
         SmartDashboard.putNumber("Adjusted Pitch", getPitch());
         SmartDashboard.putNumber("Yaw", getYaw());
         SmartDashboard.putNumber("Vision Timestamp", getMeasurementTimestamp());
+
     }
     
 }

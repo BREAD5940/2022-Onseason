@@ -54,6 +54,8 @@ public final class Constants {
         // Madtown field callibration constant factor is 0.97
         public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0) * 0.9442667069 * 1.0;
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
+        public static final double CAMERA_TO_SHOOTER_DISTANCE = Units.inchesToMeters(15.0);
+        public static final double UPPER_HUB_RADIUS = Units.inchesToMeters(53.38)/2;
         public static final double ROBOT_MAX_SPEED = (6380.0 * MODULE_GEARING * 2.0 * Math.PI * WHEEL_RADIUS) / 60.0;
         public static final Translation2d FL_LOCATION = new Translation2d(ROBOT_LENGTH/2, ROBOT_WIDTH/2);
         public static final Translation2d FR_LOCATION = new Translation2d(ROBOT_LENGTH/2, -ROBOT_WIDTH/2);
@@ -91,14 +93,7 @@ public final class Constants {
     }   
 
     // Constants pertaining to the dual intake subsystem go here
-    public static class DualIntake {public static double calculateDistanceToTargetMeters(
-        double cameraHeightMeters,
-        double targetHeightMeters,
-        double cameraPitchRadians,
-        double targetPitchRadians) {
-    return (targetHeightMeters - cameraHeightMeters)
-            / Math.tan(cameraPitchRadians + targetPitchRadians);
-}
+    public static class DualIntake {
 
         // Motor IDs 
         public static final int LEFT_INTAKE_ID = 9;

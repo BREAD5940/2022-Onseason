@@ -28,6 +28,17 @@ public class BreadUtil {
         return angle;
     }
 
+    // Returns the vector projection of one translation2d onto the other
+    public static Translation2d vectorProjection(Translation2d u, Translation2d v) {
+        double scalar = dot(u, v)/Math.pow(v.getNorm(), 2);
+        return v.times(scalar);
+    }
+
+    // Returns the dot product of two translation2ds
+    public static double dot(Translation2d u, Translation2d v) {
+        return u.getX() * v.getX() + u.getY() * v.getY();
+    }
+
     // At reference method
     public static boolean atReference(double val, double reference, double tolerance, boolean inclusive) {
         return inclusive ? (Math.abs(reference - val) <= tolerance) : (Math.abs(reference - val) < tolerance); 
