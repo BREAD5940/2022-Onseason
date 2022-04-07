@@ -44,7 +44,7 @@ public class TrajectoryFollowerController extends CommandBase {
 
     @Override
     public void initialize() {
-        if (startHeading != null) swerve.resetMatchOdometry(new Pose2d(trajectory.sample(0.0).poseMeters.getTranslation(), startHeading.get()));
+        if (startHeading != null) swerve.reset(new Pose2d(trajectory.sample(0.0).poseMeters.getTranslation(), startHeading.get()));
         timer.reset();
         timer.start();
     }
@@ -52,7 +52,7 @@ public class TrajectoryFollowerController extends CommandBase {
     @Override
     public void execute() {
         Trajectory.State goal = trajectory.sample(timer.get());
-        ChassisSpeeds adjustedSpeeds = autonomusController.calculate(swerve.getMatchPose(), goal, refHeading.apply(swerve.getMatchPose(), timer.get())); 
+        ChassisSpeeds adjustedSpeeds = autonomusController.calculate(swerve.getPose(), goal, refHeading.apply(swerve.getPose(), timer.get())); 
         swerve.setSpeeds(
             adjustedSpeeds
         );

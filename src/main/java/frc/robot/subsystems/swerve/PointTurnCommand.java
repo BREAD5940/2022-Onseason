@@ -29,22 +29,22 @@ public class PointTurnCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        turnPID.reset(swerve.getMatchPose().getRotation().getRadians());
+        turnPID.reset(swerve.getPose().getRotation().getRadians());
     }
 
     @Override
     public void execute() {
-        swerve.setSpeeds(0.0, 0.0, turnPID.calculate(swerve.getMatchPose().getRotation().getRadians(), headingSupplier.getAsDouble()));
+        swerve.setSpeeds(0.0, 0.0, turnPID.calculate(swerve.getPose().getRotation().getRadians(), headingSupplier.getAsDouble()));
         System.out.printf("Current: %.2f, Setpoint: %.2f, Error: %.2f\n",
-            swerve.getMatchPose().getRotation().getDegrees(),
+            swerve.getPose().getRotation().getDegrees(),
             Units.radiansToDegrees(headingSupplier.getAsDouble()),
-            Units.radiansToDegrees(headingSupplier.getAsDouble())-swerve.getMatchPose().getRotation().getDegrees()
+            Units.radiansToDegrees(headingSupplier.getAsDouble())-swerve.getPose().getRotation().getDegrees()
         );
     }
 
     @Override
     public boolean isFinished() {
-        return BreadUtil.atReference(swerve.getMatchPose().getRotation().getRadians(), headingSupplier.getAsDouble(), Units.degreesToRadians(2.0), true);
+        return BreadUtil.atReference(swerve.getPose().getRotation().getRadians(), headingSupplier.getAsDouble(), Units.degreesToRadians(2.0), true);
     }
 
     @Override
