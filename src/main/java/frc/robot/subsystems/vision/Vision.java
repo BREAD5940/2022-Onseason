@@ -7,6 +7,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commons.BreadUtil;
+
 import static frc.robot.Constants.Vision.*;
 
 import java.util.TreeMap;
@@ -52,7 +54,7 @@ public class Vision extends SubsystemBase {
                     return;
                 }
                 double pixelOffset = limelightTable.getEntry("tshort").getDouble(0.0)/2.0;
-                timestampSeconds = RobotController.getFPGATime()/1.0E6 - Units.millisecondsToSeconds(limelightTable.getEntry("tl").getDouble(0.0)) - Units.millisecondsToSeconds(11.0);
+                timestampSeconds = BreadUtil.getFPGATimeSeconds() - Units.millisecondsToSeconds(limelightTable.getEntry("tl").getDouble(0.0)) - Units.millisecondsToSeconds(11.0);
                 yaw = limelightTable.getEntry("tx").getDouble(0.0);
                 double centerCrosshairPitch = limelightTable.getEntry("ty").getDouble(0.0);
                 originalPitch = centerCrosshairPitch;

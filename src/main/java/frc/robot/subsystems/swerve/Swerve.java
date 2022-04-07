@@ -1,21 +1,19 @@
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commons.BreadUtil;
+import frc.robot.subsystems.vision.RobotPositionHistory;
+
 import static frc.robot.Constants.Drive.*;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.AHRS;
@@ -33,34 +31,22 @@ public class Swerve extends SubsystemBase {
     
     // Kinematics & Odometry
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(FL_LOCATION, FR_LOCATION, BL_LOCATION, BR_LOCATION);
-    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d());
+    private final SwerveDriveOdometry matchOdometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d());
 
     // Field2d
-    private Pose2d pose = odometry.getPoseMeters();
+    private Pose2d pose = matchOdometry.getPoseMeters();
     public final Field2d field = new Field2d();
-
-    // Swerve Drive Pose Estimator 
-    Matrix<N3, N1> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-    Matrix<N1, N1> localMeasurementStdDevs = VecBuilder.fill(0.01);
-    Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
-    private Pose2d swerveDrivePoseEstimate = pose;
-    private SwerveDrivePoseEstimator swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
-        gyro.getRotation2d(), 
-        pose, 
-        kinematics, 
-        stateStdDevs,
-        localMeasurementStdDevs,
-        visionMeasurementStdDevs
-    );
 
     // State variables
     private boolean atVisionHeadingSetpoint = false;
 
+    // Constructs a new swerve object
     public Swerve() {
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
     }
 
+    // Resets all of the swerve modules to use the absolute readings
     public void resetAllToAbsolute() {
         fl.resetToAbsolute();
         fr.resetToAbsolute();
@@ -68,6 +54,7 @@ public class Swerve extends SubsystemBase {
         br.resetToAbsolute();
     }
 
+    // Sets the desired speeds of the swerve drive
     public void setSpeeds(double xMetersPerSecond, double yMetersPerSecond, double thetaRadiansPerSecond) {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(
             xMetersPerSecond, 
@@ -87,6 +74,7 @@ public class Swerve extends SubsystemBase {
         br.setState(states[3]);
     }
 
+    // Sets the drive PID slots to use for more agressive/soft feedback control
     public void setDriveSlots(int slot) {
         fl.setDriveSlot(slot);
         fr.setDriveSlot(slot);
@@ -94,10 +82,12 @@ public class Swerve extends SubsystemBase {
         br.setDriveSlot(slot);
     }
 
+    // Returns the raw gyro angle; is negated to be counterclockwise positive
     public double getRawGyro() {
         return -gyro.getAngle();
     }
 
+    // Overload to set a robot relative speed
     public void setSpeeds(ChassisSpeeds robotRelativeSpeeds) {
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(robotRelativeSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
@@ -107,51 +97,32 @@ public class Swerve extends SubsystemBase {
         br.setState(states[3]);
     }
 
+    // Resets match odometry
     public void reset(Pose2d newPose) {
-        odometry.resetPosition(newPose, gyro.getRotation2d());
-        pose = odometry.getPoseMeters();
+        matchOdometry.resetPosition(newPose, gyro.getRotation2d());
+        pose = matchOdometry.getPoseMeters();
     }
     
-    public void resetPoseEstimator(Pose2d newPose) {
-        swerveDrivePoseEstimator.resetPosition(newPose, gyro.getRotation2d());
-        swerveDrivePoseEstimate = swerveDrivePoseEstimator.getEstimatedPosition();
-    }
-
+    // Updates match odometry
     public void updateOdometry() {
-        pose = odometry.update(
+        pose = matchOdometry.update(
             gyro.getRotation2d(),
             fl.getState(), 
             fr.getState(), 
             bl.getState(),
             br.getState()
         );
-        swerveDrivePoseEstimate = swerveDrivePoseEstimator.update(
-            gyro.getRotation2d(), 
-            fl.getState(), 
-            fr.getState(), 
-            bl.getState(), 
-            br.getState()
-        );
+        RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
         // field.setRobotPose(pose);
         SmartDashboard.putData(field);
     }
 
-    public void addVisionMeasurement(Pose2d visionPoseMeters, double visionTimestamp) {
-        swerveDrivePoseEstimator.addVisionMeasurement(visionPoseMeters, visionTimestamp);
-    }
-
+    // Returns the match pose
     public Pose2d getPose() {
         return pose;
     }
 
-    public Pose2d getEstimatedPose() {
-        return swerveDrivePoseEstimate;
-    }
-
-    public Pose2d getSwervePoseEstimate() {
-        return swerveDrivePoseEstimate;
-    }
-
+    // Sets the neutral mode of the drive motors
     public void setNeutralModes(NeutralMode mode) {
         fl.drive.setNeutralMode(mode);
         fr.drive.setNeutralMode(mode);
@@ -159,14 +130,17 @@ public class Swerve extends SubsystemBase {
         br.drive.setNeutralMode(mode);
     }
 
+    // Sets whether or not the drivetrain is at its vision reference
     public void setAtVisionHeadingSetpoint(boolean set) {
         atVisionHeadingSetpoint = set;
     }
 
+    // Returns whether or not the drivetrain is at its vision reference
     public boolean getAtVisionHeadingSetpoint() {
         return atVisionHeadingSetpoint;
     }
 
+    // Returns the ROBOT RELATIVE speed of the drivetrain
     public Translation2d getVelocity() {
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(
             fl.getState(),
@@ -180,6 +154,7 @@ public class Swerve extends SubsystemBase {
         );
     }
 
+    // Periodically updates odometry and posts values to smart dashboard
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());

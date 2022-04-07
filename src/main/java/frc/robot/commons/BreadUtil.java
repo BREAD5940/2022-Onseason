@@ -2,6 +2,7 @@ package frc.robot.commons;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.RobotController;
 
 public class BreadUtil {
 
@@ -37,6 +38,11 @@ public class BreadUtil {
     // Returns the dot product of two translation2ds
     public static double dot(Translation2d u, Translation2d v) {
         return u.getX() * v.getX() + u.getY() * v.getY();
+    }
+    
+    // Returns the FPGA timestamp in seconds
+    public static double getFPGATimeSeconds() {
+        return RobotController.getFPGATime()/1.0E6;
     }
 
     // At reference method
