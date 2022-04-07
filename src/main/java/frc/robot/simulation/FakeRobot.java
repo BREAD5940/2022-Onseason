@@ -33,9 +33,11 @@ public class FakeRobot extends TimedRobot {
         double vy = -controller.getLeftX() * 3;
         double omega = controller.getRawAxis(2) * 5;
 
+        var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, fieldPose.getRotation());
+
         fieldPose = fieldPose.plus(new Transform2d(
-                new Translation2d(vx, vy),
-                new Rotation2d(omega)).times(0.020));
+                new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),
+                new Rotation2d(speeds.omegaRadiansPerSecond)).times(0.020));
 
         field.setRobotPose(fieldPose);
     }
