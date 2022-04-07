@@ -113,7 +113,7 @@ public class Swerve extends SubsystemBase {
             br.getState()
         );
         RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
-        // field.setRobotPose(pose);
+        field.setRobotPose(pose);
         SmartDashboard.putData(field);
     }
 
@@ -160,6 +160,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
         SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
+        SmartDashboard.putData(field);
     }
     
 }
