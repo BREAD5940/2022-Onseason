@@ -1,11 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.simulation.FakeRobot;
 
 public final class Main {
   private Main() {}
   
   public static void main(String... args) {
-    RobotBase.startRobot(Robot::new);
+    if(RobotBase.isReal())
+      RobotBase.startRobot(Robot::new);
+    else RobotBase.startRobot(FakeRobot::new);
   }
 }

@@ -44,17 +44,15 @@ public class VisionFollowerController extends CommandBase {
             changeInPose.getTranslation().rotateBy(visionPoseEstimate.getRotation().minus(currentAbsolutePose.getRotation())), 
             changeInPose.getRotation()
         );
-        Pose2d adjustedPoseEstimate = visionPoseEstimate.transformBy(changeInPose); 
 
-        // Calculate the feed forward
-        Translation2d fieldRelativeVelocity = swerve.getVelocity().rotateBy(adjustedPoseEstimate.getRotation());
+        Pose2d adjustedPoseEstimate = visionPoseEstimate.transformBy(changeInPose);
+
         Rotation2d robotToGoalAngle = new Rotation2d(adjustedPoseEstimate.getX(), adjustedPoseEstimate.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
-        Translation2d targetRelativeVelocity = fieldRelativeVelocity.rotateBy(robotToGoalAngle.times(-1));
-        double tangentSpeed = targetRelativeVelocity.getY();
-        double ff = tangentSpeed / adjustedPoseEstimate.getTranslation().getNorm();
 
         // Calculate the pid 
         double pid = turnPID.calculate(adjustedPoseEstimate.getRotation().getDegrees(), robotToGoalAngle.getDegrees());
+
+        double ff = getFeedforward(swerve.getVelocity(), adjustedPoseEstimate);
 
         // Handles x and y translation (manually controlled)
         double x = RobotContainer.driver.getRightY();
@@ -64,6 +62,16 @@ public class VisionFollowerController extends CommandBase {
 
         // Sets the speeds of the swerve drive 
         swerve.setSpeeds(dx, dy, ff + pid);
+    }
+
+    public static double getFeedforward(Translation2d velocityInRobotFrame, Pose2d adjustedPoseEstimate) {
+        // Calculate the feed forward
+        Translation2d fieldRelativeVelocity = velocityInRobotFrame.rotateBy(adjustedPoseEstimate.getRotation());
+        Rotation2d robotToGoalAngle = new Rotation2d(adjustedPoseEstimate.getX(), adjustedPoseEstimate.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
+        Translation2d targetRelativeVelocity = fieldRelativeVelocity.rotateBy(robotToGoalAngle.times(-1));
+        double tangentSpeed = targetRelativeVelocity.getY();
+
+        return tangentSpeed / adjustedPoseEstimate.getTranslation().getNorm();
     }
 
     @Override
