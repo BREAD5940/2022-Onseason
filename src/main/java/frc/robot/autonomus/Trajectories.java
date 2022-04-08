@@ -149,6 +149,14 @@ public class Trajectories {
         ), 3.5, 2.5, 0.0, 0.0
     );
 
+    public static Trajectory goBackFromLeftTarmac = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(6.754, 5.997, new Rotation2d(2.178)),
+            new Pose2d(5.929, 7.37, new Rotation2d(2.091))
+        ), 2.0, 1.0, 0.0, 0.0
+    );
+
     public static Trajectory generateTrajectory(boolean clampedCubic, List<Pose2d> points, double maxVel, double maxAccel, double startVel, double endVel, TrajectoryConstraint... constraints) {
         TrajectoryConfig config = new TrajectoryConfig(maxVel, maxAccel);
         for (TrajectoryConstraint c : constraints) {
