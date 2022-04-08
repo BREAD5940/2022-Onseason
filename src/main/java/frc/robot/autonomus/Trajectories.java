@@ -140,13 +140,20 @@ public class Trajectories {
         ), 3.5, 2.5, 0.0, 0.0
     );
 
-
     public static Trajectory returnFromHumanPlayerStationAfterThreeBall = generateTrajectory(
         true, 
         List.of(
             new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0), new Rotation2d(0.17)),
             new Pose2d(5.017, 2.1, new Rotation2d(0.222))
         ), 3.5, 2.5, 0.0, 0.0
+    );
+
+    public static Trajectory goBackFromLeftTarmac = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(6.754, 5.997, new Rotation2d(2.342)),
+            new Pose2d(5.929, 7.37, new Rotation2d(-0.8))
+         ), 2.0,1.0,0.0, 0.0
     );
 
     public static Trajectory generateTrajectory(boolean clampedCubic, List<Pose2d> points, double maxVel, double maxAccel, double startVel, double endVel, TrajectoryConstraint... constraints) {

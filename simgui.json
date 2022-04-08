@@ -19,6 +19,7 @@
       "/LiveWindow/Shooter": "Subsystem",
       "/LiveWindow/Superstructure": "Subsystem",
       "/LiveWindow/Swerve": "Subsystem",
+<<<<<<< HEAD
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
@@ -115,11 +116,28 @@
       "/LiveWindow/Vision": "Subsystem",
       "/SmartDashboard/Autonomus Selector": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
+=======
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PIDController[1]": "PIDController"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
+>>>>>>> 5acf47330e1caf58c6ca5152fd07566e5a999bb8
     }
   },
   "NetworkTables": {
     "SmartDashboard": {
       "Field": {
+        "open": true
+      },
+      "PIDController[1]": {
         "open": true
       },
       "open": true
