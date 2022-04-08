@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commons.BreadUtil;
 import frc.robot.subsystems.swerve.VisionFollowerController;
 
 public class FakeRobot extends TimedRobot {
@@ -25,10 +26,11 @@ public class FakeRobot extends TimedRobot {
         SmartDashboard.putData(field);
         setNetworkTablesFlushEnabled(true);
         field.getObject("Goal").setPose(new Pose2d(4, 4, new Rotation2d()));
+        turnPID.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     private final PIDController turnPID = new PIDController(
-            10 * (Math.PI/180.0), 0, 0.004
+            10, 0, 0
     );
 
     @Override
@@ -39,7 +41,9 @@ public class FakeRobot extends TimedRobot {
 
         var omega = VisionFollowerController.getFeedforward(new Translation2d(vx, vy), fieldPose);
         Rotation2d robotToGoalAngle = new Rotation2d(fieldPose.getX(), fieldPose.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
-        double pid = turnPID.calculate(fieldPose.getRotation().getDegrees(), robotToGoalAngle.getDegrees());
+        double measurement = fieldPose.getRotation().getRadians();
+        double setpoint = robotToGoalAngle.getRadians();
+        double pid = turnPID.calculate(measurement, setpoint);
         omega += pid;
         omega += controller.getRawAxis(2) * 5;
 

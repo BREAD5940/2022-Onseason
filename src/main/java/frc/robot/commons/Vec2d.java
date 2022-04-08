@@ -9,6 +9,10 @@ public class Vec2d extends Translation2d {
         super();
     }
 
+    public Vec2d(Translation2d translation) {
+        super(translation.getX(), translation.getY());
+    }
+
     public Vec2d(double x, double y) {
         super(x, y);
     }

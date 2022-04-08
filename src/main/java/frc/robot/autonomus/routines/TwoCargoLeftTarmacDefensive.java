@@ -37,7 +37,7 @@ public class TwoCargoLeftTarmacDefensive extends SequentialCommandGroup {
                 () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
                 swerve
             ),
-            new InstantCommand(() -> {
+            new InstantCommand(() -> { 
                 gutNeck.requestShoot(true);
             }), 
             new WaitCommand(1.0),

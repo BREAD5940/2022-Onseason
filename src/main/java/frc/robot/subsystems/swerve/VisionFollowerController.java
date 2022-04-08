@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.commons.TimestampedPose2d;
@@ -66,12 +67,16 @@ public class VisionFollowerController extends CommandBase {
 
     public static double getFeedforward(Translation2d velocityInRobotFrame, Pose2d adjustedPoseEstimate) {
         // Calculate the feed forward
-        Translation2d fieldRelativeVelocity = velocityInRobotFrame.rotateBy(adjustedPoseEstimate.getRotation());
+        // Translation2d fieldRelativeVelocity = velocityInRobotFrame.rotateBy(adjustedPoseEstimate.getRotation());
+        Translation2d fieldRelativeVelocity = velocityInRobotFrame;
         Rotation2d robotToGoalAngle = new Rotation2d(adjustedPoseEstimate.getX(), adjustedPoseEstimate.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
         Translation2d targetRelativeVelocity = fieldRelativeVelocity.rotateBy(robotToGoalAngle.times(-1));
         double tangentSpeed = targetRelativeVelocity.getY();
 
-        return tangentSpeed / adjustedPoseEstimate.getTranslation().getNorm();
+        SmartDashboard.putNumber("Field Relative DX", fieldRelativeVelocity.getX());
+        SmartDashboard.putNumber("Field Relative DY", fieldRelativeVelocity.getY());
+
+        return -1 * tangentSpeed / adjustedPoseEstimate.getTranslation().getNorm();
     }
 
     @Override
