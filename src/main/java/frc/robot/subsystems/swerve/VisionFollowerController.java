@@ -55,19 +55,15 @@ public class VisionFollowerController extends CommandBase {
         Rotation2d robotToGoalAngle = new Rotation2d(adjustedPoseEstimate.getX(), adjustedPoseEstimate.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
         Translation2d targetRelativeVelocity = fieldRelativeVelocity.rotateBy(robotToGoalAngle.times(-1));
         double tangentialSpeed = targetRelativeVelocity.getY();
-        double radialSpeed = targetRelativeVelocity.getX();
         double distanceToCenterOfHub = adjustedPoseEstimate.getTranslation().getNorm();
         double ff = -1 * tangentialSpeed / adjustedPoseEstimate.getTranslation().getNorm();
 
         // Adjusted Target Position
         double ballFlightTime = BallFlightTimeInterpolatingTable.get(distanceToCenterOfHub);
-        Translation2d shotAimPosition = new Translation2d( // This is true because the goal is at (0, 0)
-            -radialSpeed * ballFlightTime, 
-            -tangentialSpeed * ballFlightTime
-        );
+        Translation2d shotAimPosition = fieldRelativeVelocity.rotateBy(Rotation2d.fromDegrees(180.0)).times(ballFlightTime);
 
         // Get robot to adjusted target position
-        Translation2d robotToShotAimPointPosition = shotAimPosition.minus(adjustedPoseEstimate.getTranslation());
+        Translation2d robotToShotAimPosition = shotAimPosition.minus(adjustedPoseEstimate.getTranslation());
         Rotation2d robotToShotAimPointAngle = new Rotation2d(robotToShotAimPosition.getX(), robotToShotAimPosition.getY());
         double robotToAdjustedTargetDistance = robotToShotAimPosition.getNorm();
 
@@ -77,7 +73,7 @@ public class VisionFollowerController extends CommandBase {
 
         // Calculate the pid 
         double measurement = adjustedPoseEstimate.getRotation().getRadians();
-        double setpoint = robotToAdjustedTargetAngle.getRadians();
+        double setpoint = robotToShotAimPointAngle.getRadians();
         double pid = turnPID.calculate(measurement, setpoint);
 
         // Handles x and y translation (manually controlled)
@@ -95,11 +91,7 @@ public class VisionFollowerController extends CommandBase {
         swerve.setAtVisionHeadingSetpoint(false);
         swerve.setSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0));
     }
-
-    private Rotation2d calculateOffsetToTarget(double ballFlightTime, double tangentSpeed, double distanceToCenterOfHub) {
-        return new Rotation2d(Math.atan(tangentSpeed*ballFlightTime/distanceToCenterOfHub));
-    }
-
+    
     private TimestampedPose2d getLatestVisonPoseEstimate() {
         double yawDegrees = RobotContainer.vision.getYaw();
         double targetToCameraMeters = RobotContainer.vision.getDistance() + Units.inchesToMeters(UPPER_HUB_RADIUS);
