@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.interpolation.InterpolatingTable;
-import frc.robot.interpolation.ShotParameter;
 import frc.robot.sensors.ColorSensor.BallColor;
 import frc.robot.subsystems.climber.Climber.ClimberActions;
 import static frc.robot.Constants.Hood.*;
@@ -121,9 +119,7 @@ public class Robot extends TimedRobot {
       RobotContainer.gutNeck.requestShoot(true);
       RobotContainer.vision.setLEDsOn(true);
     } else if (RobotContainer.driver.getRightStickButton()||RobotContainer.driver.getRightBumper()) {
-      ShotParameter shot = InterpolatingTable.get(RobotContainer.vision.getDistance());
       RobotContainer.vision.setLEDsOn(true);
-      RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
       // RobotContainer.shooter.requestShoot(SmartDashboard.getNumber("Flywheel Tuning", 0.0), SmartDashboard.getNumber("Hood Tuning", 8.5));
       if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&distance<=MAX_SHOT_DISTANCE) {
         RobotContainer.gutNeck.requestShoot(true);

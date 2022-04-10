@@ -10,6 +10,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.commons.TimestampedPose2d;
+import frc.robot.interpolation.BallFlightTimeInterpolatingTable;
+import frc.robot.interpolation.InterpolatingTable;
+import frc.robot.interpolation.ShotParameter;
 import frc.robot.subsystems.vision.RobotPositionHistory;
 import static frc.robot.Constants.Drive.*;
 
@@ -17,12 +20,13 @@ public class VisionFollowerController extends CommandBase {
 
     private final Swerve swerve;
     private final PIDController turnPID = new PIDController(
-        10 * (Math.PI/180.0), 0, 0.004
+        10, 0, 0.004
     );
 
     public VisionFollowerController(Swerve swerve) {
         this.swerve = swerve;
         addRequirements(swerve);
+        turnPID.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
@@ -50,11 +54,31 @@ public class VisionFollowerController extends CommandBase {
         Translation2d fieldRelativeVelocity = swerve.getVelocity().rotateBy(adjustedPoseEstimate.getRotation());
         Rotation2d robotToGoalAngle = new Rotation2d(adjustedPoseEstimate.getX(), adjustedPoseEstimate.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
         Translation2d targetRelativeVelocity = fieldRelativeVelocity.rotateBy(robotToGoalAngle.times(-1));
-        double tangentSpeed = targetRelativeVelocity.getY();
-        double ff = tangentSpeed / adjustedPoseEstimate.getTranslation().getNorm();
+        double tangentialSpeed = targetRelativeVelocity.getY();
+        double radialSpeed = targetRelativeVelocity.getX();
+        double distanceToCenterOfHub = adjustedPoseEstimate.getTranslation().getNorm();
+        double ff = -1 * tangentialSpeed / adjustedPoseEstimate.getTranslation().getNorm();
+
+        // Adjusted Target Position
+        double ballFlightTime = BallFlightTimeInterpolatingTable.get(distanceToCenterOfHub);
+        Translation2d shotAimPosition = new Translation2d( // This is true because the goal is at (0, 0)
+            -radialSpeed * ballFlightTime, 
+            -tangentialSpeed * ballFlightTime
+        );
+
+        // Get robot to adjusted target position
+        Translation2d robotToShotAimPointPosition = shotAimPosition.minus(adjustedPoseEstimate.getTranslation());
+        Rotation2d robotToShotAimPointAngle = new Rotation2d(robotToShotAimPosition.getX(), robotToShotAimPosition.getY());
+        double robotToAdjustedTargetDistance = robotToShotAimPosition.getNorm();
+
+        // Calculate (and apply) the shot parameter
+        ShotParameter shot = InterpolatingTable.get(robotToAdjustedTargetDistance);
+        RobotContainer.shooter.requestShoot(shot.flywheelRPM, shot.hoodAngleRadians);
 
         // Calculate the pid 
-        double pid = turnPID.calculate(adjustedPoseEstimate.getRotation().getDegrees(), robotToGoalAngle.getDegrees());
+        double measurement = adjustedPoseEstimate.getRotation().getRadians();
+        double setpoint = robotToAdjustedTargetAngle.getRadians();
+        double pid = turnPID.calculate(measurement, setpoint);
 
         // Handles x and y translation (manually controlled)
         double x = RobotContainer.driver.getRightY();
@@ -70,6 +94,10 @@ public class VisionFollowerController extends CommandBase {
     public void end(boolean interrupted) {
         swerve.setAtVisionHeadingSetpoint(false);
         swerve.setSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0));
+    }
+
+    private Rotation2d calculateOffsetToTarget(double ballFlightTime, double tangentSpeed, double distanceToCenterOfHub) {
+        return new Rotation2d(Math.atan(tangentSpeed*ballFlightTime/distanceToCenterOfHub));
     }
 
     private TimestampedPose2d getLatestVisonPoseEstimate() {

@@ -50,4 +50,9 @@ public class BreadUtil {
         return inclusive ? (Math.abs(reference - val) <= tolerance) : (Math.abs(reference - val) < tolerance); 
     }
 
+    // In bound method
+    public static boolean inBound(double val, double lowerBound, double higherBound, boolean inclusive) {
+        return inclusive ? (lowerBound <= val && higherBound >= val) : (lowerBound < val && higherBound > val);
+    }
+
 }

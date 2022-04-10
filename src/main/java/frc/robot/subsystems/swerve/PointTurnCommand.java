@@ -2,11 +2,11 @@ package frc.robot.subsystems.swerve;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.commons.BreadUtil;
 
 public class PointTurnCommand extends CommandBase {
 
@@ -25,16 +25,18 @@ public class PointTurnCommand extends CommandBase {
         this.headingSupplier = headingSupplier;
         addRequirements(swerve);
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
+        turnPID.reset(swerve.getPose().getRotation().getRadians());
+        turnPID.setTolerance(Units.degreesToRadians(2.0));    
     }
 
     @Override
     public void initialize() {
-        turnPID.reset(swerve.getPose().getRotation().getRadians());
+        turnPID.setTolerance(Units.degreesToRadians(2.0));
     }
 
     @Override
     public void execute() {
-        swerve.setSpeeds(0.0, 0.0, turnPID.calculate(swerve.getPose().getRotation().getRadians(), headingSupplier.getAsDouble()));
+        swerve.setSpeeds(0.0, 0.0, MathUtil.clamp(turnPID.calculate(swerve.getPose().getRotation().getRadians(), headingSupplier.getAsDouble()), -2, 2));
         System.out.printf("Current: %.2f, Setpoint: %.2f, Error: %.2f\n",
             swerve.getPose().getRotation().getDegrees(),
             Units.radiansToDegrees(headingSupplier.getAsDouble()),
@@ -44,7 +46,7 @@ public class PointTurnCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return BreadUtil.atReference(swerve.getPose().getRotation().getRadians(), headingSupplier.getAsDouble(), Units.degreesToRadians(2.0), true);
+        return turnPID.atGoal();
     }
 
     @Override

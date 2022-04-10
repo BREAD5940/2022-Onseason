@@ -4,18 +4,14 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commons.BreadUtil;
 import frc.robot.drivers.TalonUtil;
-
-import static frc.robot.Constants.Climber.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import static frc.robot.Constants.Climber.*;
 
 public class Climber extends SubsystemBase {
 
@@ -24,11 +20,11 @@ public class Climber extends SubsystemBase {
     private final TalonFX bottomMotor = new TalonFX(BOTTOM_CLIMBER_MOTOR_ID);
 
     // State variables
-    private ClimberStates systemState = ClimberStates.NEUTRAL;
+    private ClimberStates systemState = ClimberStates.STARTING_CONFIGURATION;
     private double climberSetpoint = -1.0;
     private boolean extended = true;
-    private boolean wantsExtended = false;
-    private boolean wantsLift = false;
+    private boolean requestNextState = false;
+    private boolean requestPreviousState = false;
 
     public Climber() {
 
@@ -61,20 +57,15 @@ public class Climber extends SubsystemBase {
     }
 
     // Commands the height setpoint of the climber
-    public void commandHeightSetpoint(double meters, boolean isLifting) {
+    private void commandHeightSetpoint(double meters, boolean isLifting) {
         double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL + 0.01, CLIMBER_MAXIMUM_TRAVEL - 0.01));
         topMotor.set(ControlMode.MotionMagic, output, DemandType.ArbitraryFeedForward, isLifting ? -0.16893148154 : 0.0);
     }
 
     // Commands the neutral mode of the climber
-    public void commandNeutralMode(boolean set) {
+    private void commandNeutralMode(boolean set) {
         topMotor.setNeutralMode(set ? NeutralMode.Coast : NeutralMode.Brake);
         bottomMotor.setNeutralMode(set ? NeutralMode.Coast : NeutralMode.Brake);
-    }
-
-    // Commands the climber to neutral
-    private void commandNeutral() {
-        topMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
     // Commands the climber solenoids forward
@@ -87,54 +78,6 @@ public class Climber extends SubsystemBase {
         climberSolenoids.set(Value.kReverse);
     }
 
-    // Requests the climber to go to the mid rung height
-    public void requestMidRungHeight(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.MID_RUNG_HEIGHT;
-    }   
-
-    // Requests the climber to go to the ready for next rung height
-    public void requestReadyForNextRung(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.READY_FOR_NEXT_RUNG_HEIGHT;
-    }
-
-    // Requests the climber to go the pull off height
-    public void requestPullOffHeight(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.PULLED_OFF;
-    }
-
-    // Requests the climber to go to the before next rung height
-    public void requestHeightBeforeNextRung(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.BEFORE_NEXT_RUNG_HEIGHT;
-    }
-
-    // Requests the climber to go to the transitioning rung height
-    public void requestHeightToTransitionToNextRung(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.TRANSITIONING_TO_NEXT_RUNG;
-    }
-
-    // Requests the climber to go to its fully retracted height
-    public void requestRetracted(boolean wantsExtended, boolean wantsLift, double maxVelocity) {
-        commandMaxVelocity(maxVelocity);
-        this.wantsExtended = wantsExtended;
-        this.wantsLift = wantsLift;
-        systemState = ClimberStates.RETRACTED;
-    }
-
     // Returns the position of the climber in meters
     public double getPositionMeters() {
         return integratedSensorUnitsToMeters(topMotor.getSelectedSensorPosition());
@@ -145,59 +88,14 @@ public class Climber extends SubsystemBase {
         return systemState;
     }
 
-    // Returns the previous climber action given the current climber action
-    public ClimberActions getPreviousClimberAction(ClimberActions action) {
-        if (action == ClimberActions.RETRACTED) {
-            return ClimberActions.RETRACTED;
-        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
-            return ClimberActions.RETRACTED;
-        } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
-        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
-            return ClimberActions.CLIMB_TO_MID_RUNG;
-        } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return ClimberActions.READY_FOR_HIGH_RUNG;
-        } else if (action == ClimberActions.DONE) {
-            return ClimberActions.CLIMB_TO_HIGH_RUNG;
-        }
-        return null;
+    // Sends a request for the climber to go to the next state
+    public void requestNextState() {
+        requestNextState = true;
     } 
 
-    // Returns the next climber actions given the current climber action
-    public ClimberActions getNextClimberAction(ClimberActions action) {
-        if (action == ClimberActions.RETRACTED) {
-            return ClimberActions.GO_TO_MID_RUNG_HEIGHT;
-        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
-            return ClimberActions.CLIMB_TO_MID_RUNG;
-        } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return ClimberActions.READY_FOR_HIGH_RUNG;
-        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
-            return ClimberActions.CLIMB_TO_HIGH_RUNG;
-        } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return ClimberActions.DONE;
-        } else if (action == ClimberActions.DONE) {
-            return ClimberActions.DONE;
-        }
-        return null;
-    }
-
-    public SequentialCommandGroup getCommandFromAction(ClimberActions action) {
-        if (action == ClimberActions.RETRACTED) {
-            return new RetractFully(this);
-        } else if (action == ClimberActions.GO_TO_MID_RUNG_HEIGHT) {
-            return new ExtendToMidRung(this);
-        } else if (action == ClimberActions.CLIMB_TO_MID_RUNG) {
-            return new ClimbToMidRung(this);
-        } else if (action == ClimberActions.READY_FOR_HIGH_RUNG) {
-            return new ReadyForHighRung(this);
-        } else if (action == ClimberActions.CLIMB_TO_HIGH_RUNG) {
-            return new ClimbToHighRung(this);
-        } else if (action == ClimberActions.DONE) {
-            SequentialCommandGroup command = new SequentialCommandGroup();
-            command.addRequirements(this);
-            return command;
-        }
-        return null;
+    // Sends a request for the climber to go to the previous state
+    public void requestPreviousState() {
+        requestPreviousState = true;
     }
 
     // Converted integrated sensor units to meters
@@ -222,103 +120,43 @@ public class Climber extends SubsystemBase {
 
     // Defines all of the climber states
     public enum ClimberStates { 
-        NEUTRAL,
-        RETRACTED,
-        MID_RUNG_HEIGHT,
-        READY_FOR_NEXT_RUNG_HEIGHT,
-        BEFORE_NEXT_RUNG_HEIGHT,
-        TRANSITIONING_TO_NEXT_RUNG,
-        PULLED_OFF,
-    }
-
-    // Defines all of the climber actions
-    public enum ClimberActions {
-        RETRACTED,
-        GO_TO_MID_RUNG_HEIGHT,
-        CLIMB_TO_MID_RUNG, 
-        READY_FOR_HIGH_RUNG,
-        CLIMB_TO_HIGH_RUNG,
-        DONE
+        STARTING_CONFIGURATION,
+        READY_FOR_MID_RUNG,
+        CLIMB_TO_MID_RUNG
     }
 
     @Override
     public void periodic() {
         ClimberStates nextSystemState = systemState;
-        if (systemState == ClimberStates.NEUTRAL) {
+        if (systemState == ClimberStates.STARTING_CONFIGURATION) {
             // Outputs
-            commandNeutral();
-            handleSolenoidExtension();
-            climberSetpoint = -1.0;
-            
-        } else if (systemState == ClimberStates.RETRACTED) {
-            // Outputs
-            commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_RETRACTED_HEIGHT;
-            
-            // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_RETRACTED_HEIGHT, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState = ClimberStates.NEUTRAL;
-            }
-        } else if (systemState == ClimberStates.MID_RUNG_HEIGHT) {
-            // Outputs
-            commandHeightSetpoint(CLIMBER_MID_RUNG_HEIGHT, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_MID_RUNG_HEIGHT;
+            commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, false);
+            handleSolenoidExtension(false);
 
             // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_MID_RUNG_HEIGHT, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState = ClimberStates.NEUTRAL;
+            if (requestNextState) {
+                nextSystemState = ClimberStates.READY_FOR_MID_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                requestPreviousState = false;
             }
-            
-        } else if (systemState == ClimberStates.READY_FOR_NEXT_RUNG_HEIGHT) {
+        } else if (systemState == ClimberStates.READY_FOR_MID_RUNG) {
             // Outputs
-            commandHeightSetpoint(CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT;
+            commandHeightSetpoint(CLIMBER_MID_RUNG_HEIGHT, false);
+            handleSolenoidExtension(false);
 
-            // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState = ClimberStates.NEUTRAL;
-            }
-        } else if (systemState == ClimberStates.BEFORE_NEXT_RUNG_HEIGHT) {
-            // Outputs
-            commandHeightSetpoint(CLIMBER_HEIGHT_BEFORE_NEXT_RUNG, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_HEIGHT_BEFORE_NEXT_RUNG;
-            
-            // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_BEFORE_NEXT_RUNG, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState  = ClimberStates.NEUTRAL;
-            }
-        } else if (systemState == ClimberStates.TRANSITIONING_TO_NEXT_RUNG) {
-            // Outputs
-            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG;
-            
-            // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState  = ClimberStates.NEUTRAL;
-            }
-        } else if (systemState == ClimberStates.PULLED_OFF) {
-            // Outputs
-            commandHeightSetpoint(CLIMBER_HEIGHT_PULLED_OFF, wantsLift);
-            handleSolenoidExtension();
-            climberSetpoint = CLIMBER_HEIGHT_PULLED_OFF;
-            
-            // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_PULLED_OFF, CLIMBER_SETPOINT_TOLERANCE, true)) {
-                nextSystemState  = ClimberStates.NEUTRAL;
+            // State transitions
+            if (requestNextState) {
+                nextSystemState = ClimberStates.CLIMB_TO_MID_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                nextSystemState = ClimberStates.STARTING_CONFIGURATION;
+                requestPreviousState = false;
             }
         }
-        systemState = nextSystemState;
-        SmartDashboard.putString("Climber State", systemState.name());
-        SmartDashboard.putNumber("Climber Setpoint", climberSetpoint);
-        SmartDashboard.putNumber("Climber Height", getPositionMeters());
     }
 
-    private void handleSolenoidExtension() {
+    private void handleSolenoidExtension(boolean wantsExtended) {
         if (wantsExtended && !extended) {
             commandSolenoidsForward();
             extended = true;

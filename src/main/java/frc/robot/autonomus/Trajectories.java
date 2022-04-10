@@ -54,33 +54,32 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(5.22, 6.081, new Rotation2d(1.116)),
-            new Pose2d(6.224, 7.022, new Rotation2d(0.384)),
-            new Pose2d(7.269, 6.915, new Rotation2d(-0.201))
-        ), 1.0, 0.5, 0.0, 0.0
+            new Pose2d(6.224, 7.022, new Rotation2d(0.384))
+        ), 3.0, 2.0, 0.0, 0.0
     );
 
-    // public static Trajectory prepareToUnstageCargoBilliards = generateTrajectory(
-    //     true,
-    //     List.of(
-    //         new Pose2d(6.224, 7.022, new Rotation2d(-1.56)),
-    //         new Pose2d(7.409, 6.937, new Rotation2d(1.657))
-    //     ), 1.0, 0.5, 0.0, 0.0
-    // );
+    public static Trajectory prepareToUnstageCargoBilliards = generateTrajectory(
+        true,
+        List.of(
+            new Pose2d(6.224, 7.022, new Rotation2d(-0.226)),
+            new Pose2d(7.398 - Units.inchesToMeters(2.0), 6.8, new Rotation2d(-0.137))
+        ), 2.8, 1.8, 0.0, 0.0
+    );
 
     public static Trajectory getUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.269, 6.915, new Rotation2d(1.666)),
-            new Pose2d(7.211, 7.633, new Rotation2d(1.649))
-        ), 1.0, 0.5, 0.0, 0.0
+            new Pose2d(7.398 - Units.inchesToMeters(2.0), 6.8, new Rotation2d(1.666)),
+            new Pose2d(7.352 - Units.inchesToMeters(2.0), 7.324 - Units.inchesToMeters(5.0), new Rotation2d(1.649))
+        ), 2.8, 1.8, 0.0, 0.0
     );
 
     public static Trajectory returnUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.211, 7.633, new Rotation2d(-2.623)),
+            new Pose2d(7.352 - Units.inchesToMeters(2.0), 7.324 - Units.inchesToMeters(5.0), new Rotation2d(-2.623)),
             new Pose2d(6.203, 6.858, new Rotation2d(-2.431))
-        ), 1.0, 0.5, 0.0, 0.0
+        ), 2.8, 1.8, 0.0, 0.0
     );
 
     public static Trajectory getFirstOpposingCargoTwoCargoDefensive = generateTrajectory(

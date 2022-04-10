@@ -40,7 +40,7 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }), 
-            new WaitCommand(2.0),
+            new WaitCommand(1.0),
             new WaitUntilCommand(() -> gutNeck.getSystemState() == GutNeckStates.IDLE_NO_CARGO || gutNeck.getSystemState() == GutNeckStates.INTAKE_LEFT_NO_CARGO).andThen(() -> {
                 gutNeck.requestShoot(false);
                 shooter.requestIdle();
@@ -48,16 +48,23 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
             }),
             new TrajectoryFollowerController(
                 Trajectories.getFirstOpposingCargoBilliards, 
-                (point, time) -> time > 2.0 ? Rotation2d.fromDegrees(-180.0) : Rotation2d.fromDegrees(-45.0), 
+                (point, time) -> Rotation2d.fromDegrees(-45.0), 
                 null, 
                 swerve
-            ).alongWith(
-                new SequentialCommandGroup(
-                    new WaitCommand(2.0),
-                    new InstantCommand(() -> leftIntake.requestIdleRetracted())
-                )
             ),
-            new WaitCommand(2.0).beforeStarting(() -> {
+            new WaitCommand(0.25),
+            new TrajectoryFollowerController(
+                Trajectories.prepareToUnstageCargoBilliards, 
+                (point, time) -> Rotation2d.fromDegrees(-180.0), 
+                null, 
+                swerve
+            ).beforeStarting(() -> {
+                leftIntake.requestIdleRetracted();
+                gutNeck.acceptOpposingCargo(false);
+                gutNeck.requestIntakeLeft(false);
+            }),
+            new PointTurnCommand(() -> -Math.PI, swerve),
+            new WaitCommand(1.5).beforeStarting(() -> {
                 gutNeck.requestSpitRight(true);
                 rightIntake.requestOuttakeExtended(true);
             }).andThen(() -> {
@@ -71,8 +78,9 @@ public class BilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
                 null, 
                 swerve
             ),
-            new WaitCommand(2.0).andThen(() -> {
+            new WaitCommand(0.75).andThen(() -> {
                 rightIntake.requestIdleRetracted();
+                gutNeck.requestIntakeRight(false);
             }),
             new TrajectoryFollowerController(
                 Trajectories.returnUnstagedBallBilliards, 
