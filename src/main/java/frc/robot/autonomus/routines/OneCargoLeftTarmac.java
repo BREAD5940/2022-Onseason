@@ -13,9 +13,9 @@ import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.TrajectoryFollowerController;
 import static frc.robot.Constants.Autonomus.*;
 
-public class OneBallLeftTarmac extends SequentialCommandGroup {
+public class OneCargoLeftTarmac extends SequentialCommandGroup {
    
-    public OneBallLeftTarmac(Swerve swerve, Shooter shooter, Intake leftIntake, Intake rightIntake, GutNeck gutNeck) {
+    public OneCargoLeftTarmac(Swerve swerve, Shooter shooter, Intake leftIntake, Intake rightIntake, GutNeck gutNeck) {
         addRequirements(swerve, shooter, leftIntake, rightIntake, gutNeck);
         addCommands(
             new InstantCommand(()  -> { 

@@ -26,12 +26,7 @@ public class FakeRobot extends TimedRobot {
         SmartDashboard.putData(field);
         setNetworkTablesFlushEnabled(true);
         field.getObject("Goal").setPose(new Pose2d(4, 4, new Rotation2d()));
-<<<<<<< HEAD
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
-=======
-        turnPID.enableContinuousInput(-180, 180);
-        SmartDashboard.putData(turnPID);
->>>>>>> 5acf47330e1caf58c6ca5152fd07566e5a999bb8
     }
 
     private final PIDController turnPID = new PIDController(
@@ -47,15 +42,9 @@ public class FakeRobot extends TimedRobot {
         var omega = 0;
 
         Rotation2d robotToGoalAngle = new Rotation2d(fieldPose.getX(), fieldPose.getY()).rotateBy(Rotation2d.fromDegrees(180.0));
-<<<<<<< HEAD
         double measurement = fieldPose.getRotation().getRadians();
         double setpoint = robotToGoalAngle.getRadians();
         double pid = turnPID.calculate(measurement, setpoint);
-=======
-        double pid = turnPID.calculate(fieldPose.getRotation().getDegrees(), robotToGoalAngle.getDegrees());
-
-//        omega += VisionFollowerController.getFeedforward(new Translation2d(vx, vy), fieldPose);
->>>>>>> 5acf47330e1caf58c6ca5152fd07566e5a999bb8
         omega += pid;
         omega += controller.getRawAxis(2) * 5;
 
@@ -67,6 +56,7 @@ public class FakeRobot extends TimedRobot {
 
         var pose = new Pose2d(fieldPose.getX() + 4, fieldPose.getY() + 4, fieldPose.getRotation());
         field.setRobotPose(pose);
+        field.getObject("Robot2").setPose(new Pose2d(pose.getTranslation(), new Rotation2d()));
 
         System.out.println(turnPID.getPositionError());
     }
