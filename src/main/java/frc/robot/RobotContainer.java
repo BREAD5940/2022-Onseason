@@ -31,7 +31,7 @@ public class RobotContainer {
   public static Intake rightIntake = new Intake(RIGHT_INTAKE_ID, TalonFXInvertType.CounterClockwise, RIGHT_INTAKE_PISTON_CHANNELS[0], RIGHT_INTAKE_PISTON_CHANNELS[1], 0);
   public static GutNeck gutNeck = new GutNeck();
   public static Vision vision = new Vision();
-  public static Climber climber = new Climber();
+  // public static Climber climber = new Climber();
   public static Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static XboxController driver = new XboxController(0);
   public static XboxController operator = new XboxController(1);
@@ -39,7 +39,7 @@ public class RobotContainer {
   public static AutonomusSelector autonomusSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
 
   public RobotContainer() {
-    swerve.setDefaultCommand(new DefaultDriveController(swerve, () -> 1.5));
+    swerve.setDefaultCommand(new DefaultDriveController(swerve));
     configureButtonBindings();
   }
 
@@ -54,14 +54,6 @@ public class RobotContainer {
 
     new JoystickButton(driver, Button.kRightBumper.value).whileHeld(
       new VisionFollowerController(swerve)
-    );
-
-    new JoystickButton(driver, Button.kLeftStick.value).whileHeld(
-      new DefaultDriveController(swerve, () -> ROBOT_MAX_SPEED)
-    );
-
-    new JoystickButton(driver, Button.kLeftBumper.value).whileHeld(
-      new DefaultDriveController(swerve, () -> ROBOT_MAX_SPEED)
     );
 
   }

@@ -254,8 +254,8 @@ public class MK4iSwerveModule {
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
         drive.selectProfileSlot(1, 0);
-        drive.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
+        drive.setStatusFramePeriod(StatusFrame.Status_1_General, 97);
+        drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10);
 
         // Create CAN Coder object
         azimuth = new CANCoder(azimuthID);
@@ -283,8 +283,8 @@ public class MK4iSwerveModule {
         steer.set(ControlMode.Velocity, 0.0);
         TalonUtil.checkError(steer.configAllSettings(steerConfig), moduleIdentifier + " steer motor configuration failed");
         steer.selectProfileSlot(0, 0);
-        steer.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
+        steer.setStatusFramePeriod(StatusFrame.Status_1_General, 99);
+        steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10);
 
     }
 

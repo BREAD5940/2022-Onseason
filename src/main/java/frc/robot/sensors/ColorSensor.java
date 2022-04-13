@@ -48,14 +48,6 @@ public class ColorSensor {
         return sensor.getBlue() == 0.0 && sensor.getGreen() == 0.0 && sensor.getRed() == 0.0;
     }
 
-    public void initalize() {
-        sensor = new ColorSensorV3(port);
-        sensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain1x);
-        match.addColorMatch(redBallTarget);
-        match.addColorMatch(blueBallTarget);
-        match.addColorMatch(noneTarget);
-    }
-
     public double[] getRaw() {
         Color color = sensor.getColor();
         return new double[] {

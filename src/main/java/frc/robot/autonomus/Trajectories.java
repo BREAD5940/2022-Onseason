@@ -62,22 +62,22 @@ public class Trajectories {
         true,
         List.of(
             new Pose2d(6.224, 7.022, new Rotation2d(-0.226)),
-            new Pose2d(7.398 - Units.inchesToMeters(2.0), 6.8, new Rotation2d(-0.137))
+            new Pose2d(7.398 - Units.inchesToMeters(4.0), 6.8, new Rotation2d(-0.137))
         ), 2.8, 1.8, 0.0, 0.0
     );
 
     public static Trajectory getUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.398 - Units.inchesToMeters(2.0), 6.8, new Rotation2d(1.666)),
-            new Pose2d(7.352 - Units.inchesToMeters(2.0), 7.324 - Units.inchesToMeters(5.0), new Rotation2d(1.649))
+            new Pose2d(7.398 - Units.inchesToMeters(4.0), 6.8, new Rotation2d(1.666)),
+            new Pose2d(7.352 - Units.inchesToMeters(4.0), 7.324 - Units.inchesToMeters(3.0), new Rotation2d(1.649))
         ), 2.8, 1.8, 0.0, 0.0
     );
 
     public static Trajectory returnUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.352 - Units.inchesToMeters(2.0), 7.324 - Units.inchesToMeters(5.0), new Rotation2d(-2.623)),
+            new Pose2d(7.352 - Units.inchesToMeters(4.0), 7.324 - Units.inchesToMeters(3.0), new Rotation2d(-2.623)),
             new Pose2d(6.203, 6.858, new Rotation2d(-2.431))
         ), 2.8, 1.8, 0.0, 0.0
     );

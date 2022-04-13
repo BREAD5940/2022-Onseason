@@ -3,7 +3,6 @@ package frc.robot.subsystems.vision;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.commons.TimestampedPose2d;
 
 public class RobotPositionHistory {
 
@@ -12,7 +11,7 @@ public class RobotPositionHistory {
     public static void update(double timestamp, Pose2d pose) {
         timeInterpolatingTreeMap.put(timestamp, pose);
 
-        if (timeInterpolatingTreeMap.size() > 50.0) {
+        if (timeInterpolatingTreeMap.size() > 50.0 * 20) {
             timeInterpolatingTreeMap.pollFirstEntry();
         }
     }
@@ -23,10 +22,9 @@ public class RobotPositionHistory {
         if (ceil == null) return floor.getValue();
         if (floor == null) return ceil.getValue();
         if (ceil.getValue().equals(floor.getValue())) return ceil.getValue();
-        double t = (timestamp - floor.getKey()) / (ceil.getKey() - floor.getKey()); // Value between 0 and 1 signifying the distance the interpolated point is between the ceiling and floor keys
-        return new TimestampedPose2d(
-            timestamp, 
-            floor.getValue().interpolate(ceil.getValue(), t)
+        return floor.getValue().interpolate(
+            ceil.getValue(), 
+            (timestamp - floor.getKey()) / (ceil.getKey() - floor.getKey())
         );
     }
 

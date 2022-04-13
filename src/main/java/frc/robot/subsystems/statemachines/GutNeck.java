@@ -66,8 +66,8 @@ public class GutNeck extends SubsystemBase {
         gutMotor.setInverted(TalonFXInvertType.Clockwise);
         TalonUtil.checkError(gutMotor.configAllSettings(gutConfig), "Gut Motor Configuration Failed");
         gutMotor.selectProfileSlot(0, 0);
-        gutMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        gutMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        gutMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 199);
+        gutMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 197);
 
         // Configure the neck motor
         TalonFXConfiguration neckConfig = new TalonFXConfiguration();
@@ -81,8 +81,8 @@ public class GutNeck extends SubsystemBase {
         neckMotor.set(ControlMode.Velocity, 0.0);
         TalonUtil.checkError(neckMotor.configAllSettings(neckConfig), "Neck Motor Configuration Failed");
         neckMotor.selectProfileSlot(0, 0);
-        neckMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        neckMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        neckMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 223);
+        neckMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 211);
     }
 
     // Returns the output of the left beam break
@@ -357,7 +357,12 @@ public class GutNeck extends SubsystemBase {
 
             // Outputs
             commandGutSurfaceSpeed(0.0);
-            commandNeckSurfaceSpeed(2.5);
+            if (RobotContainer.shooter.getSystemState()==ShooterState.AT_SETPOINT) {
+                commandNeckSurfaceSpeed(2.5);
+            }  else {
+                commandNeckSurfaceSpeed(0.0);
+                ballsExpelledFromNeck = false;
+            }
 
             if (!getMiddleBeamBreakTriggered() && !getTopBeamBreakTriggered() && !ballsExpelledFromNeck) {
                 ballsExpelledFromNeck = true;

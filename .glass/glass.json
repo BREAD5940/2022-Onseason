@@ -13,6 +13,13 @@
       "/LiveWindow/GutNeck": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/IntakePneumatics": "Subsystem",
+      "/LiveWindow/Ungrouped/PIDController[100]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[101]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[102]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[103]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[104]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[105]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[106]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
@@ -104,20 +111,21 @@
       "/LiveWindow/Ungrouped/PIDController[90]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[91]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[92]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[93]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[94]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[95]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[96]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[97]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[98]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[99]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/LiveWindow/Vision": "Subsystem",
       "/SmartDashboard/Autonomus Selector": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/SendableChooser[1]": "String Chooser"
-    },
-    "windows": {
-      "/SmartDashboard/Field": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables Settings": {
@@ -437,7 +445,16 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Current Robot Angle"
+              "id": "NT:/SmartDashboard/Vision Follower Measurement"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Vision Follower Setpoint"
             }
           ]
         }

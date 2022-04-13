@@ -84,7 +84,7 @@ public final class Constants {
         public static final double GUT_PULLEY_DIAMETER = Units.inchesToMeters(1.0);
         public static final double MAX_GUT_FALCON_SHAFT_SPEED = 5366.082442; // RPM
         public static final double MAX_GUT_SURFACE_SPEED = (MAX_GUT_FALCON_SHAFT_SPEED * GUT_GEARING * Math.PI * GUT_PULLEY_DIAMETER)/60.0;
-        public static final double GUT_INTAKING_SPEED = 2.0;
+        public static final double GUT_INTAKING_SPEED = 2.5;
 
         // Color Sensor Targets
         public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
@@ -193,10 +193,12 @@ public final class Constants {
         public static final String CAMERA_NAME = "BreadCam";
 
         // Measurements/Constants
-        public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(31.0);
+        public static final double LENS_HEIGHT_METERS = Units.inchesToMeters(35.5);
+        public static final double MOUNTING_YAW = Units.degreesToRadians(3.57);
         public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(104.0);
-        public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(30.0);
-        public static final double MAX_SHOT_DISTANCE = 4.3; // Distance in meters
+        public static final double MOUNTING_PITCH = Units.degreesToRadians(27.0);
+        public static final double CAMERA_TO_CENTER = Units.inchesToMeters(13.75);
+        public static final double MAX_SHOT_DISTANCE = 5.3; // Distance in meters
 
         // Camera
         public static final double STREAM_RESOLUTION_X = 960.0;
@@ -216,8 +218,8 @@ public final class Constants {
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
 
         // Two Cargo Auto Setpoints
-        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1700.0;
-        public static final double TWO_SHOT_HOOD_ANGLE = 24.0;
+        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1800.0;
+        public static final double TWO_SHOT_HOOD_ANGLE = 23.0;
 
         // Three Cargo Auto Setpoints
         public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1625.0;
@@ -231,7 +233,7 @@ public final class Constants {
         public static final double SECOND_SHOT_HOOD_ANGLE = 24.0;
 
         // Billiards Auto Setpoints
-        public static final double BILLIARDS_FLYWHEEL_VELOCITY = 1725.0;
+        public static final double BILLIARDS_FLYWHEEL_VELOCITY = 1800.0;
         public static final double BILLIARDS_HOOD_ANGLE = 23.0;
 
         // Bumper Shot Setpoints
@@ -240,7 +242,7 @@ public final class Constants {
 
         // Measurements
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
-        public static final double BALL_FLIGHT_TIME = 1.25;
+        public static final double BALL_FLIGHT_TIME = 0.75;
         public static final double RADIUS_TO_BACK_BUMPER = Units.inchesToMeters(137.5);
         public static final double RADIUS_TO_ROBOT_CENTER = RADIUS_TO_BACK_BUMPER - Drive.ROBOT_LENGTH/2;
         public static final double LIMELIGHT_MOUNTING_ANGLE_ERROR = 3.41; // Degrees

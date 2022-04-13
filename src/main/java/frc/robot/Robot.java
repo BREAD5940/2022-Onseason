@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -7,17 +10,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Climber;
 import frc.robot.sensors.ColorSensor.BallColor;
-import frc.robot.subsystems.climber.Climber.ClimberActions;
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
+import static frc.robot.Constants.Climber.*;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
   public static BallColor allianceColor = BallColor.RED;
-  private ClimberActions nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
   private boolean climbing = false;
   private double lastResetToAbsolute = 0.0;
   private double lastCheckedColorSensorConnected = 0.0;
@@ -25,6 +28,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    SmartDashboard.putNumber("Flywheel Set", 0.0);
+    SmartDashboard.putNumber("Hood Set", 0.0);
   }
 
   @Override
@@ -32,13 +37,12 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     double[] d = RobotContainer.gutNeck.colorSensor.getRaw();
+    SmartDashboard.putNumber("R", d[0]);
+    SmartDashboard.putNumber("G", d[1]);
+    SmartDashboard.putNumber("B", d[2]);
 
-    if ((RobotController.getFPGATime()/1.0E6) - lastCheckedColorSensorConnected > 1.0) {
-      if (d[0] == 0.0 && d[1] == 0.0 && d[2] == 0.0) {
-        RobotContainer.gutNeck.colorSensor.initalize();
-      }
-      lastCheckedColorSensorConnected = RobotController.getFPGATime()/1.0E6;
-    }
+    SmartDashboard.putNumber("Latest Vision Pose Heading", getLatestVisonPoseEstimate().getRotation().getDegrees());
+    SmartDashboard.putNumber("Rotation Pose", RobotContainer.swerve.getPose().getRotation().getDegrees());
   }
 
   @Override
@@ -53,6 +57,11 @@ public class Robot extends TimedRobot {
       RobotContainer.swerve.resetAllToAbsolute();
       lastResetToAbsolute = RobotController.getFPGATime()/1.0E6;
     }
+    // if (RobotContainer.operator.getAButton()) {
+    //   RobotContainer.climber.commandNeutralMode(true);
+    // } else {
+    //   RobotContainer.climber.commandNeutralMode(false);
+    // }
   }
 
   @Override
@@ -76,18 +85,21 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {    
-    RobotContainer.gutNeck.acceptOpposingCargo(false);
+    // RobotContainer.gutNeck.acceptOpposingCargo(false);
+    // CHANGFE BNACKLJ AIRF JLAKWEFA:IOWE
+    // kljldsjlkdjfslkjlksfkldj
     // Set alliance color
     allianceColor = DriverStation.getAlliance() == Alliance.Red ? BallColor.RED : BallColor.BLUE;
     
     RobotContainer.swerve.setDriveSlots(0);
 
-    nextClimberAction = ClimberActions.GO_TO_MID_RUNG_HEIGHT;
     RobotContainer.operator.getAButtonPressed();
     RobotContainer.operator.getYButtonPressed();
     climbing = false;
 
     lastCheckedColorSensorConnected = RobotController.getFPGATime()/1.0E6;
+
+    // RobotContainer.climber.commandNeutralMode(true);
   }
 
   @Override
@@ -106,10 +118,25 @@ public class Robot extends TimedRobot {
     RobotContainer.shooter.requestIdle();
   }
 
+  private Pose2d getLatestVisonPoseEstimate() {
+    double yawDegrees = RobotContainer.vision.getYaw();
+    double targetToCameraMeters = RobotContainer.vision.getCameraToCenterOfHub();
+    double visionTimestampSeconds = RobotContainer.vision.getMeasurementTimestamp(); 
+    Pose2d visionEstimatedPose = new Pose2d(
+        -targetToCameraMeters, 0.0,
+        Rotation2d.fromDegrees(-yawDegrees)
+    );   
+    Pose2d adjustedVisionEstimatePose = new Pose2d(
+        visionEstimatedPose.getTranslation().plus(new Translation2d(-CAMERA_TO_CENTER, visionEstimatedPose.getRotation())),
+        visionEstimatedPose.getRotation()
+    );
+    return adjustedVisionEstimatePose;
+}
+
   // Method to handle teleoperated controls
   public void configureTeleopControls() {
 
-    double distance = RobotContainer.vision.getDistance();
+    double distance = RobotContainer.vision.getCameraToCenterOfHub();
 
     SmartDashboard.putBoolean("Valid Shot Distance", distance<=MAX_SHOT_DISTANCE);
 
@@ -121,7 +148,7 @@ public class Robot extends TimedRobot {
     } else if (RobotContainer.driver.getRightStickButton()||RobotContainer.driver.getRightBumper()) {
       RobotContainer.vision.setLEDsOn(true);
       // RobotContainer.shooter.requestShoot(SmartDashboard.getNumber("Flywheel Tuning", 0.0), SmartDashboard.getNumber("Hood Tuning", 8.5));
-      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&distance<=MAX_SHOT_DISTANCE) {
+      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&distance<=MAX_SHOT_DISTANCE&&RobotContainer.driver.getLeftStickButton()) {
         RobotContainer.gutNeck.requestShoot(true);
       }
     } else {
@@ -172,6 +199,13 @@ public class Robot extends TimedRobot {
       RobotContainer.rightIntake.requestOuttakeExtended(false);
     } 
 
+    // Driver Max Speeds
+    if (RobotContainer.driver.getLeftTriggerAxis() > 0.1 || RobotContainer.driver.getRightTriggerAxis() > 0.1) {
+      RobotContainer.swerve.defaultDriveSpeed = 1.5;
+    } else {
+      RobotContainer.swerve.defaultDriveSpeed = 4.0;
+    }
+
     // Overrides the gutneck intake signals from the driver
     if (RobotContainer.operator.getLeftTriggerAxis() > 0.1) {
       RobotContainer.gutNeck.requestIntakeLeft(true);
@@ -193,16 +227,21 @@ public class Robot extends TimedRobot {
       RobotContainer.gutNeck.acceptOpposingCargo(true);
     } 
 
-    // "Auto" Climber Buttons
-    if (RobotContainer.operator.getAButtonPressed()) {
-      if (nextClimberAction != ClimberActions.DONE) 
-        CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-      nextClimberAction = RobotContainer.climber.getNextClimberAction(nextClimberAction);
-    }
-    if (RobotContainer.operator.getBButtonPressed()) {
-      nextClimberAction = RobotContainer.climber.getPreviousClimberAction(nextClimberAction);
-      CommandScheduler.getInstance().schedule(RobotContainer.climber.getCommandFromAction(nextClimberAction));
-    }
+    // Handle Temp Climber Controls
+    // if (RobotContainer.operator.getRightTriggerAxis() > 0.1) {
+    //   RobotContainer.climber.commandPercent(RobotContainer.operator.getRightTriggerAxis() * 0.45);
+    // } else if (RobotContainer.operator.getLeftTriggerAxis() > 0.1) {
+    //   RobotContainer.climber.commandPercent(-RobotContainer.operator.getLeftTriggerAxis() * 0.45);
+    // } else {
+    //   RobotContainer.climber.commandPercent(0.0);
+    // }
+
+    // if (RobotContainer.operator.getAButtonPressed()) {
+    //   RobotContainer.climber.commandSolenoidsForward();
+    // }
+    // if (RobotContainer.operator.getBButtonPressed()) {
+    //   RobotContainer.climber.commandSolenoidsReversed();
+    // }
 
     if (RobotContainer.operator.getYButtonPressed()) {
       if (climbing) {

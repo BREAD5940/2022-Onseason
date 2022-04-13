@@ -85,8 +85,8 @@ public class Shooter extends SubsystemBase {
         rightFlywheelMotor.setInverted(RIGHT_MOTOR_DIRECTION);
         rightFlywheelMotor.follow(leftFlywheelMotor);
         rightFlywheelMotor.enableVoltageCompensation(true);
-        rightFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        rightFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        rightFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 239);
+        rightFlywheelMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 233);
 
         // Configure hood motor 
         hoodEncoder.setPositionConversionFactor(HOOD_GEARING * 360.0);
@@ -225,7 +225,7 @@ public class Shooter extends SubsystemBase {
         ShooterState nextSystemState = systemState;
         if (systemState == ShooterState.HOMING) {
             // Outputs
-            commandHoodVoltage(-3);
+            commandHoodVoltage(-1.5);
             commandFlywheelVelocity(0.0);
 
             // State transitions

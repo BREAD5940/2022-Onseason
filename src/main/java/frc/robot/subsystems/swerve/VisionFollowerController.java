@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,42 +9,44 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.commons.TimestampedPose2d;
 import frc.robot.interpolation.BallFlightTimeInterpolatingTable;
 import frc.robot.interpolation.InterpolatingTable;
 import frc.robot.interpolation.ShotParameter;
 import frc.robot.subsystems.vision.RobotPositionHistory;
-import static frc.robot.Constants.Drive.*;
+import static frc.robot.Constants.Vision.*;
 
 public class VisionFollowerController extends CommandBase {
 
     private final Swerve swerve;
     private final PIDController turnPID = new PIDController(
-        10, 0, 0.004
+        8, 0, 0
     );
 
     public VisionFollowerController(Swerve swerve) {
         this.swerve = swerve;
         addRequirements(swerve);
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
+        turnPID.setTolerance(Units.degreesToRadians(2.0));
     }
 
     @Override
-    public void initialize() {
-        RobotPositionHistory.clear();
-    }
+    public void initialize() { }
 
     @Override
     public void execute() {
 
         // Set the pose estimate to the latest vision measurement
-        TimestampedPose2d visionPoseEstimate = getLatestVisonPoseEstimate();
+        Pair<Pose2d, Double> timestampedVisionPoseEstimate = getLatestVisonPoseEstimate();
+        Pose2d visionPoseEstimate = timestampedVisionPoseEstimate.getFirst();
+        double associatedTimestamp = timestampedVisionPoseEstimate.getSecond();
         
         // Calculate pose relative to the target (factoring in wheel speeds)
         Pose2d currentAbsolutePose = swerve.getPose();
-        Pose2d absolutePoseAtVisionTimestamp = RobotPositionHistory.get(visionPoseEstimate.getAssociatedTimestamp());
+        SmartDashboard.putNumber("Vision Pose Estimate", associatedTimestamp);
+        Pose2d absolutePoseAtVisionTimestamp = RobotPositionHistory.get(associatedTimestamp);
         Transform2d changeInPose = currentAbsolutePose.minus(absolutePoseAtVisionTimestamp);
         changeInPose = new Transform2d(
             changeInPose.getTranslation().rotateBy(visionPoseEstimate.getRotation().minus(currentAbsolutePose.getRotation())), 
@@ -75,6 +79,10 @@ public class VisionFollowerController extends CommandBase {
         double measurement = adjustedPoseEstimate.getRotation().getRadians();
         double setpoint = robotToShotAimPointAngle.getRadians();
         double pid = turnPID.calculate(measurement, setpoint);
+        double clampAdd = 1 + Math.abs(setpoint - measurement) * (2/Math.PI);
+        pid = MathUtil.clamp(pid, -clampAdd, clampAdd);
+
+        SmartDashboard.putNumber("Vision Follower Distance", robotToAdjustedTargetDistance);
 
         // Handles x and y translation (manually controlled)
         double x = RobotContainer.driver.getRightY();
@@ -84,6 +92,15 @@ public class VisionFollowerController extends CommandBase {
 
         // Sets the speeds of the swerve drive 
         swerve.setSpeeds(dx, dy, ff + pid);
+
+        if (turnPID.atSetpoint()) {
+            swerve.setAtVisionHeadingSetpoint(true);
+        } else {
+            swerve.setAtVisionHeadingSetpoint(false);
+        }
+
+        SmartDashboard.putNumber("Vision Follower Setpoint", Units.radiansToDegrees(setpoint));
+        SmartDashboard.putNumber("Vision Follower Measurement", Units.radiansToDegrees(measurement));
     }
 
     @Override
@@ -92,15 +109,19 @@ public class VisionFollowerController extends CommandBase {
         swerve.setSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0));
     }
     
-    private TimestampedPose2d getLatestVisonPoseEstimate() {
+    private Pair<Pose2d, Double> getLatestVisonPoseEstimate() {
         double yawDegrees = RobotContainer.vision.getYaw();
-        double targetToCameraMeters = RobotContainer.vision.getDistance() + Units.inchesToMeters(UPPER_HUB_RADIUS);
+        double targetToCameraMeters = RobotContainer.vision.getCameraToCenterOfHub();
         double visionTimestampSeconds = RobotContainer.vision.getMeasurementTimestamp(); 
         Pose2d visionEstimatedPose = new Pose2d(
             -targetToCameraMeters, 0.0,
             Rotation2d.fromDegrees(-yawDegrees)
         );   
-        return new TimestampedPose2d(visionTimestampSeconds, visionEstimatedPose);
+        Pose2d adjustedVisionEstimatePose = new Pose2d(
+            visionEstimatedPose.getTranslation().plus(new Translation2d(-CAMERA_TO_CENTER, visionEstimatedPose.getRotation())),
+            visionEstimatedPose.getRotation()
+        );
+        return new Pair<Pose2d, Double>(adjustedVisionEstimatePose, visionTimestampSeconds);
     }
     
 }

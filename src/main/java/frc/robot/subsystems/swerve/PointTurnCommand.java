@@ -25,13 +25,12 @@ public class PointTurnCommand extends CommandBase {
         this.headingSupplier = headingSupplier;
         addRequirements(swerve);
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
-        turnPID.reset(swerve.getPose().getRotation().getRadians());
         turnPID.setTolerance(Units.degreesToRadians(2.0));    
     }
 
     @Override
     public void initialize() {
-        turnPID.setTolerance(Units.degreesToRadians(2.0));
+        turnPID.reset(swerve.getPose().getRotation().getRadians());
     }
 
     @Override

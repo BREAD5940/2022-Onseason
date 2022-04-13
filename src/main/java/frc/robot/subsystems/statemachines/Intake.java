@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.drivers.TalonFXFactory;
 import frc.robot.drivers.TalonUtil;
 
@@ -32,8 +33,8 @@ public class Intake extends SubsystemBase {
         config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80.0, 80.0, 1.5);
         motor.setInverted(invertType);
         motor.setNeutralMode(NeutralMode.Coast);
-        motor.setStatusFramePeriod(StatusFrame.Status_1_General, 100);
-        motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+        motor.setStatusFramePeriod(StatusFrame.Status_1_General, 229);
+        motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 227);
         TalonUtil.checkError(motor.configAllSettings(config), "Intake Configuration with ID " + motorID + " Failed");
 
         // Configure the double solenoid

@@ -10,12 +10,16 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commons.BreadUtil;
+import frc.robot.subsystems.vision.RobotPositionHistory;
 
 import static frc.robot.Constants.Drive.*;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.AHRS;
 
 public class Swerve extends SubsystemBase {
+
+    public double defaultDriveSpeed = 3.0;
 
     // Gyro
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
@@ -109,7 +113,7 @@ public class Swerve extends SubsystemBase {
             bl.getState(),
             br.getState()
         );
-        // RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
+        RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
     }
