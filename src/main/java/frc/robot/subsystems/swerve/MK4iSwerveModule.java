@@ -249,7 +249,7 @@ public class MK4iSwerveModule {
         driveConfig.voltageCompSaturation = 12.0;
         driveConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 80.0, 80.0, 1.5);
         drive.setInverted(driveDirection);
-        drive.setNeutralMode(NeutralMode.Brake);
+        drive.setNeutralMode(NeutralMode.Brake); // TODO change back
         TalonUtil.checkError(drive.configAllSettings(driveConfig), moduleIdentifier + " drive motor configuration failed");
         drive.set(ControlMode.Velocity, 0.0);
         drive.enableVoltageCompensation(true);
@@ -285,7 +285,6 @@ public class MK4iSwerveModule {
         steer.selectProfileSlot(0, 0);
         steer.setStatusFramePeriod(StatusFrame.Status_1_General, 99);
         steer.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10);
-
     }
 
     public void setDriveSlot(int slot) {

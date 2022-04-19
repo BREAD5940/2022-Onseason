@@ -24,7 +24,7 @@ public class DefaultDriveController extends CommandBase {
         double y = RobotContainer.driver.getRightX();
         double omega = RobotContainer.driver.getLeftX();
         double dx = xLimit.calculate(Math.abs(x) > 0.05 ? Math.pow(-x, 1) * swerve.defaultDriveSpeed : 0.0);
-        double dy = yLimit.calculate(Math.abs(y) > 0.05 ? Math.pow(-y, 1) * swerve.defaultDriveSpeed: 0.0);
+        double dy = yLimit.calculate(Math.abs(y) > 0.05 ? Math.pow(-y, 1) * swerve.defaultDriveSpeed : 0.0);
         double rot = Math.abs(omega) > 0.05 ? Math.pow(-omega, 3) * 2 : 0.0;
         swerve.setSpeeds(dx, dy, rot);
     }

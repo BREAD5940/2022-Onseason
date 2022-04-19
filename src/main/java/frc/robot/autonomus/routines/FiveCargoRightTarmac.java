@@ -43,7 +43,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new PointTurnCommand(
                 () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
                 swerve
-            ),
+            ).withTimeout(0.5),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }),
@@ -62,7 +62,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new PointTurnCommand(
                 () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
                 swerve
-            ),
+            ).withTimeout(0.5),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }),
@@ -74,6 +74,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                 swerve
             ).beforeStarting(() -> {
                 gutNeck.requestShoot(false);
+                shooter.requestShoot(THIRD_SHOT_FLYWHEEL_VELOCITY, THIRD_SHOT_HOOD_ANGLE);
             }),
             new WaitCommand(0.25),
             new TrajectoryFollowerController(
@@ -85,7 +86,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
             new PointTurnCommand(
                 () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
                 swerve
-            ),
+            ).withTimeout(0.5),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             })

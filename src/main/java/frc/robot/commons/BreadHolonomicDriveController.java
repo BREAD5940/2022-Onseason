@@ -4,8 +4,8 @@
 
 package frc.robot.commons;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -24,16 +24,14 @@ import edu.wpi.first.math.trajectory.Trajectory;
  */
 @SuppressWarnings("MemberName")
 public class BreadHolonomicDriveController {
-  private Pose2d m_poseError = new Pose2d();
-  private Rotation2d m_rotationError = new Rotation2d();
+  public Pose2d m_poseError = new Pose2d();
+  public Rotation2d m_rotationError = new Rotation2d();
   private Pose2d m_poseTolerance = new Pose2d();
   private boolean m_enabled = true;
 
   private final PIDController m_xController;
   private final PIDController m_yController;
-  private final ProfiledPIDController m_thetaController;
-
-  private boolean m_firstRun = true;
+  private final PIDController m_thetaController;
 
   /**
    * Constructs a holonomic drive controller.
@@ -44,7 +42,7 @@ public class BreadHolonomicDriveController {
    */
   @SuppressWarnings("ParameterName")
   public BreadHolonomicDriveController(
-      PIDController xController, PIDController yController, ProfiledPIDController thetaController) {
+      PIDController xController, PIDController yController, PIDController thetaController) {
     m_xController = xController;
     m_yController = yController;
     m_thetaController = thetaController;
@@ -89,16 +87,16 @@ public class BreadHolonomicDriveController {
       Pose2d currentPose, Pose2d poseRef, double linearVelocityRefMeters, Rotation2d angleRef) {
     // If this is the first run, then we need to reset the theta controller to the current pose's
     // heading.
-    if (m_firstRun) {
-      m_thetaController.reset(currentPose.getRotation().getRadians());
-      m_firstRun = false;
-    }
 
     // Calculate feedforward velocities (field-relative).
     double xFF = linearVelocityRefMeters * poseRef.getRotation().getCos();
     double yFF = linearVelocityRefMeters * poseRef.getRotation().getSin();
-    double thetaFF =
-        m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
+    double clampAdd = 1 + Math.abs(angleRef.getRadians() - currentPose.getRotation().getRadians()) * (2/Math.PI);
+    double thetaFF = MathUtil.clamp(
+        m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians()),
+        -clampAdd,
+        clampAdd
+    );
 
     m_poseError = poseRef.relativeTo(currentPose);
     m_rotationError = angleRef.minus(currentPose.getRotation());

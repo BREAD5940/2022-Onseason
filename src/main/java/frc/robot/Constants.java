@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -39,20 +40,24 @@ public final class Constants {
         public static final boolean[] AZIMUTHS_ARE_REVERSED = {false, false, false, false};
 
         // Offsets (calculate offsets by measuring the values shown in the pheonix tuner self-test snapshot when all offsets are set to 0.0)
-        // Offsers change on boot
+        // Offsets change on boot
         public static final Rotation2d[] AZIMUTH_OFFSETS = {
-            Rotation2d.fromDegrees(-106.12), // FL
-            Rotation2d.fromDegrees(54.053), // FR
-            Rotation2d.fromDegrees(-57.744), // BL
-            Rotation2d.fromDegrees(-41.748) //BR
+            Rotation2d.fromDegrees(-106.12-33.223), // FL
+            Rotation2d.fromDegrees(54.053+0.527), // FR
+            Rotation2d.fromDegrees(-57.74-0.967), // BL
+            Rotation2d.fromDegrees(-41.748-0.176) //BR
         };
+
+        // Drive-by shooting constants
+        public static final double TANGENTIAL_SHOT_SCALAR = 0.6;
+        public static final double RADIAL_SHOT_SCALAR = 0.9;
 
         // Measurements/Gearings
         public static final double MODULE_GEARING = (14.0/50.0) * (28.0/16.0) * (15.0/45.0);
         public static final double ROBOT_WIDTH = Units.inchesToMeters(25.0);
         public static final double ROBOT_LENGTH = Units.inchesToMeters(30.0);
         // Madtown field callibration constant factor is 0.97
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0) * 0.9442667069 * 1.0;
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0) * 0.9442667069;
         public static final Translation2d FIELD_TO_TARGET = new Translation2d(Units.feetToMeters(27), Units.feetToMeters(13.5));
         public static final double CAMERA_TO_SHOOTER_DISTANCE = Units.inchesToMeters(15.0);
         public static final double UPPER_HUB_RADIUS = Units.inchesToMeters(53.38)/2;
@@ -87,9 +92,17 @@ public final class Constants {
         public static final double GUT_INTAKING_SPEED = 2.5;
 
         // Color Sensor Targets
-        public static final Color COLOR_SENSOR_RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
-        public static final Color COLOR_SENSOR_BLUE_TARGET = new Color(0.1181640625, 0.3466796875, 0.53125);
-        public static final Color COLOR_SENSOR_NONE_TARGET = new Color(0.2470703125, 0.46923828125, 0.2841796875);
+        // public static final Color RED_TARGET = new Color(0.559326, 0.333740, 0.107422);
+        // public static final Color BLUE_TARGET = new Color(0.133545, 0.393555, 0.473389);
+        // public static final Color NONE_TARGET = new Color(0.260010, 0.480225, 0.260010);
+
+        // public static final Color RED_TARGET = new Color(0.5712890625, 0.31103515625, 0.1181640625);
+        // public static final Color BLUE_TARGET = new Color(0.1181640625, 0.3466796875, 0.53125);
+        // public static final Color NONE_TARGET = new Color(0.2470703125, 0.46923828125, 0.2841796875);
+
+        public static final Color RED_TARGET = new Color(0.551514, 0.328613, 0.111084);
+        public static final Color BLUE_TARGET = new Color(0.136963, 0.375244, 0.488281);
+        public static final Color NONE_TARGET = new Color(0.243408, 0.486572, 0.270508);
     }   
 
     // Constants pertaining to the dual intake subsystem go here
@@ -171,13 +184,14 @@ public final class Constants {
         public static final double CLIMBER_GEARING = 1.0/12.86;
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
         public static final double CLIMBER_MINIMUM_TRAVEL = 0;
-        public static final double CLIMBER_RETRACTED_HEIGHT = 0.00025;
-        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.536372477688169;
-        public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.5;
-        public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.61;
+        public static final double CLIMBER_RETRACTED_HEIGHT = 0.005;
+        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.543980 + Units.inchesToMeters(0.5);
+        public static final double CILMBER_RELEASE_FROM_RUNG = 0.091646;
+        public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.427754;
+        public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.625;
         public static final double CLIMBER_HEIGHT_PULLED_OFF = 0;
         public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = 0.61;
-        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.615025221351613;
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.630042;
         public static final double CLIMBER_SETPOINT_TOLERANCE = 0.01;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 
@@ -219,18 +233,21 @@ public final class Constants {
 
         // Two Cargo Auto Setpoints
         public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1800.0;
-        public static final double TWO_SHOT_HOOD_ANGLE = 23.0;
+        public static final double TWO_SHOT_HOOD_ANGLE = 24.0;
 
         // Three Cargo Auto Setpoints
         public static final double THREE_SHOT_FLYWHEEL_VELOCITY = 1625.0;
         public static final double THREE_SHOT_HOOD_ANGLE = 25.0;
 
         // Five Cargo Auto Setpoints
-        public static final double FIRST_SHOT_FLYWHEEL_VELOCITY = 1450.0;
-        public static final double FIRST_SHOT_HOOD_ANGLE = 24.0;
+        public static final double FIRST_SHOT_FLYWHEEL_VELOCITY = 1610.0;
+        public static final double FIRST_SHOT_HOOD_ANGLE = 16.0;
 
         public static final double SECOND_SHOT_FLYWHEEL_VELOCITY = 1725.0;
         public static final double SECOND_SHOT_HOOD_ANGLE = 24.0;
+
+        public static final double THIRD_SHOT_FLYWHEEL_VELOCITY = 1850.0;
+        public static final double THIRD_SHOT_HOOD_ANGLE = 18.0;
 
         // Billiards Auto Setpoints
         public static final double BILLIARDS_FLYWHEEL_VELOCITY = 1800.0;

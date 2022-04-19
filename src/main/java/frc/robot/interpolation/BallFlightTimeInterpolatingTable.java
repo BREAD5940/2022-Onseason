@@ -10,8 +10,8 @@ public class BallFlightTimeInterpolatingTable {
 
     private BallFlightTimeInterpolatingTable() {}
 
-    // private static double scalar = 1.0; // TODO Change back
-    private static double scalar = 0.6067961165;
+    private static double scalar = 1.0; // TODO Change back
+    // private static double scalar = 0.6067961165;
 
     private static TreeMap<Double, Double> table = new TreeMap<>(
         Map.ofEntries(

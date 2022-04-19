@@ -3,14 +3,13 @@ package frc.robot.subsystems.swerve;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commons.BreadHolonomicDriveController;
 
@@ -24,10 +23,7 @@ public class TrajectoryFollowerController extends CommandBase {
     public final BreadHolonomicDriveController autonomusController = new BreadHolonomicDriveController(
         new PIDController(8, 0, 0), 
         new PIDController(8, 0, 0), 
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints( // P was 6 at madtown field
-            Units.degreesToRadians(360.0),
-            Units.degreesToRadians(180.0)
-        ))
+        new PIDController(6, 0, 0)
     );
 
     public TrajectoryFollowerController(Trajectory trajectory, BiFunction<Pose2d, Double, Rotation2d> refHeading, Supplier<Rotation2d> startHeading, Swerve swerve) {
@@ -56,6 +52,11 @@ public class TrajectoryFollowerController extends CommandBase {
         swerve.setSpeeds(
             adjustedSpeeds
         );
+        Pose2d poseError = autonomusController.m_poseError;
+        Rotation2d rotError = autonomusController.m_rotationError;
+        SmartDashboard.putNumber("Traj-X-Error", Units.metersToInches(poseError.getX()));
+        SmartDashboard.putNumber("Traj-Y-Error", Units.metersToInches(poseError.getY()));
+        SmartDashboard.putNumber("Traj-Theta-Error", rotError.getDegrees());
     }
 
     @Override

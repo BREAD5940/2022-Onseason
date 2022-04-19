@@ -316,6 +316,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Hood AtSetpoint", hoodAtSetpoint());
         SmartDashboard.putBoolean("FlywheelAtSetpoint", flywheelAtSetpoint());
         SmartDashboard.putBoolean("Hood Limit Switch Triggered", getHoodLimitSwitchTriggered());
+        flywheelCalibration = SmartDashboard.getNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
     }
 
     // Method to be called when you begin homing

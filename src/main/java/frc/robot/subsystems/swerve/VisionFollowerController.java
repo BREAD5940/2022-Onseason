@@ -17,6 +17,7 @@ import frc.robot.interpolation.InterpolatingTable;
 import frc.robot.interpolation.ShotParameter;
 import frc.robot.subsystems.vision.RobotPositionHistory;
 import static frc.robot.Constants.Vision.*;
+import static frc.robot.Constants.Drive.*;
 
 public class VisionFollowerController extends CommandBase {
 
@@ -62,9 +63,14 @@ public class VisionFollowerController extends CommandBase {
         double distanceToCenterOfHub = adjustedPoseEstimate.getTranslation().getNorm();
         double ff = -1 * tangentialSpeed / adjustedPoseEstimate.getTranslation().getNorm();
 
-        // Adjusted Target Position
+        // Construct the shot aim position
         double ballFlightTime = BallFlightTimeInterpolatingTable.get(distanceToCenterOfHub);
         Translation2d shotAimPosition = fieldRelativeVelocity.rotateBy(Rotation2d.fromDegrees(180.0)).times(ballFlightTime);
+
+        // Apply scalars to shot aim position
+        shotAimPosition = shotAimPosition.rotateBy(robotToGoalAngle.times(-1));
+        shotAimPosition = new Translation2d(shotAimPosition.getX() * RADIAL_SHOT_SCALAR, shotAimPosition.getY() * TANGENTIAL_SHOT_SCALAR);
+        shotAimPosition = shotAimPosition.rotateBy(robotToGoalAngle);
 
         // Get robot to adjusted target position
         Translation2d robotToShotAimPosition = shotAimPosition.minus(adjustedPoseEstimate.getTranslation());
@@ -79,7 +85,7 @@ public class VisionFollowerController extends CommandBase {
         double measurement = adjustedPoseEstimate.getRotation().getRadians();
         double setpoint = robotToShotAimPointAngle.getRadians();
         double pid = turnPID.calculate(measurement, setpoint);
-        double clampAdd = 1 + Math.abs(setpoint - measurement) * (2/Math.PI);
+        double clampAdd = 2 + Math.abs(setpoint - measurement) * (2/Math.PI);
         pid = MathUtil.clamp(pid, -clampAdd, clampAdd);
 
         SmartDashboard.putNumber("Vision Follower Distance", robotToAdjustedTargetDistance);

@@ -28,7 +28,7 @@ public class Climber extends SubsystemBase {
     // State variables
     private ClimberStates systemState = ClimberStates.STARTING_CONFIGURATION;
     private double climberSetpoint = -1.0;
-    private boolean extended = true;
+    private boolean extended = false;
     private boolean requestNextState = false;
     private boolean requestPreviousState = false;
     private double lastTransitionedFPGASeconds = 0.0;
@@ -58,8 +58,8 @@ public class Climber extends SubsystemBase {
         TalonUtil.checkError(bottomMotor.configAllSettings(bottomMotorConfig), "Bottom Climber Motor Configuration Failed");
         bottomMotor.setNeutralMode(NeutralMode.Brake);
         bottomMotor.follow(topMotor);
-        topMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 197);
-        topMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 193);
+        bottomMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 197);
+        bottomMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 193);
     }
 
     // Commands the max velocity of the climber
@@ -73,7 +73,7 @@ public class Climber extends SubsystemBase {
 
     // Commands the height setpoint of the climber
     public void commandHeightSetpoint(double meters, boolean isLifting) {
-        double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL + 0.01, CLIMBER_MAXIMUM_TRAVEL - 0.01));
+        double output = metersToIntegratedSensorUnits(MathUtil.clamp(meters, CLIMBER_MINIMUM_TRAVEL + 0.001, CLIMBER_MAXIMUM_TRAVEL - 0.001));
         topMotor.set(ControlMode.MotionMagic, output, DemandType.ArbitraryFeedForward, isLifting ? -0.16893148154 : 0.0);
     }
 
@@ -91,6 +91,11 @@ public class Climber extends SubsystemBase {
     // Commands the climber solenoids backward
     public void commandSolenoidsReversed() {
         climberSolenoids.set(Value.kReverse);
+    }
+
+    // Commands the climber to neutral
+    private void commandNeutral() {
+        topMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
     // Returns the position of the climber in meters
@@ -138,95 +143,135 @@ public class Climber extends SubsystemBase {
         STARTING_CONFIGURATION,
         READY_FOR_MID_RUNG,
         CLIMB_TO_MID_RUNG,
-        EXTENDED_BELOW_HIGH_RUNG,
-        READY_FOR_HIGH_RUNG,
-        LATCHED_TO_HIGH_RUNG,
-        CLIMB_TO_HIGH_RUNG,
-        EXTEND_TO_TRAVERSAL_RUNG,   
-        CLIMB_TO_TRAVERSAL
+        INTER_RELEASE_STATE,
+        RELEASE_FROM_MID_RUNG,
+        EXTENDED_BEFORE_HIGH_RUNG,
+        EXTENDED_ON_HIGH_RUNG,
+        POP_OFF, 
+        RETRACTED_DONE
     }
 
     @Override
     public void periodic() {
-        // ClimberStates nextSystemState = systemState;
-        // if (systemState == ClimberStates.STARTING_CONFIGURATION) {
-        //     // Outputs
-        //     commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, false);
-        //     handleSolenoidExtension(false);
+        ClimberStates nextSystemState = systemState;
+        if (systemState == ClimberStates.STARTING_CONFIGURATION) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, false);
+            handleSolenoidExtension(true);
 
-        //     // State Transitions
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.READY_FOR_MID_RUNG;
-        //         requestNextState = false;
-        //     } else if (requestPreviousState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         requestPreviousState = false;
-        //     }
-        // } else if (systemState == ClimberStates.READY_FOR_MID_RUNG) {
-        //     // Outputs
-        //     commandHeightSetpoint(CLIMBER_MID_RUNG_HEIGHT, false);
-        //     handleSolenoidExtension(false);
+            // State Transitions
+            if (requestNextState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.READY_FOR_MID_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                requestPreviousState = false;
+            }
+        } else if (systemState == ClimberStates.READY_FOR_MID_RUNG) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_MID_RUNG_HEIGHT, false);
+            handleSolenoidExtension(true);
 
-        //     // State transitions
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.CLIMB_TO_MID_RUNG;
-        //         requestNextState = false;
-        //     } else if (requestPreviousState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.STARTING_CONFIGURATION;
-        //         requestPreviousState = false;
-        //     }
-        // } else if (systemState == ClimberStates.CLIMB_TO_MID_RUNG) {
-        //     // Outputs
-        //     if (BreadUtil.getFPGATimeSeconds() - lastTransitionedFPGASeconds < 0.4) {
-        //         commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, true);
-        //     } else {
-        //         commandHeightSetpoint(CLIMBER_HEIGHT_BEFORE_NEXT_RUNG, false);
-        //     }
-        //     handleSolenoidExtension(false);
+            // State transitions
+            if (requestNextState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.CLIMB_TO_MID_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.STARTING_CONFIGURATION;
+                requestPreviousState = false;
+            }
+        } else if (systemState == ClimberStates.CLIMB_TO_MID_RUNG) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, true);
+            handleSolenoidExtension(true);
 
-        //     // State transitions
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.EXTENDED_BELOW_HIGH_RUNG;
-        //         requestNextState = false;
-        //     } else if (requestPreviousState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.READY_FOR_MID_RUNG;
-        //         requestPreviousState = false;
-        //     }
-        // } else if (systemState == ClimberStates.EXTENDED_BELOW_HIGH_RUNG) {
-        //     // Outputs
-        //     commandHeightSetpoint(CLIMBER_HEIGHT_BEFORE_NEXT_RUNG, false);
-        //     handleSolenoidExtension(true);
+            // State Transitions
+            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_RETRACTED_HEIGHT, CLIMBER_SETPOINT_TOLERANCE, true)) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.INTER_RELEASE_STATE;
+            }
+        } else if (systemState == ClimberStates.INTER_RELEASE_STATE) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_RETRACTED_HEIGHT, true);
+            handleSolenoidExtension(true);
 
-        //     // State Transitoins
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.READY_FOR_HIGH_RUNG;
-        //         requestNextState = false;   
-        //     } else if (requestPreviousState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.CLIMB_TO_MID_RUNG;
-        //         requestPreviousState = false;
-        //     }
-        // } else if (systemState == ClimberStates.READY_FOR_HIGH_RUNG) {
-        //     // Outputs
-        //     commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, false);
-        //     handleSolenoidExtension(true);
+            // State Transitions
+            if (BreadUtil.getFPGATimeSeconds() - lastTransitionedFPGASeconds > 0.5) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.RELEASE_FROM_MID_RUNG;
+            }
+        } else if (systemState == ClimberStates.RELEASE_FROM_MID_RUNG) {
+            // Outputs
+            commandHeightSetpoint(CILMBER_RELEASE_FROM_RUNG, false);
+            handleSolenoidExtension(true);
 
-        //     // State Transitions
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.LATCHED_TO_HIGH_RUNG;
-        //         requestNextState = false;
-        //     } else if (requestPreviousState) {
-        //         lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
-        //         nextSystemState = ClimberStates.EXTENDED_BELOW_HIGH_RUNG;
-        //         requestPreviousState = false;
-        //     }
+            // State Transitions
+            if (requestNextState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.EXTENDED_BEFORE_HIGH_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.STARTING_CONFIGURATION;
+                requestPreviousState = false;
+            }
+        } else if (systemState == ClimberStates.EXTENDED_BEFORE_HIGH_RUNG) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, false);
+            handleSolenoidExtension(true);
+
+            // State Transitions
+            if (requestNextState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.EXTENDED_ON_HIGH_RUNG;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.RELEASE_FROM_MID_RUNG;
+                requestPreviousState = false;
+            }
+        } else if (systemState == ClimberStates.EXTENDED_ON_HIGH_RUNG) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, false);
+            handleSolenoidExtension(false);
+            
+
+            // State Transitions
+            if (requestNextState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.POP_OFF;
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.EXTENDED_BEFORE_HIGH_RUNG;
+                requestPreviousState = false;
+            }
+        } else if (systemState == ClimberStates.POP_OFF) {
+            // Outputs
+            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.40, true);
+            handleSolenoidExtension(false);
+
+            // State Transitions
+            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.40, CLIMBER_SETPOINT_TOLERANCE, true)) {
+                nextSystemState = ClimberStates.RETRACTED_DONE;
+            }
+        } else if (systemState == ClimberStates.RETRACTED_DONE) {
+            // Outputs
+            commandNeutral();
+            handleSolenoidExtension(false);
+            
+            // State Transitions
+            if (requestNextState) {
+                requestNextState = false;
+            } else if (requestPreviousState) {
+                lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
+                nextSystemState = ClimberStates.EXTENDED_ON_HIGH_RUNG;
+                requestPreviousState = false;
+            }
+        }
         // } else if (systemState == ClimberStates.LATCHED_TO_HIGH_RUNG) {
         //     // Outputs
         //     commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG, false);
@@ -251,13 +296,10 @@ public class Climber extends SubsystemBase {
         //         commandHeightSetpoint(CLIMBER_HEIGHT_BEFORE_NEXT_RUNG, false);
         //         handleSolenoidExtension(false);
         //     }
+        // }
 
-        //     // States Transitions
-        //     if (requestNextState) {
-        //         lastTransitionedFPGASeconds=  
-        //         nextSystemState = ClimberStates.EXTEND_TO_TRAVERSAL_RUNG;
+        systemState = nextSystemState;
 
-        //     }
         SmartDashboard.putNumber("Climber Height", getPositionMeters());
     } 
 

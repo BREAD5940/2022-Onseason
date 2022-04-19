@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +46,9 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
+        SmartDashboard.putNumber("Traj-X-Error", 0.0);
+        SmartDashboard.putNumber("Traj-Y-Error", 0.0);
+        SmartDashboard.putNumber("Traj-Theta-Error", 0.0);
     }
 
     // Resets all of the swerve modules to use the absolute readings

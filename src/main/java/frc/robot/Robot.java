@@ -7,14 +7,20 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Climber;
 import frc.robot.sensors.ColorSensor.BallColor;
+import frc.robot.subsystems.statemachines.GutNeck;
+import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
+
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
 import static frc.robot.Constants.Climber.*;
+import static frc.robot.Constants.Flywheel.*;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -30,16 +36,30 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     SmartDashboard.putNumber("Flywheel Set", 0.0);
     SmartDashboard.putNumber("Hood Set", 0.0);
+    SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    double[] d = RobotContainer.gutNeck.colorSensor.getRaw();
-    SmartDashboard.putNumber("R", d[0]);
-    SmartDashboard.putNumber("G", d[1]);
-    SmartDashboard.putNumber("B", d[2]);
+    Color d = RobotContainer.gutNeck.colorSensor.getColor();
+    float[] f = RobotContainer.gutNeck.colorSensor.getHSB();
+    SmartDashboard.putNumber("R", d.red);
+    SmartDashboard.putNumber("G", d.green);
+    SmartDashboard.putNumber("B", d.blue);
+    SmartDashboard.putString("Ball Color", RobotContainer.gutNeck.colorSensor.get().name());
+
+    SmartDashboard.putNumber("Hue", f[0]);
+    SmartDashboard.putNumber("Saturation", f[1]);
+    SmartDashboard.putNumber("Value", f[2]);
+
+    System.out.printf("Detected: %s, Value: %.3f\n", RobotContainer.gutNeck.colorSensor.get().name(), f[2]);
+
+    // if (Math.abs(d[0]) < 1.0E-6 && Math.abs(d[1]) < 1.0E-6 && Math.abs(d[2]) < 1.0E-6) {
+    //   System.out.println("REV Color Sensor Has Died\nTrying to Re-initialize\n");
+    //   RobotContainer.gutNeck.colorSensor.intialize();
+    // } TODO
 
     SmartDashboard.putNumber("Latest Vision Pose Heading", getLatestVisonPoseEstimate().getRotation().getDegrees());
     SmartDashboard.putNumber("Rotation Pose", RobotContainer.swerve.getPose().getRotation().getDegrees());
@@ -57,11 +77,11 @@ public class Robot extends TimedRobot {
       RobotContainer.swerve.resetAllToAbsolute();
       lastResetToAbsolute = RobotController.getFPGATime()/1.0E6;
     }
-    // if (RobotContainer.operator.getAButton()) {
-    //   RobotContainer.climber.commandNeutralMode(true);
-    // } else {
-    //   RobotContainer.climber.commandNeutralMode(false);
-    // }
+    if (RobotContainer.operator.getXButton()) {
+      RobotContainer.climber.commandNeutralMode(true);
+    } else {
+      RobotContainer.climber.commandNeutralMode(false);
+    }
   }
 
   @Override
@@ -75,6 +95,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
 
+    RobotContainer.gutNeck.requestReset();
     RobotContainer.swerve.setDriveSlots(1);
   }
 
@@ -201,7 +222,7 @@ public class Robot extends TimedRobot {
 
     // Driver Max Speeds
     if (RobotContainer.driver.getLeftTriggerAxis() > 0.1 || RobotContainer.driver.getRightTriggerAxis() > 0.1) {
-      RobotContainer.swerve.defaultDriveSpeed = 1.5;
+      RobotContainer.swerve.defaultDriveSpeed = 3.0;
     } else {
       RobotContainer.swerve.defaultDriveSpeed = 4.0;
     }
@@ -227,21 +248,20 @@ public class Robot extends TimedRobot {
       RobotContainer.gutNeck.acceptOpposingCargo(true);
     } 
 
-    // Handle Temp Climber Controls
-    // if (RobotContainer.operator.getRightTriggerAxis() > 0.1) {
-    //   RobotContainer.climber.commandPercent(RobotContainer.operator.getRightTriggerAxis() * 0.45);
-    // } else if (RobotContainer.operator.getLeftTriggerAxis() > 0.1) {
-    //   RobotContainer.climber.commandPercent(-RobotContainer.operator.getLeftTriggerAxis() * 0.45);
-    // } else {
-    //   RobotContainer.climber.commandPercent(0.0);
-    // }
+    // Operator climber controls
+    if (RobotContainer.operator.getAButtonPressed()) {
+      RobotContainer.climber.requestNextState();
+    } 
+    if (RobotContainer.operator.getBButtonPressed()) {
+      RobotContainer.climber.requestPreviousState();
+    }
 
-    // if (RobotContainer.operator.getAButtonPressed()) {
-    //   RobotContainer.climber.commandSolenoidsForward();
-    // }
-    // if (RobotContainer.operator.getBButtonPressed()) {
-    //   RobotContainer.climber.commandSolenoidsReversed();
-    // }
+    // Driver vibrations
+    if (RobotContainer.gutNeck.getSystemState() == GutNeckStates.IDLE_TWO_CARGO) {
+      RobotContainer.driver.setRumble(RumbleType.kLeftRumble, 0.35);
+    } else {
+      RobotContainer.driver.setRumble(RumbleType.kLeftRumble, 0.0);
+    }
 
     if (RobotContainer.operator.getYButtonPressed()) {
       if (climbing) {

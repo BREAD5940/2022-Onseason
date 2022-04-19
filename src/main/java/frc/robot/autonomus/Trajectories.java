@@ -45,15 +45,15 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(5.877, 4.854, new Rotation2d(-3.114)),
-            new Pose2d(5.006, 5.14, new Rotation2d(1.126)),
-            new Pose2d(5.22, 6.081, new Rotation2d(1.052))
+            new Pose2d(4.843, 5.197, new Rotation2d(1.126)),
+            new Pose2d(5.057, 6.081, new Rotation2d(1.052))
         ), 2.0, 1.0, 0.0, 0.0
     );
 
     public static Trajectory getFirstOpposingCargoBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(5.22, 6.081, new Rotation2d(1.116)),
+            new Pose2d(5.057, 6.081, new Rotation2d(1.116)),
             new Pose2d(6.224, 7.022, new Rotation2d(0.384))
         ), 3.0, 2.0, 0.0, 0.0
     );
@@ -61,23 +61,40 @@ public class Trajectories {
     public static Trajectory prepareToUnstageCargoBilliards = generateTrajectory(
         true,
         List.of(
-            new Pose2d(6.224, 7.022, new Rotation2d(-0.226)),
-            new Pose2d(7.398 - Units.inchesToMeters(4.0), 6.8, new Rotation2d(-0.137))
+            new Pose2d(6.224, 7.022, new Rotation2d(0.007)),
+            new Pose2d(7.296, 7.022, new Rotation2d(-0.05))
         ), 2.8, 1.8, 0.0, 0.0
     );
 
     public static Trajectory getUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.398 - Units.inchesToMeters(4.0), 6.8, new Rotation2d(1.666)),
-            new Pose2d(7.352 - Units.inchesToMeters(4.0), 7.324 - Units.inchesToMeters(3.0), new Rotation2d(1.649))
+            new Pose2d(7.296, 7.022, new Rotation2d(1.666)),
+            new Pose2d(7.498, 7.499, new Rotation2d(1.649))
         ), 2.8, 1.8, 0.0, 0.0
+    );
+
+    public static Trajectory adjustedGetBallBilliards = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(7.296, 7.02, new Rotation2d(0.09)),
+            new Pose2d(7.966, 7.622, new Rotation2d(1.728)),
+            new Pose2d(7.239, 7.67, new Rotation2d(3.139))
+        ), 2.8, 1.8, 0.0, 0.0
+    );
+
+    public static Trajectory adjustedReturnUnstagedBallBilliards = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(7.239, 7.467, new Rotation2d(-2.623)),
+            new Pose2d(5.746, 6.504, new Rotation2d(-2.431))
+        ), 2.8, 1.8, 0.0, 0.0 
     );
 
     public static Trajectory returnUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.352 - Units.inchesToMeters(4.0), 7.324 - Units.inchesToMeters(3.0), new Rotation2d(-2.623)),
+            new Pose2d(7.498, 7.499, new Rotation2d(-2.623)),
             new Pose2d(6.203, 6.858, new Rotation2d(-2.431))
         ), 2.8, 1.8, 0.0, 0.0
     );
@@ -85,7 +102,7 @@ public class Trajectories {
     public static Trajectory getFirstOpposingCargoTwoCargoDefensive = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(5.071 + Units.inchesToMeters(8.0), 6.07, new Rotation2d(1.052)),
+            new Pose2d(5.057 + Units.inchesToMeters(8.0), 6.081, new Rotation2d(1.052)),
             new Pose2d(5.931 + Units.inchesToMeters(8.0), 6.88, new Rotation2d(0.248))
         ), 3.0, 2.0, 0.0, 0.0
     );
@@ -135,7 +152,7 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(5.169, 1.974, new Rotation2d(-3.002)),
-            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0), new Rotation2d(-2.5))
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0), new Rotation2d(-2.5))
         ), 3.5, 2.5, 0.0, 0.0
     );
 
@@ -143,7 +160,7 @@ public class Trajectories {
     public static Trajectory returnFromHumanPlayerStationAfterThreeBall = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0), new Rotation2d(0.17)),
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0), new Rotation2d(0.17)),
             new Pose2d(5.017, 2.1, new Rotation2d(0.222))
         ), 3.5, 2.5, 0.0, 0.0
     );
@@ -153,6 +170,14 @@ public class Trajectories {
         List.of(
             new Pose2d(6.754, 5.997, new Rotation2d(2.178)),
             new Pose2d(5.929, 7.37, new Rotation2d(2.091))
+        ), 2.0, 1.0, 0.0, 0.0
+    );
+
+    public static Trajectory driveForwardsMeters = generateTrajectory(
+        true, 
+        List.of(
+            new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
+            new Pose2d(2.0, 0.0, new Rotation2d(0.0))
         ), 2.0, 1.0, 0.0, 0.0
     );
 

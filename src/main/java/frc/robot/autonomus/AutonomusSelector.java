@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.autonomus.routines.BilliardsThreeBallLeftTarmac;
+import frc.robot.autonomus.routines.BumpyBilliardsThreeBallLeftTarmac;
 import frc.robot.autonomus.routines.FiveCargoRightTarmac;
 import frc.robot.autonomus.routines.OneCargoLeftTarmac;
 import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
@@ -30,8 +31,12 @@ public class AutonomusSelector {
             new FiveCargoRightTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
         autonomusSelector.addOption(
-            "BILLIARD_THREE_BALL_LEFT_TARMAC", 
+            "SMOOTH_BILLIARD_THREE_BALL_LEFT_TARMAC", 
             new BilliardsThreeBallLeftTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
+        );
+        autonomusSelector.addOption(
+            "BUMPY_BILLIARD_THREE_BALL_LEFT_TARMAC", 
+            new BumpyBilliardsThreeBallLeftTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
         autonomusSelector.addOption(
             "ONE_CARGO_LEFT_TARMAC", 

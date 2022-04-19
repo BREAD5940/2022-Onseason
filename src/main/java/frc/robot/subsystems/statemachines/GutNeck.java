@@ -31,12 +31,7 @@ public class GutNeck extends SubsystemBase {
     private final BeamBreak rightBeamBreak = new BeamBreak(RIGHT_BEAM_BREAK_CHANNEL);
     private final BeamBreak middleBeamBreak = new BeamBreak(MIDDLE_BEAM_BREAK_CHANNEL);
     private final BeamBreak topBeamBreak = new BeamBreak(TOP_BEAM_BREAK_CHANNEL);
-    public final ColorSensor colorSensor = new ColorSensor(
-        COLOR_SENSOR_PORT,
-        COLOR_SENSOR_RED_TARGET,
-        COLOR_SENSOR_BLUE_TARGET,
-        COLOR_SENSOR_NONE_TARGET
-    );
+    public final ColorSensor colorSensor = new ColorSensor();
 
     // State logic
     private GutNeckStates systemState = GutNeckStates.IDLE_NO_CARGO;
@@ -178,6 +173,11 @@ public class GutNeck extends SubsystemBase {
     // Requests the gut neck subsystem to spit out all the balls in its system to the right
     public void requestSpitRight(boolean set) {
         requestSpitRight = set;
+    }
+
+    // Requests the gut neck to go into idle no cargo
+    public void requestReset() {
+        systemState = GutNeckStates.IDLE_NO_CARGO;
     }
 
     // Returns the system state of the gut neck
@@ -412,6 +412,14 @@ public class GutNeck extends SubsystemBase {
         SmartDashboard.putBoolean("GutNeck Request Shoot", requestShoot);
         SmartDashboard.putBoolean("Middle BeamBreak", getMiddleBeamBreakTriggered());
         SmartDashboard.putBoolean("Top BeamBreak", getTopBeamBreakTriggered());
+        if (!colorSensor.isConnected()) {
+            colorSensor.triggerConnectionFault();
+        }
+        if (!colorSensor.hasNotTimeout()) {
+            colorSensor.triggerTimeoutFault();
+        }
+        SmartDashboard.putNumber("Connection Fault Triggered", colorSensor.getConnectionFaultTriggered());
+        SmartDashboard.putNumber("Timeout Fault Triggered", colorSensor.getTimeoutFaultTriggered());
     }
 
     // Private method to begin the shooting sequence

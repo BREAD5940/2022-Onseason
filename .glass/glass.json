@@ -1,6 +1,12 @@
 {
   "NetworkTables": {
     "CameraPublisher": {
+      "limelight": {
+        "open": true
+      },
+      "open": true
+    },
+    "LiveWindow": {
       "open": true
     },
     "SmartDashboard": {
@@ -20,10 +26,50 @@
       "/LiveWindow/Ungrouped/PIDController[104]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[105]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[106]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[107]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[108]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[109]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[110]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[111]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[112]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[113]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[114]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[115]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[116]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[117]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[118]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[119]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[120]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[121]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[122]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[123]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[124]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[125]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[126]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[127]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[128]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[129]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[130]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[131]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[132]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[133]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[134]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[135]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[136]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[137]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[138]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[139]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[140]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[141]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[142]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[143]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[144]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[145]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[146]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
@@ -284,7 +330,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
@@ -406,7 +455,7 @@
     "Plot <6>": {
       "plots": [
         {
-          "height": 332,
+          "height": 603,
           "series": [
             {
               "color": [
@@ -415,7 +464,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Flywheel Velocity"
+              "id": "NT:/SmartDashboard/Hue"
             },
             {
               "color": [
@@ -424,14 +473,20 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Shooter Setpoint"
+              "id": "NT:/SmartDashboard/Saturation"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Value"
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <7>": {
       "plots": [
@@ -445,7 +500,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Vision Follower Measurement"
+              "id": "NT:/SmartDashboard/Traj-X-Error"
             },
             {
               "color": [
@@ -454,11 +509,23 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Vision Follower Setpoint"
+              "id": "NT:/SmartDashboard/Traj-Y-Error"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Traj-Theta-Error"
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <8>": {
       "plots": [
@@ -493,7 +560,7 @@
     "Plot <9>": {
       "plots": [
         {
-          "height": 739,
+          "height": 606,
           "series": [
             {
               "color": [
@@ -502,7 +569,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Shooter Setpoint"
+              "id": "NT:/SmartDashboard/B"
             },
             {
               "color": [
@@ -511,7 +578,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Flywheel Velocity"
+              "id": "NT:/SmartDashboard/G"
             },
             {
               "color": [
@@ -520,7 +587,7 @@
                 0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Climber Height"
+              "id": "NT:/SmartDashboard/R"
             },
             {
               "color": [
@@ -529,14 +596,11 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Climber Setpoint"
+              "id": "NT:/SmartDashboard/Color Sensor Fault Triggered"
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     }
   }
 }
