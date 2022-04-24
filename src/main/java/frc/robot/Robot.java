@@ -12,14 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.Climber;
 import frc.robot.sensors.ColorSensor.BallColor;
-import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
-
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
-import static frc.robot.Constants.Climber.*;
 import static frc.robot.Constants.Flywheel.*;
 
 public class Robot extends TimedRobot {
@@ -37,6 +33,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Flywheel Set", 0.0);
     SmartDashboard.putNumber("Hood Set", 0.0);
     SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
+    SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
   }
 
   @Override
@@ -54,7 +51,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Saturation", f[1]);
     SmartDashboard.putNumber("Value", f[2]);
 
-    System.out.printf("Detected: %s, Value: %.3f\n", RobotContainer.gutNeck.colorSensor.get().name(), f[2]);
+    // System.out.printf("Detected: %s, Value: %.3f\n", RobotContainer.gutNeck.colorSensor.get().name(), f[2]);
 
     // if (Math.abs(d[0]) < 1.0E-6 && Math.abs(d[1]) < 1.0E-6 && Math.abs(d[2]) < 1.0E-6) {
     //   System.out.println("REV Color Sensor Has Died\nTrying to Re-initialize\n");
@@ -106,9 +103,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {    
-    // RobotContainer.gutNeck.acceptOpposingCargo(false);
-    // CHANGFE BNACKLJ AIRF JLAKWEFA:IOWE
-    // kljldsjlkdjfslkjlksfkldj
+    RobotContainer.gutNeck.acceptOpposingCargo(false);
+
     // Set alliance color
     allianceColor = DriverStation.getAlliance() == Alliance.Red ? BallColor.RED : BallColor.BLUE;
     
@@ -258,9 +254,9 @@ public class Robot extends TimedRobot {
 
     // Driver vibrations
     if (RobotContainer.gutNeck.getSystemState() == GutNeckStates.IDLE_TWO_CARGO) {
-      RobotContainer.driver.setRumble(RumbleType.kLeftRumble, 0.35);
+      RobotContainer.driver.setRumble(RumbleType.kRightRumble, 0.35);
     } else {
-      RobotContainer.driver.setRumble(RumbleType.kLeftRumble, 0.0);
+      RobotContainer.driver.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     if (RobotContainer.operator.getYButtonPressed()) {

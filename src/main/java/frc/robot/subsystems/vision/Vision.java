@@ -25,28 +25,10 @@ public class Vision extends SubsystemBase {
     private double originalPitch;
     private double distance;
     private double timestampSeconds;
+    private double mountingAngle = MOUNTING_PITCH;
+    private double mountingAdjustment = 0.0;
 
     public Vision() {
-        // NetworkTableInstance.getDefault()
-        //     .getEntry("/photonvision/" + "BreadCam" + "/latencyMillis")
-        //     .addListener(event -> {
-        //         PhotonPipelineResult result = camera.getLatestResult();
-        //         if (!result.hasTargets())  {
-        //             return;
-        //         }
-        //         PhotonTrackedTarget bestTarget = result.getBestTarget();
-        //         if (bestTarget != null) {
-        //             timestampSeconds = RobotController.getFPGATime()/1.0E6 - Units.millisecondsToSeconds(result.getLatencyMillis()) - Units.millisecondsToSeconds(60.0);
-        //             yaw = bestTarget.getYaw();
-        //             pitch = bestTarget.getPitch();
-        //             distance = PhotonUtils.calculateDistanceToTargetMeters(
-        //                 CAMERA_HEIGHT_METERS, 
-        //                 TARGET_HEIGHT_METERS, 
-        //                 CAMERA_PITCH_RADIANS, 
-        //                 Units.degreesToRadians(pitch)
-        //             );
-        //         }
-        //     }, EntryListenerFlags.kUpdate);
         limelightTable
             .getEntry("tl")
             .addListener(event -> {
@@ -122,7 +104,7 @@ public class Vision extends SubsystemBase {
 
         // Rotate the vector by the camera pitch
         double xPrime = x;
-        Translation2d yzPrime = new Translation2d(y, z).rotateBy(new Rotation2d(-MOUNTING_PITCH));
+        Translation2d yzPrime = new Translation2d(y, z).rotateBy(new Rotation2d(-mountingAngle));
         double yPrime = yzPrime.getX();
         double zPrime = yzPrime.getY();
 
@@ -142,7 +124,8 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("Adjusted Pitch", getPitch());
         SmartDashboard.putNumber("Yaw", getYaw());
         SmartDashboard.putNumber("Vision Timestamp", getMeasurementTimestamp());
-
+        mountingAdjustment = Units.degreesToRadians(SmartDashboard.getNumber("F-Mounting-Adjustment", 0.0));
+        mountingAngle = MOUNTING_PITCH + mountingAdjustment;
     }
     
 }

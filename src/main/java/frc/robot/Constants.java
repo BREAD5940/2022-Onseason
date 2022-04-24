@@ -1,8 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.revrobotics.ColorMatch;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -132,7 +130,7 @@ public final class Constants {
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
         public static final double SHOOTER_IDLE_VEL = 0.0;
-        public static final double FLYWHEEL_CALIBRATION = 0.98;
+        public static final double FLYWHEEL_CALIBRATION = 0.9725;
         public static final double FLYWHEEL_GEARING = 19.0/36.0;
 
         // Other
@@ -185,10 +183,10 @@ public final class Constants {
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
         public static final double CLIMBER_MINIMUM_TRAVEL = 0;
         public static final double CLIMBER_RETRACTED_HEIGHT = 0.005;
-        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.543980 + Units.inchesToMeters(0.5);
+        public static final double CLIMBER_MID_RUNG_HEIGHT = 0.54980 + Units.inchesToMeters(0.5);
         public static final double CILMBER_RELEASE_FROM_RUNG = 0.091646;
         public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.427754;
-        public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.625;
+        public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.628;
         public static final double CLIMBER_HEIGHT_PULLED_OFF = 0;
         public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = 0.61;
         public static final double CLIMBER_MAXIMUM_TRAVEL = 0.630042;
@@ -210,7 +208,7 @@ public final class Constants {
         public static final double LENS_HEIGHT_METERS = Units.inchesToMeters(35.5);
         public static final double MOUNTING_YAW = Units.degreesToRadians(3.57);
         public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(104.0);
-        public static final double MOUNTING_PITCH = Units.degreesToRadians(27.0);
+        public static double MOUNTING_PITCH = Units.degreesToRadians(27.0);
         public static final double CAMERA_TO_CENTER = Units.inchesToMeters(13.75);
         public static final double MAX_SHOT_DISTANCE = 5.3; // Distance in meters
 
@@ -232,7 +230,7 @@ public final class Constants {
         public static final double RETURN_SHOT_HOOD_ANGLE = 23.0;
 
         // Two Cargo Auto Setpoints
-        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1800.0;
+        public static final double TWO_SHOT_FLYWHEL_VELOCITY = 1750.0;
         public static final double TWO_SHOT_HOOD_ANGLE = 24.0;
 
         // Three Cargo Auto Setpoints

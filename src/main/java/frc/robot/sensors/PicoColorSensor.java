@@ -285,3 +285,4 @@ public class PicoColorSensor implements AutoCloseable {
     readThread.join();
   }
 }
+

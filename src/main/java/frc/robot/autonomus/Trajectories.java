@@ -70,7 +70,7 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(7.296, 7.022, new Rotation2d(1.666)),
-            new Pose2d(7.498, 7.499, new Rotation2d(1.649))
+            new Pose2d(7.498, 7.499 + Units.inchesToMeters(8.0), new Rotation2d(1.649))
         ), 2.8, 1.8, 0.0, 0.0
     );
 
@@ -94,7 +94,7 @@ public class Trajectories {
     public static Trajectory returnUnstagedBallBilliards = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(7.498, 7.499, new Rotation2d(-2.623)),
+            new Pose2d(7.498, 7.499 + Units.inchesToMeters(8.0), new Rotation2d(-2.623)),
             new Pose2d(6.203, 6.858, new Rotation2d(-2.431))
         ), 2.8, 1.8, 0.0, 0.0
     );
@@ -152,7 +152,7 @@ public class Trajectories {
         true, 
         List.of(
             new Pose2d(5.169, 1.974, new Rotation2d(-3.002)),
-            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0), new Rotation2d(-2.5))
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0-4.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0-4.0), new Rotation2d(-2.5))
         ), 3.5, 2.5, 0.0, 0.0
     );
 
@@ -160,7 +160,7 @@ public class Trajectories {
     public static Trajectory returnFromHumanPlayerStationAfterThreeBall = generateTrajectory(
         true, 
         List.of(
-            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0), new Rotation2d(0.17)),
+            new Pose2d(1.286+Units.inchesToMeters(8.0-6.0+6.0-3.0-4.0), 1.462+Units.inchesToMeters(8.0+6.0+6.0-3.0-4.0), new Rotation2d(0.17)),
             new Pose2d(5.017, 2.1, new Rotation2d(0.222))
         ), 3.5, 2.5, 0.0, 0.0
     );

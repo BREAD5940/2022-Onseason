@@ -3,7 +3,6 @@ package frc.robot.subsystems.climber;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,7 +16,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import static frc.robot.Constants.Climber.*;
 
-import java.io.ObjectInputFilter.Status;
 
 public class Climber extends SubsystemBase {
 
@@ -199,7 +197,7 @@ public class Climber extends SubsystemBase {
             handleSolenoidExtension(true);
 
             // State Transitions
-            if (BreadUtil.getFPGATimeSeconds() - lastTransitionedFPGASeconds > 0.5) {
+            if (BreadUtil.getFPGATimeSeconds() - lastTransitionedFPGASeconds > 0.3) {
                 lastTransitionedFPGASeconds = BreadUtil.getFPGATimeSeconds();
                 nextSystemState = ClimberStates.RELEASE_FROM_MID_RUNG;
             }
@@ -251,11 +249,11 @@ public class Climber extends SubsystemBase {
             }
         } else if (systemState == ClimberStates.POP_OFF) {
             // Outputs
-            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.40, true);
+            commandHeightSetpoint(CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.30, true);
             handleSolenoidExtension(false);
 
             // State Transitions
-            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.40, CLIMBER_SETPOINT_TOLERANCE, true)) {
+            if (BreadUtil.atReference(getPositionMeters(), CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG - 0.30, CLIMBER_SETPOINT_TOLERANCE, true)) {
                 nextSystemState = ClimberStates.RETRACTED_DONE;
             }
         } else if (systemState == ClimberStates.RETRACTED_DONE) {

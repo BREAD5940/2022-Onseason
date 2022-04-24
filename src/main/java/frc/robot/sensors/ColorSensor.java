@@ -1,8 +1,6 @@
 package frc.robot.sensors;
 
 import com.revrobotics.ColorMatch;
-import com.revrobotics.ColorMatchResult;
-
 import frc.robot.commons.BreadUtil;
 import frc.robot.sensors.PicoColorSensor.RawColor;
 import edu.wpi.first.wpilibj.util.Color;
@@ -28,14 +26,23 @@ public class ColorSensor {
     }
 
     public BallColor get() {
-        Color detectedColor = getColor();
-        ColorMatchResult result = match.matchClosestColor(detectedColor);
-        if (result.color == redBallTarget) {
+        // Color detectedColor = getColor();
+        // ColorMatchResult result = match.matchClosestColor(detectedColor);
+        // if (result.color == redBallTarget) {
+        //     return BallColor.RED;
+        // } else if (result.color == blueBallTarget) {
+        //     return BallColor.BLUE;
+        // } else if (result.color == noneTarget) {
+        //     return BallColor.NONE;
+        // } else {
+        //     return BallColor.NONE;
+        // }
+        float[] hsb = getHSB();
+        double hue = hsb[0];
+        if (hue < 0.2) { 
             return BallColor.RED;
-        } else if (result.color == blueBallTarget) {
+        } else if (hue > 0.4) {
             return BallColor.BLUE;
-        } else if (result.color == noneTarget) {
-            return BallColor.NONE;
         } else {
             return BallColor.NONE;
         }
@@ -45,8 +52,8 @@ public class ColorSensor {
         RawColor color = sensor.getRawColor0();
         return new int[] {
             color.red,
-            color.blue,
-            color.green
+            color.green,
+            color.blue
         };
     }
 

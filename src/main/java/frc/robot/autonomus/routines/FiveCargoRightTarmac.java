@@ -84,7 +84,7 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                 swerve
             ),
             new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
+                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(2.0)).getRadians(), 
                 swerve
             ).withTimeout(0.5),
             new InstantCommand(() -> {

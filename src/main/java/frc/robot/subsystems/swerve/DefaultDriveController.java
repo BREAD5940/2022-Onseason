@@ -5,8 +5,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-import java.util.function.DoubleSupplier;
-
 public class DefaultDriveController extends CommandBase {
     
     private final Swerve swerve;
