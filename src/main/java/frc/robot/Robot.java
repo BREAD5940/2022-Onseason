@@ -159,6 +159,7 @@ public class Robot extends TimedRobot {
 
     // Driver shooting signals
     if (RobotContainer.driver.getAButton()) {
+  
       RobotContainer.shooter.requestShoot(1400, 10);
       RobotContainer.gutNeck.requestShoot(true);
       RobotContainer.vision.setLEDsOn(true);

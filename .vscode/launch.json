@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch Vision",
+      "request": "launch",
+      "mainClass": "frc.robot.subsystems.vision.Vision",
+      "projectName": "2022-Onseason"
+    },
+    {
+      "type": "java",
       "name": "Launch Constants$Gut",
       "request": "launch",
       "mainClass": "frc.robot.Constants$Gut",
