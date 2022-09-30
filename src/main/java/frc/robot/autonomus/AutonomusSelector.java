@@ -7,6 +7,7 @@ import frc.robot.autonomus.routines.BilliardsThreeBallLeftTarmac;
 import frc.robot.autonomus.routines.BumpyBilliardsThreeBallLeftTarmac;
 import frc.robot.autonomus.routines.FiveCargoRightTarmac;
 import frc.robot.autonomus.routines.OneCargoLeftTarmac;
+import frc.robot.autonomus.routines.TwoCargoLeftTarmac;
 import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;
@@ -42,6 +43,10 @@ public class AutonomusSelector {
             "ONE_CARGO_LEFT_TARMAC", 
             new OneCargoLeftTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck)
         );
+        autonomusSelector.addOption(
+            "TWO_CARGO_LEFT_TARMAC", 
+            new TwoCargoLeftTarmac(swerve, shooter, leftIntake, rightIntake, gutNeck
+        ));
         SmartDashboard.putData("Autonomus Selector", autonomusSelector);
     }
 

@@ -5,11 +5,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.autonomus.Trajectories;
 import frc.robot.commons.BreadUtil;
-import frc.robot.sensors.ColorSensor.BallColor;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;
 import frc.robot.subsystems.statemachines.Shooter;
@@ -93,7 +91,7 @@ public class BumpyBilliardsThreeBallLeftTarmac extends SequentialCommandGroup {
                 swerve
             ),
             new WaitUntilCommand(() -> swerve.getAtVisionHeadingSetpoint()).alongWith(
-                new VisionFollowerController(swerve)
+                new VisionFollowerController(swerve, true)
             ).withTimeout(0.5).beforeStarting(() -> RobotContainer.swerve.setDriveSlots(0))
             .andThen(() -> RobotContainer.swerve.setDriveSlots(1)),
             new InstantCommand(() -> {

@@ -129,7 +129,7 @@ public class Trajectories {
         List.of(
             new Pose2d(7.574, 1.796, new Rotation2d(-1.516)),
             new Pose2d(7.619, 0.815, new Rotation2d(-1.528))
-        ), 2.5, 2.0, 0.0, 0.0
+        ), 3.3, 2.0, 0.0, 0.0
     );
 
     public static Trajectory returnFirstCargoRightTarmac = generateTrajectory(
@@ -137,7 +137,7 @@ public class Trajectories {
         List.of(
             new Pose2d(7.619, 0.815, new Rotation2d(1.626)),
             new Pose2d(7.641, 1.53, new Rotation2d(1.557))
-        ), 2.5, 2.0, 0.0, 0.0
+        ), 3.3, 2.0, 0.0, 0.0
     );
 
     public static Trajectory getThirdBallRightTarmac = generateTrajectory(
@@ -145,7 +145,7 @@ public class Trajectories {
         List.of(
             new Pose2d(7.641, 1.53, new Rotation2d(-2.502)),
             new Pose2d(5.169, 1.974, new Rotation2d(2.573))
-        ), 2.5, 2.0, 0.0, 0.0
+        ), 3.5, 2.0, 0.0, 0.0
     );
 
     public static Trajectory advanceToHumanPlayerStationAfterThreeBall = generateTrajectory(

@@ -3,20 +3,32 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sensors.ColorSensor.BallColor;
 import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+// import org.littletonrobotics.junction.LoggedRobot;
+// import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+// import org.littletonrobotics.junction.io.ByteLogReceiver;
+// import org.littletonrobotics.junction.io.ByteLogReplay;
+// import org.littletonrobotics.junction.io.LogSocketServer;
+
 import static frc.robot.Constants.Flywheel.*;
+import static frc.robot.Constants.Climber.*;
+
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -25,41 +37,37 @@ public class Robot extends TimedRobot {
   public static BallColor allianceColor = BallColor.RED;
   private boolean climbing = false;
   private double lastResetToAbsolute = 0.0;
-  private double lastCheckedColorSensorConnected = 0.0;
 
   @Override
   public void robotInit() {
+    // setUseTiming(isReal()); 
+    // LoggedNetworkTables.getInstance().addTable("/SmartDashboard"); 
+    // Logger.getInstance().recordMetadata("ProjectName", "2022-Onseason"); 
+
+    // if (isReal()) {
+    //   Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda1/")); 
+    //   Logger.getInstance().addDataReceiver(new LogSocketServer(5800));
+    // } else {
+    //   String path = ByteLogReplay.promptForPath();
+    //   Logger.getInstance().setReplaySource(new ByteLogReplay(path)); 
+    //   Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")));
+    // }
+
+    // Logger.getInstance().start(); 
     m_robotContainer = new RobotContainer();
-    SmartDashboard.putNumber("Flywheel Set", 0.0);
-    SmartDashboard.putNumber("Hood Set", 0.0);
     SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
     SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
+    SmartDashboard.putNumber("Flywheel Tuning", 0.0);
+    SmartDashboard.putNumber("Hood Tuning", 8.5);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    Color d = RobotContainer.gutNeck.colorSensor.getColor();
-    float[] f = RobotContainer.gutNeck.colorSensor.getHSB();
-    SmartDashboard.putNumber("R", d.red);
-    SmartDashboard.putNumber("G", d.green);
-    SmartDashboard.putNumber("B", d.blue);
-    SmartDashboard.putString("Ball Color", RobotContainer.gutNeck.colorSensor.get().name());
-
-    SmartDashboard.putNumber("Hue", f[0]);
-    SmartDashboard.putNumber("Saturation", f[1]);
-    SmartDashboard.putNumber("Value", f[2]);
-
-    // System.out.printf("Detected: %s, Value: %.3f\n", RobotContainer.gutNeck.colorSensor.get().name(), f[2]);
-
-    // if (Math.abs(d[0]) < 1.0E-6 && Math.abs(d[1]) < 1.0E-6 && Math.abs(d[2]) < 1.0E-6) {
-    //   System.out.println("REV Color Sensor Has Died\nTrying to Re-initialize\n");
-    //   RobotContainer.gutNeck.colorSensor.intialize();
-    // } TODO
-
     SmartDashboard.putNumber("Latest Vision Pose Heading", getLatestVisonPoseEstimate().getRotation().getDegrees());
     SmartDashboard.putNumber("Rotation Pose", RobotContainer.swerve.getPose().getRotation().getDegrees());
+    SmartDashboard.putNumber("Distance to Fender", Units.metersToInches(RobotContainer.vision.getCameraToCenterOfHub()) - 34.25);
+    RobotContainer.climber.setEasy(RobotContainer.operator.getXButton());
   }
 
   @Override
@@ -73,11 +81,6 @@ public class Robot extends TimedRobot {
     if ((RobotController.getFPGATime()/1.0E6) - lastResetToAbsolute > 1.0) {
       RobotContainer.swerve.resetAllToAbsolute();
       lastResetToAbsolute = RobotController.getFPGATime()/1.0E6;
-    }
-    if (RobotContainer.operator.getXButton()) {
-      RobotContainer.climber.commandNeutralMode(true);
-    } else {
-      RobotContainer.climber.commandNeutralMode(false);
     }
   }
 
@@ -113,10 +116,6 @@ public class Robot extends TimedRobot {
     RobotContainer.operator.getAButtonPressed();
     RobotContainer.operator.getYButtonPressed();
     climbing = false;
-
-    lastCheckedColorSensorConnected = RobotController.getFPGATime()/1.0E6;
-
-    // RobotContainer.climber.commandNeutralMode(true);
   }
 
   @Override
@@ -166,7 +165,7 @@ public class Robot extends TimedRobot {
     } else if (RobotContainer.driver.getRightStickButton()||RobotContainer.driver.getRightBumper()) {
       RobotContainer.vision.setLEDsOn(true);
       // RobotContainer.shooter.requestShoot(SmartDashboard.getNumber("Flywheel Tuning", 0.0), SmartDashboard.getNumber("Hood Tuning", 8.5));
-      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&distance<=MAX_SHOT_DISTANCE&&RobotContainer.driver.getLeftStickButton()) {
+      if (RobotContainer.swerve.getAtVisionHeadingSetpoint()&&RobotContainer.driver.getLeftStickButton()) {
         RobotContainer.gutNeck.requestShoot(true);
       }
     } else {
@@ -219,9 +218,9 @@ public class Robot extends TimedRobot {
 
     // Driver Max Speeds
     if (RobotContainer.driver.getLeftTriggerAxis() > 0.1 || RobotContainer.driver.getRightTriggerAxis() > 0.1) {
-      RobotContainer.swerve.defaultDriveSpeed = 3.0;
+      RobotContainer.swerve.defaultDriveSpeed = 3.75;
     } else {
-      RobotContainer.swerve.defaultDriveSpeed = 4.0;
+      RobotContainer.swerve.defaultDriveSpeed = 4.5;
     }
 
     // Overrides the gutneck intake signals from the driver
@@ -245,13 +244,44 @@ public class Robot extends TimedRobot {
       RobotContainer.gutNeck.acceptOpposingCargo(true);
     } 
 
-    // Operator climber controls
+    // Buttons for the operator the climb
     if (RobotContainer.operator.getAButtonPressed()) {
       RobotContainer.climber.requestNextState();
     } 
     if (RobotContainer.operator.getBButtonPressed()) {
-      RobotContainer.climber.requestPreviousState();
+      RobotContainer.climber.requestPrevState();
     }
+
+    // Operator climber controls
+    // if (RobotContainer.operator.getAButtonPressed()) {
+    //   RobotContainer.climber.requestNextState();
+    // } 
+    // if (RobotContainer.operator.getBButtonPressed()) {
+    //   RobotContainer.climber.requestPreviousState();
+    // }
+    // if (RobotContainer.operator.getAButton()) {
+    //   if (RobotContainer.climber.getPositionMeters() < CLIMBER_MAXIMUM_TRAVEL) {
+    //     RobotContainer.climber.commandPercent(0.25);
+    //   } else {
+    //     RobotContainer.climber.commandPercent(0.0);
+    //   }
+    // } else if (RobotContainer.operator.getBButton()) {
+    //   if (RobotContainer.climber.getPositionMeters() > CLIMBER_MINIMUM_TRAVEL) {
+    //     RobotContainer.climber.commandPercent(-0.25);
+    //   } else {
+    //     RobotContainer.climber.commandPercent(0.0);
+    //   }
+    // } else {
+    //   RobotContainer.climber.commandPercent(0.0);
+    // }
+
+    // if (RobotContainer.operator.getXButtonPressed()) {
+    //   RobotContainer.climber.commandSolenoidsForward();
+    // }
+
+    // if (RobotContainer.operator.getYButtonPressed()) {
+    //   RobotContainer.climber.commandSolenoidsReversed();
+    // }
 
     // Driver vibrations
     if (RobotContainer.gutNeck.getSystemState() == GutNeckStates.IDLE_TWO_CARGO) {
@@ -271,29 +301,6 @@ public class Robot extends TimedRobot {
     if (climbing) {
       RobotContainer.shooter.requestIdle();
     }
-
-        // if (RobotContainer.operator.getPOV() == 0.0) {
-        //   CommandScheduler.getInstance().schedule(new ExtendToMidRung(RobotContainer.climber));
-        // } 
-        // if (RobotContainer.operator.getPOV() == 180.0) {
-        //   CommandScheduler.getInstance().schedule(new ClimbToNextRung(RobotContainer.climber));
-        // }
-        // if (RobotContainer.operator.getPOV() == 90.0) {
-        //   CommandScheduler.getInstance().schedule(new ReadyForNextRung(RobotContainer.climber));
-        // }
-        // if (RobotContainer.operator.getPOV() == 270.0) {
-        //   CommandScheduler.getInstance().schedule(new TransitioningToNextRung(RobotContainer.climber));
-        // }
-        // if (RobotContainer.operator.getRightStickButton()) {
-        //   CommandScheduler.getInstance().schedule(new LatchToNextRung(RobotContainer.climber));
-        // }
-        // if (RobotContainer.operator.getLeftStickButtonPressed()) {
-        //   CommandScheduler.getInstance().schedule(new ClimbToHighRung(RobotContainer.climber));
-        // }
-        // if (RobotContainer.operator.getXButton()) {
-        //   CommandScheduler.getInstance().schedule(new PopOffStaticHooks(RobotContainer.climber));
-        // }
-        // RobotContainer.climber.commandNeutralMode(RobotContainer.operator.getYButton());
 
   }
 

@@ -5,18 +5,20 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.RobotContainer;
 import frc.robot.autonomus.Trajectories;
 import frc.robot.commons.BreadUtil;
 import frc.robot.subsystems.statemachines.GutNeck;
 import frc.robot.subsystems.statemachines.Intake;
 import frc.robot.subsystems.statemachines.Shooter;
 import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
-import frc.robot.subsystems.swerve.PointTurnCommand;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.TrajectoryFollowerController;
+import frc.robot.subsystems.swerve.VisionFollowerController;
+
 import static frc.robot.Constants.Autonomus.*;
 
-public class FiveCargoRightTarmac extends SequentialCommandGroup {  
+public class FiveCargoRightTarmac extends SequentialCommandGroup { 
 
     public FiveCargoRightTarmac(Swerve swerve, Shooter shooter, Intake leftIntake, Intake rightIntake, GutNeck gutNeck) {
         addRequirements(swerve, shooter, leftIntake, rightIntake, gutNeck);
@@ -33,17 +35,17 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                     gutNeck.requestIntakeLeft(true);
                 }
             ),
-            new WaitCommand(0.2),
+            new WaitCommand(0.08),
             new TrajectoryFollowerController(
                 Trajectories.returnFirstCargoRightTarmac, 
                 (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
                 null,
                 swerve
             ),
-            new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
-                swerve
-            ).withTimeout(0.5),
+            new WaitUntilCommand(() -> swerve.getAtVisionHeadingSetpoint()).alongWith(
+                new VisionFollowerController(swerve, true)
+            ).withTimeout(0.5).beforeStarting(() -> RobotContainer.swerve.setDriveSlots(0))
+            .andThen(() -> RobotContainer.swerve.setDriveSlots(1)),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }),
@@ -59,14 +61,14 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                 null,
                 swerve
             ),
-            new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).getRadians(), 
-                swerve
-            ).withTimeout(0.5),
+            new WaitUntilCommand(() -> swerve.getAtVisionHeadingSetpoint()).alongWith(
+                new VisionFollowerController(swerve, true)
+            ).withTimeout(0.5).beforeStarting(() -> RobotContainer.swerve.setDriveSlots(0))
+            .andThen(() -> RobotContainer.swerve.setDriveSlots(1)),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             }),
-            new WaitCommand(0.5).andThen(() -> gutNeck.requestShoot(true)), 
+            new WaitCommand(0.75).andThen(() -> gutNeck.requestShoot(false)), 
             new TrajectoryFollowerController(
                 Trajectories.advanceToHumanPlayerStationAfterThreeBall,
                 (point, time) -> Rotation2d.fromDegrees(135.0), 
@@ -76,17 +78,17 @@ public class FiveCargoRightTarmac extends SequentialCommandGroup {
                 gutNeck.requestShoot(false);
                 shooter.requestShoot(THIRD_SHOT_FLYWHEEL_VELOCITY, THIRD_SHOT_HOOD_ANGLE);
             }),
-            new WaitCommand(0.25),
+            new WaitCommand(0.05),
             new TrajectoryFollowerController(
                 Trajectories.returnFromHumanPlayerStationAfterThreeBall,
                 (point, time) -> BreadUtil.getAngleToTarget(point.getTranslation(), FIELD_TO_TARGET), 
                 null, 
                 swerve
             ),
-            new PointTurnCommand(
-                () -> BreadUtil.getAngleToTarget(swerve.getPose().getTranslation(), FIELD_TO_TARGET).plus(Rotation2d.fromDegrees(2.0)).getRadians(), 
-                swerve
-            ).withTimeout(0.5),
+            new WaitUntilCommand(() -> swerve.getAtVisionHeadingSetpoint()).alongWith(
+                new VisionFollowerController(swerve, true)
+            ).withTimeout(0.5).beforeStarting(() -> RobotContainer.swerve.setDriveSlots(0))
+            .andThen(() -> RobotContainer.swerve.setDriveSlots(1)),
             new InstantCommand(() -> {
                 gutNeck.requestShoot(true);
             })

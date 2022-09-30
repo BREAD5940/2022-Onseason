@@ -25,9 +25,11 @@ public class VisionFollowerController extends CommandBase {
     private final PIDController turnPID = new PIDController(
         8, 0, 0
     );
+    private final boolean auto;
 
-    public VisionFollowerController(Swerve swerve) {
+    public VisionFollowerController(Swerve swerve, boolean auto) {
         this.swerve = swerve;
+        this.auto = auto;
         addRequirements(swerve);
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
         turnPID.setTolerance(Units.degreesToRadians(2.0));
@@ -97,7 +99,7 @@ public class VisionFollowerController extends CommandBase {
         double dy = Math.abs(y) > 0.05 ? Math.pow(-y, 1) : 0.0;
 
         // Sets the speeds of the swerve drive 
-        swerve.setSpeeds(dx, dy, ff + pid);
+        swerve.setSpeeds((!auto) ? dx : 0.0, (!auto) ? dy : 0.0, ff + pid);
 
         if (turnPID.atSetpoint()) {
             swerve.setAtVisionHeadingSetpoint(true);

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -11,10 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.BreadUtil;
+import frc.robot.commons.FieldRelativeAccel;
+import frc.robot.commons.FieldRelativeSpeed;
 import frc.robot.subsystems.vision.RobotPositionHistory;
 
 import static frc.robot.Constants.Drive.*;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 
 public class Swerve extends SubsystemBase {
@@ -23,6 +27,7 @@ public class Swerve extends SubsystemBase {
 
     // Gyro
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final Pigeon2 pigeon = new Pigeon2(PIGEON_ID);
 
     // Modules
     private final MK4iSwerveModule fl = new MK4iSwerveModule(DRIVE_IDS[0], STEER_IDS[0], AZIMUTH_CHANNELS[0], AZIMUTH_OFFSETS[0], DRIVE_INVERT_TYPES[0], STEERS_ARE_REVERSED[0], AZIMUTHS_ARE_REVERSED[0], "FL");
@@ -41,8 +46,14 @@ public class Swerve extends SubsystemBase {
     // State variables
     private boolean atVisionHeadingSetpoint = false;
 
+    // Speed/Accel Variables
+    private FieldRelativeSpeed fieldRelVel = new FieldRelativeSpeed();
+    private FieldRelativeSpeed lastFieldRelVel = new FieldRelativeSpeed();
+    private FieldRelativeAccel fieldRelAccel = new FieldRelativeAccel();
+
     // Constructs a new swerve object
     public Swerve() {
+        pigeon.setYaw(0);
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
         SmartDashboard.putNumber("Traj-X-Error", 0.0);
@@ -68,11 +79,6 @@ public class Swerve extends SubsystemBase {
         ));
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ROBOT_MAX_SPEED);
         fl.setState(states[0]);
-        // SmartDashboard.putNumber("FL Desired Velocity (Before Optimization and Continous Output)", states[0].speedMetersPerSecond);
-        // SmartDashboard.putNumber("FL Desired Angle (Before Optimization and Continous Output)", states[0].angle.getDegrees());
-        // SmartDashboard.putNumber("FL Desired Velocity (After Optimization and Continous Output)", fl.getReferenceVelocity());
-        // SmartDashboard.putNumber("FL Desired Angle (After Optimization and Continous Output", fl.getReferenceAngle());
-        // SmartDashboard.putNumber("FL Motor Output Percent", fl.getDriveOutputPercent());
         fr.setState(states[1]);
         bl.setState(states[2]);
         br.setState(states[3]);
@@ -89,6 +95,21 @@ public class Swerve extends SubsystemBase {
     // Returns the raw gyro angle; is negated to be counterclockwise positive
     public double getRawGyro() {
         return -gyro.getAngle();
+    }
+
+    // Returns the rotation2d representing the gyro angle 
+    public Rotation2d getGyro() {
+        return gyro.getRotation2d();
+    }
+
+    // Returns the field relative speed
+    public FieldRelativeSpeed getFieldRelativeSpeed() {
+        return fieldRelVel;
+    }
+
+    // Return the field relative acceleration
+    public FieldRelativeAccel getFieldRelativeAccel() {
+        return fieldRelAccel;
     }
 
     // Overload to set a robot relative speed
@@ -144,6 +165,11 @@ public class Swerve extends SubsystemBase {
         return atVisionHeadingSetpoint;
     }
 
+    // To Test the Pigeon2 
+    public double testPigeonYaw() {
+        return pigeon.getYaw();
+    }
+
     // Returns the ROBOT RELATIVE speed of the drivetrain
     public Translation2d getVelocity() {
         ChassisSpeeds speeds = kinematics.toChassisSpeeds(
@@ -158,13 +184,28 @@ public class Swerve extends SubsystemBase {
         );
     }
 
+    // Returns the Chassis Speeds object, representing the ROBOT RELATIVE velocity of the drivetrain 
+    public ChassisSpeeds getChassisSpeeds() {
+        return kinematics.toChassisSpeeds(
+            fl.getState(), 
+            fr.getState(),
+            bl.getState(),
+            br.getState()
+        );
+    }
+
     // Periodically updates odometry and posts values to smart dashboard
     @Override
     public void periodic() {
+        fieldRelVel = new FieldRelativeSpeed(getChassisSpeeds(), getGyro());
+        fieldRelAccel = new FieldRelativeAccel(fieldRelVel, lastFieldRelVel, 0.020); // TODO check that this works
+        lastFieldRelVel = fieldRelVel;
+
         SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
         SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
         SmartDashboard.putData(field);
+        SmartDashboard.putNumber("Test Pigeon Yaw", testPigeonYaw());
     }
     
 }

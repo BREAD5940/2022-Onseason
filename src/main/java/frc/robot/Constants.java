@@ -21,6 +21,7 @@ public final class Constants {
         // Motor IDs 
         public static final int[] DRIVE_IDS = {1, 2, 3, 4};
         public static final int[] STEER_IDS = {5, 6, 7, 8};
+        public static final int PIGEON_ID = 30;
         public static final int HORIZONTAL_GUT = 10;
         public static final int VERTICAL_GUT = 11;
 
@@ -130,7 +131,7 @@ public final class Constants {
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
         public static final double SHOOTER_IDLE_VEL = 0.0;
-        public static final double FLYWHEEL_CALIBRATION = 0.9725;
+        public static final double FLYWHEEL_CALIBRATION = 0.985;
         public static final double FLYWHEEL_GEARING = 19.0/36.0;
 
         // Other
@@ -183,13 +184,16 @@ public final class Constants {
         public static final double CLIMBER_PITCH_DIAMETER = Units.inchesToMeters(2.256);
         public static final double CLIMBER_MINIMUM_TRAVEL = 0;
         public static final double CLIMBER_RETRACTED_HEIGHT = 0.005;
+        public static final double CLIMBER_RELEASE_SMALL = 0.016008058195862;
         public static final double CLIMBER_MID_RUNG_HEIGHT = 0.54980 + Units.inchesToMeters(0.5);
         public static final double CILMBER_RELEASE_FROM_RUNG = 0.091646;
+        public static final double CLIMBER_TILT_TOWARDS_HIGH = 0.426195752641584;
+        public static final double CLIMBER_EXTEND = 0.687034142399182;
         public static final double CLIMBER_HEIGHT_BEFORE_NEXT_RUNG = 0.427754;
         public static final double CLIMBER_HEIGHT_TRANSITIONING_TO_NEXT_RUNG = 0.628;
         public static final double CLIMBER_HEIGHT_PULLED_OFF = 0;
         public static final double CLIMBER_READY_FOR_NEXT_RUNG_HEIGHT = 0.61;
-        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.630042;
+        public static final double CLIMBER_MAXIMUM_TRAVEL = 0.684628149023886;
         public static final double CLIMBER_SETPOINT_TOLERANCE = 0.01;
         public static final double MAX_CLIMBER_TRAVEL_SPEED = 6380.0 * CLIMBER_GEARING * Math.PI * CLIMBER_PITCH_DIAMETER;
 
@@ -208,13 +212,13 @@ public final class Constants {
         public static final double LENS_HEIGHT_METERS = Units.inchesToMeters(35.5);
         public static final double MOUNTING_YAW = Units.degreesToRadians(3.57);
         public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(104.0);
-        public static double MOUNTING_PITCH = Units.degreesToRadians(27.0);
+        public static double MOUNTING_PITCH = Units.degreesToRadians(29.25);
         public static final double CAMERA_TO_CENTER = Units.inchesToMeters(13.75);
         public static final double MAX_SHOT_DISTANCE = 5.3; // Distance in meters
 
         // Camera
-        public static final double STREAM_RESOLUTION_X = 960.0;
-        public static final double STREAM_RESOLUTION_Y = 720.0;
+        public static final double STREAM_RESOLUTION_X = 320.0;
+        public static final double STREAM_RESOLUTION_Y = 240.0;
         public static final double MAX_PITCH = 24.85;
         public static final double CAMERA_BASIS_PIXELS = (STREAM_RESOLUTION_Y/2.0)/Math.tan(Units.degreesToRadians(MAX_PITCH));
     }
@@ -241,8 +245,8 @@ public final class Constants {
         public static final double FIRST_SHOT_FLYWHEEL_VELOCITY = 1610.0;
         public static final double FIRST_SHOT_HOOD_ANGLE = 16.0;
 
-        public static final double SECOND_SHOT_FLYWHEEL_VELOCITY = 1725.0;
-        public static final double SECOND_SHOT_HOOD_ANGLE = 24.0;
+        public static final double SECOND_SHOT_FLYWHEEL_VELOCITY = 1800.0;
+        public static final double SECOND_SHOT_HOOD_ANGLE = 23.0;
 
         public static final double THIRD_SHOT_FLYWHEEL_VELOCITY = 1850.0;
         public static final double THIRD_SHOT_HOOD_ANGLE = 18.0;

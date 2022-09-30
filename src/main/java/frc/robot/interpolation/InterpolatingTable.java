@@ -25,6 +25,15 @@ public class InterpolatingTable {
             entry(5.128513 + CAMERA_TO_CENTER, new ShotParameter(20.0, 2100)), // 150 inches
             entry(5.431509 + CAMERA_TO_CENTER, new ShotParameter(20.5, 2200)) // 160 inches
         )
+        // Map.ofEntries(
+        //     entry(2.209163 + CAMERA_TO_CENTER, new ShotParameter(16.0, 1700.0)), // 50 inches
+        //     entry(2.487882 + CAMERA_TO_CENTER, new ShotParameter(16.0, 1725.0)), // 62 inches
+        //     entry(2.766106 + CAMERA_TO_CENTER, new ShotParameter(17.5, 1775.0)), // 74 inches
+        //     entry(3.071202 + CAMERA_TO_CENTER, new ShotParameter(18.0, 1825.0)), // 86 inches
+        //     entry(3.403684 + CAMERA_TO_CENTER, new ShotParameter(18.5, 1875.0)), // 98 inches
+        //     entry(3.695869 + CAMERA_TO_CENTER, new ShotParameter(19.0, 1950.0)), // 110 inches
+        //     entry(4.009022 + CAMERA_TO_CENTER, new ShotParameter(19.0, 1990.0)) // 122 inches
+        // )
     );
 
     public static ShotParameter get(double distanceToTarget) {

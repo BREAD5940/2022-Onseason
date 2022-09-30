@@ -25,6 +25,7 @@ public class Vision extends SubsystemBase {
     private double originalPitch;
     private double distance;
     private double timestampSeconds;
+    private double hasTarget;
     private double mountingAngle = MOUNTING_PITCH;
     private double mountingAdjustment = 0.0;
 
@@ -38,6 +39,7 @@ public class Vision extends SubsystemBase {
                 double pixelOffset = limelightTable.getEntry("tshort").getDouble(0.0)/2.0;
                 timestampSeconds = BreadUtil.getFPGATimeSeconds() - Units.millisecondsToSeconds(limelightTable.getEntry("tl").getDouble(0.0)) - Units.millisecondsToSeconds(11.0);
                 yaw = -limelightTable.getEntry("tx").getDouble(0.0);
+                hasTarget = limelightTable.getEntry("tv").getDouble(0.0);
                 double centerCrosshairPitch = limelightTable.getEntry("ty").getDouble(0.0);
                 originalPitch = centerCrosshairPitch;
                 double centerCrosshairY = Math.tan(Units.degreesToRadians(centerCrosshairPitch)) * CAMERA_BASIS_PIXELS;
@@ -77,6 +79,11 @@ public class Vision extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(set ? 0.0 : 1.0);
     }
 
+    // Method to check if vision is working
+    public boolean working() {
+        return hasTarget == 1.0;
+    }
+
     // Private method to add a distance to the time interpolating buffer
     private double setDistance(double currentDistance) {
         timeInterpolatingBuffer.put(RobotController.getFPGATime()/1.0E6, currentDistance);
@@ -109,7 +116,7 @@ public class Vision extends SubsystemBase {
         double zPrime = yzPrime.getY();
 
         // Solve for the intersection
-        double angleToGoalRadians = Math.asin(yPrime/norm);
+        double angleToGoalRadians = Math.asin(yPrime);
         double diffHeight = TARGET_HEIGHT_METERS - LENS_HEIGHT_METERS;
         double distance = diffHeight/Math.tan(angleToGoalRadians);
 
