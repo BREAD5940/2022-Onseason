@@ -6,6 +6,9 @@ import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 import static frc.robot.Constants.Climber.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -65,6 +68,7 @@ public class Climber extends StateMachine {
     @Override
     protected void log() {
         io.updateInputs(inputs);
+        Logger.getInstance().processInputs("Climber", inputs);
         SmartDashboard.putString("Climber State", mSystemState.name());
         SmartDashboard.putNumber("Climber Height", getHeight());
     }
