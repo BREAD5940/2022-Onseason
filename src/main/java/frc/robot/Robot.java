@@ -9,28 +9,29 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sensors.ColorSensor.BallColor;
 import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-// import org.littletonrobotics.junction.LoggedRobot;
-// import org.littletonrobotics.junction.Logger;
-// import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-// import org.littletonrobotics.junction.io.ByteLogReceiver;
-// import org.littletonrobotics.junction.io.ByteLogReplay;
-// import org.littletonrobotics.junction.io.LogSocketServer;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.ByteLogReceiver;
+import org.littletonrobotics.junction.io.ByteLogReplay;
+import org.littletonrobotics.junction.io.LogSocketServer;
 
 import static frc.robot.Constants.Flywheel.*;
 import static frc.robot.Constants.Climber.*;
 
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -40,33 +41,33 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // setUseTiming(isReal()); 
-    // LoggedNetworkTables.getInstance().addTable("/SmartDashboard"); 
-    // Logger.getInstance().recordMetadata("ProjectName", "2022-Onseason"); 
+    setUseTiming(isReal()); 
+    LoggedNetworkTables.getInstance().addTable("/SmartDashboard"); 
+    Logger.getInstance().recordMetadata("ProjectName", "2022-Onseason"); 
 
-    // if (isReal()) {
-    //   Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda1/")); 
-    //   Logger.getInstance().addDataReceiver(new LogSocketServer(5800));
-    // } else {
-    //   String path = ByteLogReplay.promptForPath();
-    //   Logger.getInstance().setReplaySource(new ByteLogReplay(path)); 
-    //   Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")));
-    // }
+    if (isReal()) {
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda2/")); 
+      Logger.getInstance().addDataReceiver(new LogSocketServer(5800));
+    } else {
+      String path = ByteLogReplay.promptForPath();
+      Logger.getInstance().setReplaySource(new ByteLogReplay(path)); 
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")));
+    }
 
-    // Logger.getInstance().start(); 
+    Logger.getInstance().start(); 
     m_robotContainer = new RobotContainer();
-    SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
-    SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
-    SmartDashboard.putNumber("Flywheel Tuning", 0.0);
-    SmartDashboard.putNumber("Hood Tuning", 8.5);
+    // SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
+    // SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
+    // SmartDashboard.putNumber("Flywheel Tuning", 0.0);
+    // SmartDashboard.putNumber("Hood Tuning", 8.5);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    SmartDashboard.putNumber("Latest Vision Pose Heading", getLatestVisonPoseEstimate().getRotation().getDegrees());
-    SmartDashboard.putNumber("Rotation Pose", RobotContainer.swerve.getPose().getRotation().getDegrees());
-    SmartDashboard.putNumber("Distance to Fender", Units.metersToInches(RobotContainer.vision.getCameraToCenterOfHub()) - 34.25);
+    // SmartDashboard.putNumber("Latest Vision Pose Heading", getLatestVisonPoseEstimate().getRotation().getDegrees());
+    // SmartDashboard.putNumber("Rotation Pose", RobotContainer.swerve.getPose().getRotation().getDegrees());
+    // SmartDashboard.putNumber("Distance to Fender", Units.metersToInches(RobotContainer.vision.getCameraToCenterOfHub()) - 34.25);
     RobotContainer.climber.setEasy(RobotContainer.operator.getXButton());
   }
 
@@ -154,7 +155,7 @@ public class Robot extends TimedRobot {
 
     double distance = RobotContainer.vision.getCameraToCenterOfHub();
 
-    SmartDashboard.putBoolean("Valid Shot Distance", distance<=MAX_SHOT_DISTANCE);
+    // SmartDashboard.putBoolean("Valid Shot Distance", distance<=MAX_SHOT_DISTANCE);
 
     // Driver shooting signals
     if (RobotContainer.driver.getAButton()) {

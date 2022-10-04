@@ -408,18 +408,18 @@ public class GutNeck extends SubsystemBase {
             }
         }
         systemState = nextSystemState;
-        SmartDashboard.putString("GutNeck State", getSystemState().name());
-        SmartDashboard.putBoolean("GutNeck Request Shoot", requestShoot);
-        SmartDashboard.putBoolean("Middle BeamBreak", getMiddleBeamBreakTriggered());
-        SmartDashboard.putBoolean("Top BeamBreak", getTopBeamBreakTriggered());
+        // SmartDashboard.putString("GutNeck State", getSystemState().name());
+        // SmartDashboard.putBoolean("GutNeck Request Shoot", requestShoot);
+        // SmartDashboard.putBoolean("Middle BeamBreak", getMiddleBeamBreakTriggered());
+        // SmartDashboard.putBoolean("Top BeamBreak", getTopBeamBreakTriggered());
         if (!colorSensor.isConnected()) {
             colorSensor.triggerConnectionFault();
         }
         if (!colorSensor.hasNotTimeout()) {
             colorSensor.triggerTimeoutFault();
         }
-        SmartDashboard.putNumber("Connection Fault Triggered", colorSensor.getConnectionFaultTriggered());
-        SmartDashboard.putNumber("Timeout Fault Triggered", colorSensor.getTimeoutFaultTriggered());
+        // SmartDashboard.putNumber("Connection Fault Triggered", colorSensor.getConnectionFaultTriggered());
+        // SmartDashboard.putNumber("Timeout Fault Triggered", colorSensor.getTimeoutFaultTriggered());
     }
 
     // Private method to begin the shooting sequence

@@ -69,8 +69,8 @@ public class Climber extends StateMachine {
     protected void log() {
         io.updateInputs(inputs);
         Logger.getInstance().processInputs("Climber", inputs);
-        SmartDashboard.putString("Climber State", mSystemState.name());
-        SmartDashboard.putNumber("Climber Height", getHeight());
+        // SmartDashboard.putString("Climber State", mSystemState.name());
+        // SmartDashboard.putNumber("Climber Height", getHeight());
     }
 
     @Override

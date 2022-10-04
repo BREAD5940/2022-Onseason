@@ -48,7 +48,7 @@ public class VisionFollowerController extends CommandBase {
         
         // Calculate pose relative to the target (factoring in wheel speeds)
         Pose2d currentAbsolutePose = swerve.getPose();
-        SmartDashboard.putNumber("Vision Pose Estimate", associatedTimestamp);
+        // SmartDashboard.putNumber("Vision Pose Estimate", associatedTimestamp);
         Pose2d absolutePoseAtVisionTimestamp = RobotPositionHistory.get(associatedTimestamp);
         Transform2d changeInPose = currentAbsolutePose.minus(absolutePoseAtVisionTimestamp);
         changeInPose = new Transform2d(
@@ -90,7 +90,7 @@ public class VisionFollowerController extends CommandBase {
         double clampAdd = 2 + Math.abs(setpoint - measurement) * (2/Math.PI);
         pid = MathUtil.clamp(pid, -clampAdd, clampAdd);
 
-        SmartDashboard.putNumber("Vision Follower Distance", robotToAdjustedTargetDistance);
+        // SmartDashboard.putNumber("Vision Follower Distance", robotToAdjustedTargetDistance);
 
         // Handles x and y translation (manually controlled)
         double x = RobotContainer.driver.getRightY();
@@ -107,8 +107,8 @@ public class VisionFollowerController extends CommandBase {
             swerve.setAtVisionHeadingSetpoint(false);
         }
 
-        SmartDashboard.putNumber("Vision Follower Setpoint", Units.radiansToDegrees(setpoint));
-        SmartDashboard.putNumber("Vision Follower Measurement", Units.radiansToDegrees(measurement));
+        // SmartDashboard.putNumber("Vision Follower Setpoint", Units.radiansToDegrees(setpoint));
+        // SmartDashboard.putNumber("Vision Follower Measurement", Units.radiansToDegrees(measurement));
     }
 
     @Override

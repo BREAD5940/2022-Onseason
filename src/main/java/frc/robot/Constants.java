@@ -217,8 +217,8 @@ public final class Constants {
         public static final double MAX_SHOT_DISTANCE = 5.3; // Distance in meters
 
         // Camera
-        public static final double STREAM_RESOLUTION_X = 320.0;
-        public static final double STREAM_RESOLUTION_Y = 240.0;
+        public static final double STREAM_RESOLUTION_X = 960.0;
+        public static final double STREAM_RESOLUTION_Y = 720.0;
         public static final double MAX_PITCH = 24.85;
         public static final double CAMERA_BASIS_PIXELS = (STREAM_RESOLUTION_Y/2.0)/Math.tan(Units.degreesToRadians(MAX_PITCH));
     }

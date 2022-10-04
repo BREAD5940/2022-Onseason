@@ -55,10 +55,10 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         pigeon.setYaw(0);
         field.setRobotPose(pose);
-        SmartDashboard.putData(field);
-        SmartDashboard.putNumber("Traj-X-Error", 0.0);
-        SmartDashboard.putNumber("Traj-Y-Error", 0.0);
-        SmartDashboard.putNumber("Traj-Theta-Error", 0.0);
+        // SmartDashboard.putData(field);
+        // SmartDashboard.putNumber("Traj-X-Error", 0.0);
+        // SmartDashboard.putNumber("Traj-Y-Error", 0.0);
+        // SmartDashboard.putNumber("Traj-Theta-Error", 0.0);
     }
 
     // Resets all of the swerve modules to use the absolute readings
@@ -139,7 +139,7 @@ public class Swerve extends SubsystemBase {
         );
         RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
         field.setRobotPose(pose);
-        SmartDashboard.putData(field);
+        // SmartDashboard.putData(field);
     }
 
     // Returns the match pose
@@ -201,11 +201,11 @@ public class Swerve extends SubsystemBase {
         fieldRelAccel = new FieldRelativeAccel(fieldRelVel, lastFieldRelVel, 0.020); // TODO check that this works
         lastFieldRelVel = fieldRelVel;
 
-        SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
+        // SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
+        // SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
-        SmartDashboard.putData(field);
-        SmartDashboard.putNumber("Test Pigeon Yaw", testPigeonYaw());
+        // SmartDashboard.putData(field);
+        // SmartDashboard.putNumber("Test Pigeon Yaw", testPigeonYaw());
     }
     
 }

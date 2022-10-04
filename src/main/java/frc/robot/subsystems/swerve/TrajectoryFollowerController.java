@@ -54,9 +54,9 @@ public class TrajectoryFollowerController extends CommandBase {
         );
         Pose2d poseError = autonomusController.m_poseError;
         Rotation2d rotError = autonomusController.m_rotationError;
-        SmartDashboard.putNumber("Traj-X-Error", Units.metersToInches(poseError.getX()));
-        SmartDashboard.putNumber("Traj-Y-Error", Units.metersToInches(poseError.getY()));
-        SmartDashboard.putNumber("Traj-Theta-Error", rotError.getDegrees());
+        // SmartDashboard.putNumber("Traj-X-Error", Units.metersToInches(poseError.getX()));
+        // SmartDashboard.putNumber("Traj-Y-Error", Units.metersToInches(poseError.getY()));
+        // SmartDashboard.putNumber("Traj-Theta-Error", rotError.getDegrees());
     }
 
     @Override

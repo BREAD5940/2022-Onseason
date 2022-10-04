@@ -46,9 +46,9 @@ public class Vision extends SubsystemBase {
                 double topCrosshairY = centerCrosshairY + pixelOffset;
                 pitch = Units.radiansToDegrees(Math.atan(topCrosshairY/CAMERA_BASIS_PIXELS));
                 distance = setDistance(getCameraToTarget().getNorm());
-                SmartDashboard.putNumber("Pixel offset", pixelOffset);
-                SmartDashboard.putNumber("Center Crosshair Y", centerCrosshairY);
-                SmartDashboard.putNumber("topCrossHairY", topCrosshairY);
+                // SmartDashboard.putNumber("Pixel offset", pixelOffset);
+                // SmartDashboard.putNumber("Center Crosshair Y", centerCrosshairY);
+                // SmartDashboard.putNumber("topCrossHairY", topCrosshairY);
             }, EntryListenerFlags.kUpdate);
     }
     
@@ -126,11 +126,11 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Distance To Center Of Hub", getCameraToCenterOfHub());
-        SmartDashboard.putNumber("Center Pitch", originalPitch);
-        SmartDashboard.putNumber("Adjusted Pitch", getPitch());
-        SmartDashboard.putNumber("Yaw", getYaw());
-        SmartDashboard.putNumber("Vision Timestamp", getMeasurementTimestamp());
+        // SmartDashboard.putNumber("Distance To Center Of Hub", getCameraToCenterOfHub());
+        // SmartDashboard.putNumber("Center Pitch", originalPitch);
+        // SmartDashboard.putNumber("Adjusted Pitch", getPitch());
+        // SmartDashboard.putNumber("Yaw", getYaw());
+        // SmartDashboard.putNumber("Vision Timestamp", getMeasurementTimestamp());
         mountingAdjustment = Units.degreesToRadians(SmartDashboard.getNumber("F-Mounting-Adjustment", 0.0));
         mountingAngle = MOUNTING_PITCH + mountingAdjustment;
     }
