@@ -1,4 +1,4 @@
-package frc.robot.subsystems.statemachines;
+package frc.robot.subsystems.shooter;
 
 import java.util.Map;
 import java.util.TreeMap;

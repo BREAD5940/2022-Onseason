@@ -9,9 +9,9 @@ import frc.robot.autonomus.routines.FiveCargoRightTarmac;
 import frc.robot.autonomus.routines.OneCargoLeftTarmac;
 import frc.robot.autonomus.routines.TwoCargoLeftTarmac;
 import frc.robot.autonomus.routines.TwoCargoLeftTarmacDefensive;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.statemachines.GutNeck;
-import frc.robot.subsystems.statemachines.Intake;
-import frc.robot.subsystems.statemachines.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
 
 public class AutonomusSelector {

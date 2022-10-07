@@ -17,7 +17,7 @@ import frc.robot.drivers.TalonUtil;
 import frc.robot.sensors.BeamBreak;
 import frc.robot.sensors.ColorSensor;
 import frc.robot.sensors.ColorSensor.BallColor;
-import frc.robot.subsystems.statemachines.Shooter.ShooterState;
+import frc.robot.subsystems.shooter.Shooter.ShooterState;
 import frc.robot.Robot;
 import static frc.robot.Constants.Gut.*;
 import static frc.robot.Constants.Neck.*;
