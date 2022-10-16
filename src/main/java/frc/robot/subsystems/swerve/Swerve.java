@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -206,6 +207,16 @@ public class Swerve extends SubsystemBase {
         updateOdometry();
         // SmartDashboard.putData(field);
         // SmartDashboard.putNumber("Test Pigeon Yaw", testPigeonYaw());
+        SmartDashboard.putNumber("FL-Angle", Units.radiansToDegrees(fl.getAngle()));
+        SmartDashboard.putBoolean("SwerveAtSetpoint", atVisionHeadingSetpoint);
+        // SmartDashboard.putNumber("FR-Angle", Units.radiansToDegrees(fr.getAngle()));
+        // SmartDashboard.putNumber("BL-Angle", Units.radiansToDegrees(bl.getAngle()));
+        // SmartDashboard.putNumber("BR-Angle", Units.radiansToDegrees(br.getAngle()));
+
+        // SmartDashboard.putNumber("FL-Desired-Angle", Units.radiansToDegrees(fl.getDesiredState()[0]));
+        // SmartDashboard.putNumber("FR-Desired-Angle", Units.radiansToDegrees(fr.getDesiredState()[0]));
+        // SmartDashboard.putNumber("BL-Desired-Angle", Units.radiansToDegrees(bl.getDesiredState()[0]));
+        // SmartDashboard.putNumber("BR-Desired-Angle", Units.radiansToDegrees(br.getDesiredState()[0]));
 
     }
     

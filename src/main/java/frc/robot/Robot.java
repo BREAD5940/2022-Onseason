@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sensors.ColorSensor.BallColor;
@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", "2022-Onseason"); 
 
     if (isReal()) {
-      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda2/")); 
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda1/")); 
       Logger.getInstance().addDataReceiver(new LogSocketServer(5800));
     } else {
       String path = ByteLogReplay.promptForPath();
@@ -56,7 +56,7 @@ public class Robot extends LoggedRobot {
 
     Logger.getInstance().start(); 
     m_robotContainer = new RobotContainer();
-    // SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
+    SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
     // SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
     // SmartDashboard.putNumber("Flywheel Tuning", 0.0);
     // SmartDashboard.putNumber("Hood Tuning", 8.5);

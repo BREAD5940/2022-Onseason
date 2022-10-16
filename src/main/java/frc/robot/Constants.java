@@ -41,10 +41,10 @@ public final class Constants {
         // Offsets (calculate offsets by measuring the values shown in the pheonix tuner self-test snapshot when all offsets are set to 0.0)
         // Offsets change on boot
         public static final Rotation2d[] AZIMUTH_OFFSETS = {
-            Rotation2d.fromDegrees(-106.12-33.223), // FL
-            Rotation2d.fromDegrees(54.053+0.527), // FR
-            Rotation2d.fromDegrees(-57.74-0.967), // BL
-            Rotation2d.fromDegrees(-41.748-0.176) //BR
+            Rotation2d.fromDegrees(-140.361), // FL // 140.361
+            Rotation2d.fromDegrees(54.756), // FR // -54.756
+            Rotation2d.fromDegrees(-58.887), // BL // 58.887
+            Rotation2d.fromDegrees(-41.924) //BR // 41.924
         };
 
         // Drive-by shooting constants
@@ -131,7 +131,7 @@ public final class Constants {
         // Measurements/Gearings
         public static final double MAX_FLYWHEEL_RPM = 6163.0;
         public static final double SHOOTER_IDLE_VEL = 0.0;
-        public static final double FLYWHEEL_CALIBRATION = 0.985;
+        public static final double FLYWHEEL_CALIBRATION = 0.98;
         public static final double FLYWHEEL_GEARING = 19.0/36.0;
 
         // Other

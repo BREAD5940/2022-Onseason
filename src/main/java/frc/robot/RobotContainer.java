@@ -37,7 +37,6 @@ public class RobotContainer {
   public static Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static XboxController driver = new XboxController(0);
   public static XboxController operator = new XboxController(1);
-  public static AutonomusSelector autoSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
   public static AutonomusSelector autonomusSelector = new AutonomusSelector(swerve, shooter, leftIntake, rightIntake, gutNeck);
 
   public RobotContainer() {

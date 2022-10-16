@@ -56,6 +56,9 @@ public interface ShooterIO {
     /* Sets the position of the hood in degrees */
     public default void setHoodPos(double posDeg) { }
 
+    /* Sets the voltage input of the hood in volts */
+    public default void setHoodVoltage(double volts) { }
+
     /* Sets the velocity of the flywheel in rotations per second */
     public default void setFlywheelVel(double velRPM) { }
 }

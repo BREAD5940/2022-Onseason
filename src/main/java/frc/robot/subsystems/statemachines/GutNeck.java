@@ -384,6 +384,31 @@ public class GutNeck extends SubsystemBase {
                 exitShootingSequence();
                 nextSystemState = GutNeckStates.IDLE_NO_CARGO;
             }
+
+            // Outputs
+            // commandGutSurfaceSpeed(0.0);
+            // commandNeckSurfaceSpeed(2.5);
+
+            // if (!getMiddleBeamBreakTriggered() && !getTopBeamBreakTriggered() && !ballsExpelledFromNeck) {
+            //     ballsExpelledFromNeck = true;
+            //     shootingTimer.start();
+            // }
+
+            // if (getMiddleBeamBreakTriggered() || getTopBeamBreakTriggered()) {
+            //     ballsExpelledFromNeck = false;
+            //     shootingTimer.stop();
+            //     shootingTimer.reset();
+            // }
+
+            // // State transitions
+            // if (requestSpitLeft) {
+            //     nextSystemState = GutNeckStates.SPIT_LEFT;
+            // } else if (requestSpitRight) {
+            //     nextSystemState = GutNeckStates.SPIT_RIGHT;
+            // } else if (shootingTimer.get() > 0.5 && ballsExpelledFromNeck) {
+            //     exitShootingSequence();
+            //     nextSystemState = GutNeckStates.IDLE_NO_CARGO;
+            // }
         } else if (systemState == GutNeckStates.SPIT_LEFT) {
             /* The neck is moving in the down direction; the gut is moving in the left direction; there may or may not be balls somewhere in the robot */
 
