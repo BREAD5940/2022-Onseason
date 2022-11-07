@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sensors.ColorSensor.BallColor;
-import frc.robot.subsystems.statemachines.GutNeck.GutNeckStates;
+import frc.robot.subsystems.gutneck.GutNeck.GutNeckStates;
+
 import static frc.robot.Constants.Hood.*;
 import static frc.robot.Constants.Vision.*;
 
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 import org.littletonrobotics.junction.io.ByteLogReceiver;
 import org.littletonrobotics.junction.io.ByteLogReplay;
 import org.littletonrobotics.junction.io.LogSocketServer;
@@ -39,6 +42,8 @@ public class Robot extends LoggedRobot {
   private boolean climbing = false;
   private double lastResetToAbsolute = 0.0;
 
+  
+
   @Override
   public void robotInit() {
     setUseTiming(isReal()); 
@@ -46,7 +51,7 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", "2022-Onseason"); 
 
     if (isReal()) {
-      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda1/")); 
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda2/")); 
       Logger.getInstance().addDataReceiver(new LogSocketServer(5800));
     } else {
       String path = ByteLogReplay.promptForPath();
@@ -54,9 +59,11 @@ public class Robot extends LoggedRobot {
       Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")));
     }
 
+    LoggedSystemStats.getInstance().setPowerDistributionConfig(1, ModuleType.kRev);
     Logger.getInstance().start(); 
     m_robotContainer = new RobotContainer();
     SmartDashboard.putNumber("Flywheel Calibration", FLYWHEEL_CALIBRATION);
+    
     // SmartDashboard.putNumber("F-Mounting-Adjustment", 0.0);
     // SmartDashboard.putNumber("Flywheel Tuning", 0.0);
     // SmartDashboard.putNumber("Hood Tuning", 8.5);

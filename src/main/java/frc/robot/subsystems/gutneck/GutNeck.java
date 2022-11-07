@@ -1,4 +1,4 @@
-package frc.robot.subsystems.statemachines;
+package frc.robot.subsystems.gutneck;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -240,7 +240,7 @@ public class GutNeck extends SubsystemBase {
                 nextSystemState = GutNeckStates.INTAKE_LEFT_ONE_CARGO;
             } else if (requestIntakeRight && !requestShoot) {
                 nextSystemState = GutNeckStates.INTAKE_RIGHT_ONE_CARGO;
-            }   
+            }    
         } else if (systemState == GutNeckStates.IDLE_TWO_CARGO) {
             /* Gut and neck are stationary; two cargo are stored in the neck */
             
@@ -385,7 +385,7 @@ public class GutNeck extends SubsystemBase {
                 nextSystemState = GutNeckStates.IDLE_NO_CARGO;
             }
 
-            // Outputs
+            // // Outputs
             // commandGutSurfaceSpeed(0.0);
             // commandNeckSurfaceSpeed(2.5);
 

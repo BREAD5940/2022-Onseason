@@ -129,7 +129,13 @@ public class ColorSensor {
     }
     
     public enum BallColor {
-        RED, BLUE, NONE
+        RED(0), BLUE(1), NONE(2);
+
+        public final int value;
+
+        BallColor(int value) {
+            this.value = value;
+        }
     }
     
 }
