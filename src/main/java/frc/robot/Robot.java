@@ -42,8 +42,6 @@ public class Robot extends LoggedRobot {
   private boolean climbing = false;
   private double lastResetToAbsolute = 0.0;
 
-  
-
   @Override
   public void robotInit() {
     setUseTiming(isReal()); 

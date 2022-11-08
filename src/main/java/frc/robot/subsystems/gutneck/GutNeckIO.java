@@ -19,7 +19,7 @@ public interface GutNeckIO {
         public double neckTempCelcius = 0.0;
         public boolean bottomBeamBreakBroken = false;
         public boolean topBeamBreakBroken = false;
-        public int detectedColor = BallColor.NONE.value;
+        public BallColor detectedColor = BallColor.NONE;
 
         @Override
         public void toLog(LogTable table) {
@@ -33,7 +33,7 @@ public interface GutNeckIO {
             table.put("NeckTempCelcius", neckTempCelcius);
             table.put("BottomBeamBreakBroken", bottomBeamBreakBroken);
             table.put("TopBeamBreakBroken", topBeamBreakBroken);
-            table.put("DetectedColor", detectedColor);
+            table.put("DetectedColor", detectedColor.toString());
         } 
 
         @Override
@@ -48,7 +48,7 @@ public interface GutNeckIO {
             neckTempCelcius = table.getDouble("NeckTempCelcius", neckTempCelcius);
             bottomBeamBreakBroken = table.getBoolean("BottomBeamBreakBroken", bottomBeamBreakBroken);
             topBeamBreakBroken = table.getBoolean("TopBeamBreakBroken", topBeamBreakBroken);
-            detectedColor = table.getInteger("DetectedColor", detectedColor);
+            detectedColor = BallColor.valueOf(table.getString("DetectedColor", detectedColor.toString()));
         }
         
     }
@@ -56,5 +56,9 @@ public interface GutNeckIO {
     /* Updates the set of loggable inputs */
     public default void updateInputs(GutNeckIOInputs inputs) { }
 
+    /* Sets the speed of the gut in meters per second */
+    public default void setGutSpeedMetersPerSecond(double speed) { }
     
+    /* Sets the speed of the neck in meters per second */
+    public default void setNeckSpeedMetersPerSecond(double speed) { }
 }
