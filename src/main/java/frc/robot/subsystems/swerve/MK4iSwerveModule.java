@@ -20,6 +20,8 @@ import frc.robot.commons.BreadUtil;
 import frc.robot.drivers.TalonUtil;
 
 import static frc.robot.Constants.Drive.*;
+import static frc.robot.Constants.Electrical.*;
+
 
 public class MK4iSwerveModule {
 
@@ -31,7 +33,7 @@ public class MK4iSwerveModule {
     public MK4iSwerveModule(int driveID, int steerID, int azimuthID, Rotation2d offset, TalonFXInvertType driveDirection, boolean steerReversed, boolean azimuthReversed, String moduleIdentifier) {
 
         // Configure the driving motor
-        drive = new TalonFX(driveID);
+        drive = new TalonFX(driveID, CANIVORE_BUS_NAME);
         TalonFXConfiguration driveConfig = new TalonFXConfiguration();
         driveConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
         driveConfig.slot0.kP = integratedSensorUnitsToWheelSpeedMetersPerSecond(0.05) * 1023.0; // TODO check this
@@ -57,14 +59,14 @@ public class MK4iSwerveModule {
         drive.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 15);
 
         // Create CAN Coder object
-        azimuth = new CANCoder(azimuthID);
+        azimuth = new CANCoder(azimuthID, CANIVORE_BUS_NAME);
         TalonUtil.checkError(azimuth.configMagnetOffset(offset.getDegrees()), "CANCoder Magnet Offset Configuration Failed");
         TalonUtil.checkError(azimuth.configSensorDirection(false), "CANCoder Sensor Direction Configuration Failed");
         TalonUtil.checkError(azimuth.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition), "CANCoder Initialization Strategy Configuration Failed");
         TalonUtil.checkError(azimuth.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180), "CANCoder Absolute Sensor Range Configuration Failed");
 
         // Configure the steering motor
-        steer = new TalonFX(steerID);
+        steer = new TalonFX(steerID, CANIVORE_BUS_NAME);
         TalonFXConfiguration steerConfig = new TalonFXConfiguration();
         steerConfig.remoteFilter0.remoteSensorDeviceID = azimuth.getDeviceID();
         steerConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
@@ -165,5 +167,3 @@ public class MK4iSwerveModule {
     }  
 
 }
-
-

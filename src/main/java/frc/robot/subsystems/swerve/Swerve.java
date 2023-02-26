@@ -9,13 +9,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.BreadUtil;
 import frc.robot.commons.FieldRelativeAccel;
 import frc.robot.commons.FieldRelativeSpeed;
-import frc.robot.subsystems.vision.RobotPositionHistory;
-
 import static frc.robot.Constants.Drive.*;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -55,10 +52,6 @@ public class Swerve extends SubsystemBase {
     public Swerve() {
         pigeon.setYaw(0);
         field.setRobotPose(pose);
-        // SmartDashboard.putData(field);
-        // SmartDashboard.putNumber("Traj-X-Error", 0.0);
-        // SmartDashboard.putNumber("Traj-Y-Error", 0.0);
-        // SmartDashboard.putNumber("Traj-Theta-Error", 0.0);
     }
 
     // Resets all of the swerve modules to use the absolute readings
@@ -139,7 +132,6 @@ public class Swerve extends SubsystemBase {
         );
         RobotPositionHistory.update(BreadUtil.getFPGATimeSeconds(), pose);
         field.setRobotPose(pose);
-        // SmartDashboard.putData(field);
     }
 
     // Returns the match pose
@@ -201,11 +193,7 @@ public class Swerve extends SubsystemBase {
         fieldRelAccel = new FieldRelativeAccel(fieldRelVel, lastFieldRelVel, 0.020); // TODO check that this works
         lastFieldRelVel = fieldRelVel;
 
-        // SmartDashboard.putNumber("Robot Rotation", pose.getRotation().getDegrees());
-        // SmartDashboard.putNumber("Get Raw Gyro Angle", getRawGyro());
         updateOdometry();
-        // SmartDashboard.putData(field);
-        // SmartDashboard.putNumber("Test Pigeon Yaw", testPigeonYaw());
     }
     
 }

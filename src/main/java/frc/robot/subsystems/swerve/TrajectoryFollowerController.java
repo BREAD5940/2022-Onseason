@@ -7,9 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commons.BreadHolonomicDriveController;
 
@@ -21,12 +19,12 @@ public class TrajectoryFollowerController extends CommandBase {
     private final Swerve swerve;
     private final Timer timer = new Timer();
     public final BreadHolonomicDriveController autonomusController = new BreadHolonomicDriveController(
-        new PIDController(8, 0, 0), 
-        new PIDController(8, 0, 0), 
-        new PIDController(6, 0, 0)
-    );
+            new PIDController(8, 0, 0),
+            new PIDController(8, 0, 0),
+            new PIDController(6, 0, 0));
 
-    public TrajectoryFollowerController(Trajectory trajectory, BiFunction<Pose2d, Double, Rotation2d> refHeading, Supplier<Rotation2d> startHeading, Swerve swerve) {
+    public TrajectoryFollowerController(Trajectory trajectory, BiFunction<Pose2d, Double, Rotation2d> refHeading,
+            Supplier<Rotation2d> startHeading, Swerve swerve) {
         this.trajectory = trajectory;
         this.refHeading = refHeading;
         this.startHeading = startHeading;
@@ -34,13 +32,15 @@ public class TrajectoryFollowerController extends CommandBase {
         addRequirements(swerve);
     }
 
-    public TrajectoryFollowerController(Trajectory trajectory, BiFunction<Pose2d, Double, Rotation2d> refHeading, Swerve swerve) {
+    public TrajectoryFollowerController(Trajectory trajectory, BiFunction<Pose2d, Double, Rotation2d> refHeading,
+            Swerve swerve) {
         this(trajectory, refHeading, null, swerve);
     }
 
     @Override
     public void initialize() {
-        if (startHeading != null) swerve.reset(new Pose2d(trajectory.sample(0.0).poseMeters.getTranslation(), startHeading.get()));
+        if (startHeading != null)
+            swerve.reset(new Pose2d(trajectory.sample(0.0).poseMeters.getTranslation(), startHeading.get()));
         timer.reset();
         timer.start();
     }
@@ -48,15 +48,10 @@ public class TrajectoryFollowerController extends CommandBase {
     @Override
     public void execute() {
         Trajectory.State goal = trajectory.sample(timer.get());
-        ChassisSpeeds adjustedSpeeds = autonomusController.calculate(swerve.getPose(), goal, refHeading.apply(swerve.getPose(), timer.get())); 
+        ChassisSpeeds adjustedSpeeds = autonomusController.calculate(swerve.getPose(), goal,
+                refHeading.apply(swerve.getPose(), timer.get()));
         swerve.setSpeeds(
-            adjustedSpeeds
-        );
-        Pose2d poseError = autonomusController.m_poseError;
-        Rotation2d rotError = autonomusController.m_rotationError;
-        // SmartDashboard.putNumber("Traj-X-Error", Units.metersToInches(poseError.getX()));
-        // SmartDashboard.putNumber("Traj-Y-Error", Units.metersToInches(poseError.getY()));
-        // SmartDashboard.putNumber("Traj-Theta-Error", rotError.getDegrees());
+                adjustedSpeeds);
     }
 
     @Override
@@ -65,8 +60,7 @@ public class TrajectoryFollowerController extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) { 
+    public void end(boolean interrupted) {
         swerve.setSpeeds(new ChassisSpeeds(0, 0, 0));
     }
-
 }
